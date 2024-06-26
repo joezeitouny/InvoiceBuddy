@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="closed_trade_chart_modal" tabindex="-1" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Trade Chart</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body custom-modal-body">
+                <div class="container-fluid">
+                    <div id="closed_trade_chart"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h2>Closed Trades (<span id="closed-trades-count-header"></span>)</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover" id="closed-trades-data-table">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Entry Timestamp</th>
+                <th scope="col">Rule ID</th>
+                <th scope="col">Symbol</th>
+                <th scope="col">Interval</th>
+                <th scope="col">Strategy</th>
+                <th scope="col">FIAT Asset Used</th>
+                <th scope="col">Entry Type</th>
+                <th scope="col">Entry Price</th>
+                <th scope="col">Quantity Bought</th>
+                <th scope="col">Entry Amount</th>
+                <th scope="col">Exit Timestamp</th>
+                <th scope="col">Exit Price</th>
+                <th scope="col">P&L</th>
+            </tr>
+            </thead>
+            <tbody id="closed-trades-data-table-body">
+
+            </tbody>
+        </table>
+    </div>
+    <nav class="d-flex justify-content-center" aria-label="Page navigation">
+        <ul class="pagination" id="pagination">
+            <!-- Pagination links will be populated here -->
+        </ul>
+    </nav>
+</div>
+
+<script type="text/javascript">
+const closedTradeChartModal = new bootstrap.Modal(document.getElementById('closed_trade_chart_modal'), {backdrop: 'static'});
+
+function refreshData(page) {
+    $.ajax({
+        type: 'GET',
+        url: '/get_closed_trades_data?page=' + page,
+        success: function(data) {
+            // hide the loading modal
+            $('#loading_modal').modal('hide');
+
+            // Populate closed trades section
+            const closedTradesDataTable = document.getElementById('closed-trades-data-table').getElementsByTagName('tbody')[0];
+            const tableBody = $('#closed-trades-data-table-body');
+            const pagination = $('#pagination');
+
+            // clear all the old rows first
+            tableBody.empty();
+
+            // Repopulate the table
+            for (const [entry, values] of Object.entries(data['closed_trades'])) {
+                    const row = closedTradesDataTable.insertRow();
+                    row.setAttribute('data-timestamp', values.timestamp);
+                    row.setAttribute('data-symbol', values.symbol);
+                    row.setAttribute('data-interval', values.interval);
+
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+                    const cell3 = row.insertCell(2);
+                    const cell4 = row.insertCell(3);
+                    const cell5 = row.insertCell(4);
+                    const cell6 = row.insertCell(5);
+                    const cell7 = row.insertCell(6);
+                    const cell8 = row.insertCell(7);
+                    const cell9 = row.insertCell(8);
+                    const cell10 = row.insertCell(9);
+                    const cell11 = row.insertCell(10);
+                    const cell12 = row.insertCell(11);
+                    const cell13 = row.insertCell(12);
+
+                    cell1.innerHTML = getFormattedTimestamp(values.timestamp, true);
+                    cell2.innerHTML = values.rule_id;
+                    cell3.innerHTML = values.symbol;
+                    cell4.innerHTML = values.interval;
+                    cell5.innerHTML = values.strategy;
+                    cell6.innerHTML = values.fiat_symbol_to_use;
+                    cell7.innerHTML = values.entry_type;
+                    cell8.innerHTML = values.entry_price;
+                    cell9.innerHTML = values.quantity;
+                    cell10.innerHTML = values.amount;
+                    cell11.innerHTML = getFormattedTimestamp(values.exit_timestamp, true);
+                    cell12.innerHTML = values.exit_price;
+                    cell13.innerHTML = values.p_and_l;
+            }
+
+            // Attach a click event listener to the rows in the table
+            $('#closed-trades-data-table tbody tr').click(function() {
+                // Get values from the clicked row
+                var timestamp = $(this).data('timestamp');
+                var symbol = $(this).data('symbol');
+                var interval = $(this).data('interval');
+
+                // call the relevant handler function
+                handleRowClick(timestamp, symbol, interval);
+            });
+
+            // Custom function to handle row click
+            function handleRowClick(timestamp, symbol, interval) {
+                $('#loading_modal').modal('show');
+                $.ajax({
+                    url: '/get_chart',
+                    method: 'POST',
+                    data: { timestamp: timestamp, symbol: symbol, interval: interval },
+                    success: function (response) {
+                        $('#loading_modal').modal('hide');
+                        // Render the chart using the Plotly JSON data passed from Flask
+                        Plotly.newPlot('closed_trade_chart', JSON.parse(response).data, JSON.parse(response).layout);
+
+                        // Show the chart dialog
+                        closedTradeChartModal.show();
+                    },
+                    error: function (error) {
+                        $('#loading_modal').modal('hide');
+                        console.error('Error retrieving chart:', error);
+                    }
+                });
+            }
+
+            pagination.empty();
+            for (let i = 1; i <= parseInt(data['total_number_of_pages']); i++) {
+                let li = `<li class="page-item ${i === page ? 'highlighted' : ''}">`;
+                li += `<a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                pagination.append(li);
+            }
+
+            // Handle pagination click
+            pagination.on('click', 'a', function(e) {
+                e.preventDefault();
+                const page = $(this).data('page');
+                refreshData(page);
+            });
+
+            $('#closed-trades-count').html(parseInt(data['total_number_of_trades']));
+            $('#closed-trades-count-header').html(parseInt(data['total_number_of_trades']));
+        }
+    });
+}
+
+$(document).ready(function() {
+    $('#loading_modal').modal('show');
+
+    setTimeout(() => {
+        refreshData(1);
+    }, 500);
+});
+
+</script>
+{% endblock %}

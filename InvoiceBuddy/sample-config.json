@@ -1,0 +1,51 @@
+{
+  "output_path": "",
+  "tmp_path": "",
+  "filename_prefix": "TradingBot_",
+  "run_in_simulation_mode": "True",
+  "exchange" : {
+    "exchange_name": "bybit",
+    "exchange_api_keys": "",
+    "exchange_api_secret": "",
+    "exchange_test_net": "True"
+  },
+  "web_application": {
+    "web_module": "True",
+    "web_host": "127.0.0.1",
+    "web_port": "5001",
+    "web_environment": "production"
+  },
+  "email": {
+    "email_module": "False",
+    "email_address": "",
+    "email_password": "",
+    "email_trade_report": "True"
+  },
+  "notification": {
+    "notifications_module": "True",
+    "notification_email": "True",
+    "notification_sound": "True",
+    "notification_console": "True",
+    "notification_cool_off_interval": "60"
+  },
+  "log": {
+    "log_module": "True",
+    "log_level": "INFO"
+  },
+  "sound": {
+    "sound_module": "True"
+  },
+  "trades_rules": {
+    "trade_rule_1": {
+      "rule_name": "XRP",
+      "symbol": "XRPUSDT",
+      "strategy": "HA_Candlesticks",
+      "interval": "15",
+      "long3x_symbol": "XRP3LUSDT",
+      "short3x_symbol": "XRP3SUSDT",
+      "fiat_symbol_to_use": "USDT",
+      "balance_percentage_to_use": "20",
+      "price_rounding_digits": 4
+    }
+  }
+}
