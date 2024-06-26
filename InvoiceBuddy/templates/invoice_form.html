@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Invoice</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Generate Invoice</h1>
+    <form method="POST" id="invoiceForm">
+        <label for="invoice_number">Invoice Number:</label>
+        <input type="text" name="invoice_number" required><br>
+
+        <label for="date">Date:</label>
+        <input type="date" name="date" required><br>
+
+        <label for="client_name">Client Name:</label>
+        <input type="text" name="client_name" required><br>
+
+        <h2>Items</h2>
+        <div id="itemsContainer">
+            <div class="item">
+                <input type="text" name="item_description[]" placeholder="Description" required>
+                <input type="number" name="item_quantity[]" placeholder="Quantity" required>
+                <input type="number" name="item_price[]" step="0.01" placeholder="Price" required>
+            </div>
+        </div>
+        <button type="button" id="addItem">Add Item</button>
+
+        <br><br>
+        <input type="submit" value="Generate Invoice">
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            $("#addItem").click(function() {
+                var newItem = `
+                    <div class="item">
+                        <input type="text" name="item_description[]" placeholder="Description" required>
+                        <input type="number" name="item_quantity[]" placeholder="Quantity" required>
+                        <input type="number" name="item_price[]" step="0.01" placeholder="Price" required>
+                        <button type="button" class="removeItem">Remove</button>
+                    </div>
+                `;
+                $("#itemsContainer").append(newItem);
+            });
+
+            $(document).on("click", ".removeItem", function() {
+                $(this).parent().remove();
+            });
+        });
+    </script>
+</body>
+</html>

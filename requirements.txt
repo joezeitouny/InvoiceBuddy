@@ -1,6 +1,4 @@
 Flask~=2.3.2
 Events==0.4
 rich==13.3.1
-pybit==5.5.0
-numpy
-scipy~=1.11.1
+weasyprint

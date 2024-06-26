@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='invoice.css') }}">
+</head>
+<body>
+    <div class="invoice">
+        <h1>Invoice</h1>
+        <p><strong>Invoice Number:</strong> {{ invoice_number }}</p>
+        <p><strong>Date:</strong> {{ date }}</p>
+        <p><strong>Client:</strong> {{ client_name }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td>${{ "%.2f"|format(item.total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3"><strong>Total Amount</strong></td>
+                    <td><strong>${{ "%.2f"|format(total_amount) }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>
