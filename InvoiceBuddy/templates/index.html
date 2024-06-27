@@ -161,295 +161,34 @@
 <script type="text/javascript">
 first_refresh_data_call = true;
 
-function calculateTotals() {
-    const active_trades_table = document.getElementById('active-trades-data-table');
-    const summary_table = document.getElementById('rules-summary-data-table');
-    tbody = active_trades_table.getElementsByTagName('tbody')[0];
-    rows = tbody.getElementsByTagName('tr');
-    const totalAmountTradedElement = document.getElementById('totalAmountTraded');
-    const totalUnrealisedPAndLElement = document.getElementById('totalUnrealisedPAndL');
-    const totalNumberOfTradesElement = document.getElementById('totalNumberOfTrades');
-    const totalNumberOfProfitableTradesElement = document.getElementById('totalNumberOfProfitableTrades');
-    const profitablePercentageElement = document.getElementById('profitablePercentage');
-    const totalPAndLElement = document.getElementById('totalPAndL');
-    let totalAmountTraded = 0;
-    let totalUnrealisedPAndL = 0;
-    let totalNumberOfTrades = 0;
-    let totalNumberOfProfitableTrades = 0;
-    let profitablePercentage = 0;
-    let totalPAndL = 0
-
-    // Start from index 1 to skip the header row
-    for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        const amountTraded = parseFloat(cells[9].innerText);
-        const unrealisedPAndL = parseFloat(cells[10].innerText);
-
-        totalAmountTraded += amountTraded;
-        totalUnrealisedPAndL += unrealisedPAndL;
-    }
-
-    totalAmountTradedElement.textContent = totalAmountTraded.toFixed(2);
-    totalUnrealisedPAndLElement.textContent = totalUnrealisedPAndL.toFixed(2);
-
-    tbody = summary_table.getElementsByTagName('tbody')[0];
-    rows = tbody.getElementsByTagName('tr');
-
-    // Start from index 1 to skip the header row
-    for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        const numberOfTrades = parseInt(cells[2].innerText);
-        const numberOfProfitableTrades = parseInt(cells[3].innerText);
-        const pAndL = parseFloat(cells[5].innerText);
-
-        totalNumberOfTrades += numberOfTrades;
-        totalNumberOfProfitableTrades += numberOfProfitableTrades;
-        totalPAndL += pAndL
-    }
-
-    if (totalNumberOfProfitableTrades > 0) {
-        profitablePercentage = Math.round((totalNumberOfProfitableTrades / totalNumberOfTrades) * 100);
-    }
-
-    totalNumberOfTradesElement.textContent = totalNumberOfTrades;
-    totalNumberOfProfitableTradesElement.textContent = totalNumberOfProfitableTrades;
-    profitablePercentageElement.textContent = profitablePercentage;
-    totalPAndLElement.textContent = totalPAndL.toPrecision(2);
-}
-
-// Call the function to calculate and add the totals row when the page loads
-document.addEventListener('DOMContentLoaded', calculateTotals);
-
 function refreshData() {
-    $.ajax({
-        type: 'GET',
-        url: '/data',
-        success: function(data) {
-            // Update the relevant part of the webpage with the new data
-            document.getElementById('closed-trades-count').innerHTML = data['closed_trades_count'];
-            document.getElementById('wallet-balance-in-usd').innerHTML = data['wallet_balance_in_usd'];
+    if (first_refresh_data_call) {
+        $('#loading_modal').modal('hide');
+        first_refresh_data_call = false;
+    }
+<!--    $.ajax({-->
+<!--        type: 'GET',-->
+<!--        url: '/data',-->
+<!--        success: function(data) {            -->
+<!--            if (first_refresh_data_call) {-->
+<!--                $('#loading_modal').modal('hide');-->
+<!--                first_refresh_data_call = false;-->
+<!--            }-->
+<!--        },-->
+<!--        error: function (error) {-->
+<!--            if (first_refresh_data_call) {-->
+<!--                $('#loading_modal').modal('hide');-->
+<!--                first_refresh_data_call = false;-->
+<!--            }-->
 
-            // Populate wallet section
-            const walletDataTable = document.getElementById('wallet-data-table').getElementsByTagName('tbody')[0];
-            // clear all the old rows first
-            const walletDataTableRowCount = walletDataTable.rows.length;
-
-            // Start from the last row and go backwards to avoid index shift
-            for (let i = walletDataTableRowCount - 1; i >= 0; i--) {
-                walletDataTable.deleteRow(i);
-            }
-
-            // Repopulate the table
-            for (const key in data['wallet']) {
-                  if (data['wallet'].hasOwnProperty(key)) {
-                    const row = walletDataTable.insertRow();
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    cell1.innerHTML = key;
-                    cell2.innerHTML = data['wallet'][key];
-                  }
-            }
-
-            // Populate active trades section
-            const activeTradesDataTable = document.getElementById('active-trades-data-table').getElementsByTagName('tbody')[0];
-            // clear all the old rows first
-            const activeTradesDataTableRowCount = activeTradesDataTable.rows.length;
-
-            // Start from the last row and go backwards to avoid index shift
-            for (let i = activeTradesDataTableRowCount - 1; i >= 0; i--) {
-                activeTradesDataTable.deleteRow(i);
-            }
-
-            // Repopulate the table
-            for (const [entry, values] of Object.entries(data['active_trades'])) {
-                    const row = activeTradesDataTable.insertRow();
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    const cell3 = row.insertCell(2);
-                    const cell4 = row.insertCell(3);
-                    const cell5 = row.insertCell(4);
-                    const cell6 = row.insertCell(5);
-                    const cell7 = row.insertCell(6);
-                    const cell8 = row.insertCell(7);
-                    const cell9 = row.insertCell(8);
-                    const cell10 = row.insertCell(9);
-                    const cell11 = row.insertCell(10);
-                    const cell12 = row.insertCell(11);
-
-                    cell1.innerHTML = getFormattedTimestamp(values.timestamp, true);
-                    cell2.innerHTML = values.rule_id;
-                    cell3.innerHTML = values.symbol;
-                    cell4.innerHTML = values.interval;
-                    cell5.innerHTML = values.strategy;
-                    cell6.innerHTML = values.fiat_symbol_to_use;
-                    cell7.innerHTML = values.entry_type;
-                    cell8.innerHTML = values.entry_price;
-                    cell9.innerHTML = values.quantity;
-                    cell10.innerHTML = values.amount;
-
-                    if (values.unrealised_p_and_l == 0)
-                        cell11.style.color = 'black';
-                    else if (values.unrealised_p_and_l > 0)
-                        cell11.style.color = 'green';
-                    else
-                        cell11.style.color = 'red';
-
-                    cell11.innerHTML = values.unrealised_p_and_l;
-                    cell12.innerHTML = `<button type="button" class="btn btn-danger delete-btn" data-id="${values.rule_id}">Exit</button>`;
-            }
-
-            document.getElementById('active-trades-count').innerHTML = Object.entries(data['active_trades']).length;
-
-            // Handle delete button clicks
-            $('.delete-btn').on('click', function () {
-                const rule_id = $(this).data('id');
-
-                // Set the value in the modal's prompt text
-                $('#exitTradeModalValue').text(rule_id);
-
-                $('#exit_trade_modal').modal('show');
-            });
-
-            // Populate active trades section
-            const configuredRulesDataTable = document.getElementById('configured-rules-data-table').getElementsByTagName('tbody')[0];
-            // clear all the old rows first
-            const configuredRulesDataTableRowCount = configuredRulesDataTable.rows.length;
-
-            // Start from the last row and go backwards to avoid index shift
-            for (let i = configuredRulesDataTableRowCount - 1; i >= 0; i--) {
-                configuredRulesDataTable.deleteRow(i);
-            }
-
-            // Repopulate the table
-            for (const [entry, values] of Object.entries(data['rules'])) {
-                    const row = configuredRulesDataTable.insertRow();
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    const cell3 = row.insertCell(2);
-                    const cell4 = row.insertCell(3);
-                    const cell5 = row.insertCell(4);
-                    const cell6 = row.insertCell(5);
-                    const cell7 = row.insertCell(6);
-                    const cell8 = row.insertCell(7);
-                    const cell9 = row.insertCell(8);
-                    const cell10 = row.insertCell(9);
-                    const cell11 = row.insertCell(10);
-
-                    cell1.innerHTML = values.rule_id;
-                    cell2.innerHTML = values.rule_name;
-                    cell3.innerHTML = values.symbol;
-                    cell4.innerHTML = values.strategy;
-                    cell5.innerHTML = values.interval;
-                    cell6.innerHTML = values.long3x_symbol;
-                    cell7.innerHTML = values.short3x_symbol;
-                    cell8.innerHTML = values.fiat_symbol_to_use;
-                    cell9.innerHTML = values.balance_percentage_to_use;
-                    cell10.innerHTML = values.price_rounding_digits;
-
-                    if (values.active == true)
-                        cell11.innerHTML = `<button type="button" class="btn btn-danger change-status-btn" data-id="${values.rule_id}">Deactivate</button>`;
-                    else
-                        cell11.innerHTML = `<button type="button" class="btn btn-success change-status-btn" data-id="${values.rule_id}">Activate</button>`;
-            }
-
-            document.getElementById('configured-rules-count').innerHTML = Object.entries(data['rules']).length;
-
-            // Handle deactivate rule button clicks
-            $('.change-status-btn').on('click', function () {
-                const rule_id = $(this).data('id');
-
-                $('#loading_modal').modal('show');
-
-                $.ajax({
-                    url: '/change_rule_status',
-                    method: 'POST',
-                    data: { rule_id: rule_id },
-                    success: function (response) {
-                        $('#loading_modal').modal('hide');
-                        notify_success('Rule ' + rule_id + ' status successfully changed!');
-                    },
-                    error: function (error) {
-                        $('#loading_modal').modal('hide');
-                        notify_warning('Error changing rule ' + rule_id + ' status: ' + error);
-                    }
-                });
-            });
-
-            // Populate active trades section
-            const rulesSummaryDataTable = document.getElementById('rules-summary-data-table').getElementsByTagName('tbody')[0];
-            // clear all the old rows first
-            const rulesSummaryDataTableRowCount = rulesSummaryDataTable.rows.length;
-
-            // Start from the last row and go backwards to avoid index shift
-            for (let i = rulesSummaryDataTableRowCount - 1; i >= 0; i--) {
-                rulesSummaryDataTable.deleteRow(i);
-            }
-
-            // Repopulate the table
-            for (const [entry, values] of Object.entries(data['rules_summary'])) {
-                    const row = rulesSummaryDataTable.insertRow();
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    const cell3 = row.insertCell(2);
-                    const cell4 = row.insertCell(3);
-                    const cell5 = row.insertCell(4);
-                    const cell6 = row.insertCell(5);
-
-                    cell1.innerHTML = values.rule_id;
-                    cell2.innerHTML = values.rule_name;
-                    cell3.innerHTML = values.amount_of_trades;
-                    cell4.innerHTML = values.times_in_profit;
-                    cell5.innerHTML = values.profitable_percentage;
-                    cell6.innerHTML = values.total_p_and_l;
-            }
-
-            calculateTotals();
-
-            if (first_refresh_data_call) {
-                $('#loading_modal').modal('hide');
-                first_refresh_data_call = false;
-            }
-        },
-        error: function (error) {
-            if (first_refresh_data_call) {
-                $('#loading_modal').modal('hide');
-                first_refresh_data_call = false;
-            }
-
-            if (!connection_lost_dialog_shown) {
-                notify_warning('Error refreshing data: ' + error);
-            }
-        }
-    });
-}
-
-// Function to handle the POST request to delete the row from the database
-function exitTrade(rule_id) {
-    $('#loading_modal').modal('show');
-
-    $.ajax({
-        url: '/exit_trade',
-        method: 'POST',
-        data: { id: rule_id },
-        success: function (response) {
-            $('#loading_modal').modal('hide');
-            notify_success('Trade for rule ' + rule_id + ' successfully ended!')
-        },
-        error: function (error) {
-            $('#loading_modal').modal('hide');
-            notify_warning('Error exiting trade for rule ' + rule_id + ':' + error);
-        }
-    });
+<!--            if (!connection_lost_dialog_shown) {-->
+<!--                notify_warning('Error refreshing data: ' + error);-->
+<!--            }-->
+<!--        }-->
+<!--    });-->
 }
 
 $(document).ready(function() {
-    // Attach a click event listener to the action button of the exit trade modal dialog
-    $('#exitTradeActionButton').click(function() {
-      rule_id = $('#exitTradeModalValue').text();
-      exitTrade(rule_id);
-      $('#exit_trade_modal').modal('hide');
-    });
-
     $('#loading_modal').modal('show');
 
     // Call the refreshData function every 1 seconds
