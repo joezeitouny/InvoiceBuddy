@@ -57,6 +57,14 @@ def index():
     return render_template('index.html', application_name=application_name, application_version=application_version)
 
 
+@app.route('/current_time')
+def get_current_time():
+    curr_time = time.strftime("%H:%M:%S", time.localtime())
+
+    data = {'data_format_version': globals.JSON_RESPONSE_FORMAT_VERSION, 'curr_time': curr_time}
+    return jsonify(data)
+
+
 @app.route('/generate_invoice', methods=['GET', 'POST'])
 def generate_invoice():
     if request.method == 'POST':
