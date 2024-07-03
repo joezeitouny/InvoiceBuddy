@@ -10,3 +10,8 @@ FLASK_WEB_SERVER_CACHE_INTERVAL = 5    # in seconds
 LOG_FILENAME = 'InvoiceBuddy.log'
 LOG_FILE_SIZE = 1024 * 1024  # Log file size 1MB
 LOGGER_NAME = 'InvoiceBuddy'
+
+# DB
+DATABASE_NAME = "InvoiceBuddy"
+INVOICE_FOLDER = "invoices"
+PROPOSAL_FOLDER = "proposals"

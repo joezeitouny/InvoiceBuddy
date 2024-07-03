@@ -9,5 +9,7 @@
   "log": {
     "log_module": "True",
     "log_level": "INFO"
-  }
+  },
+  "invoice_number": 1,
+  "proposal_number": 1
 }

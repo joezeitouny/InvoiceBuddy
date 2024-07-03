@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="delete_invoice_modal" tabindex="-1" class="modal fade" data-backdrop="static" xmlns="http://www.w3.org/1999/html">
+<div id="delete_invoice_modal" tabindex="-1" class="modal fade" data-backdrop="static"
+     xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -15,7 +16,63 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="delete_invoice_modal_button" type="button" class="btn btn-primary">Yes</button>
+                <button type="button" class="btn btn-primary" onclick="deleteInvoice()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="new_invoice_modal" tabindex="-1" class="modal fade" data-backdrop="static" xmlns="http://www.w3.org/1999/html">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-light">
+                <h5 class="modal-title">New Invoice</h5>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <label for="invoice_number">Invoice Number:</label>
+                <input id="new_invoice_number" type="text" name="invoice_number" required><br>
+
+                <label for="date">Date:</label>
+                <input id="new_invoice_date" type="date" name="date" required><br>
+
+                <label for="customer_name">Customer Name:</label>
+                <input type="text" name="customer_name" required><br>
+
+                <h2>Items</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="itemsTable">
+                        <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="itemsContainer">
+                        <tr class="item">
+                            <td class="col-6"><input type="text" class="form-control" name="description[]" required>
+                            </td>
+                            <td class="col-2"><input type="number" class="form-control" name="quantity[]" min="1"
+                                                     value="1" required></td>
+                            <td class="col-3"><input type="number" class="form-control" name="price[]" step="1" min="0"
+                                                     value="0" required>
+                            </td>
+                            <td class="col-1">
+                                <button type="button" class="btn btn-danger btn-sm removeItem">
+                                    <span><i class="bi bi-trash"></i></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" id="addItem" class="btn btn-primary mb-3">Add Item</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="generateInvoice()">Create</button>
             </div>
         </div>
     </div>
@@ -85,61 +142,112 @@
 </div>
 
 <script type="text/javascript">
-first_refresh_data_call = true;
+    first_refresh_data_call = true;
+    const newInvoiceModal = new bootstrap.Modal(document.getElementById('new_invoice_modal'), {backdrop: 'static'});
 
-function refreshData() {
-    if (first_refresh_data_call) {
-        $('#loading_modal').modal('hide');
-        first_refresh_data_call = false;
+    function showNewInvoiceModal() {
+        $('#loading_modal').modal('show');
+
+        setNewInvoiceTodayDate();
+
+        $.ajax({
+            type: 'GET',
+            url: '/new_invoice_number',
+            success: function(data) {
+                $('#loading_modal').modal('hide');
+                $('#new_invoice_number').val(data);
+
+                newInvoiceModal.show();
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while retrieving a new invoice number! Reason: ' + error);
+            }
+        });
+
+        $('#itemsContainer tr.item:not(:first)').remove();
+
+        // Clear the inputs of the first row
+        var firstRow = $('#itemsContainer tr.item:first');
+        firstRow.find('input[type="text"]').val('');
+        firstRow.find('input[name="quantity[]"]').val('1');
+        firstRow.find('input[name="price[]"]').val('0');
     }
-<!--    $.ajax({-->
-<!--        type: 'GET',-->
-<!--        url: '/data',-->
-<!--        success: function(data) {            -->
-<!--            if (first_refresh_data_call) {-->
-<!--                $('#loading_modal').modal('hide');-->
-<!--                first_refresh_data_call = false;-->
-<!--            }-->
-<!--        },-->
-<!--        error: function (error) {-->
-<!--            if (first_refresh_data_call) {-->
-<!--                $('#loading_modal').modal('hide');-->
-<!--                first_refresh_data_call = false;-->
-<!--            }-->
 
-<!--            if (!connection_lost_dialog_shown) {-->
-<!--                notify_warning('Error refreshing data: ' + error);-->
-<!--            }-->
-<!--        }-->
-<!--    });-->
-}
+    function refreshData() {
+        if (first_refresh_data_call) {
+            $('#loading_modal').modal('hide');
+            first_refresh_data_call = false;
+        }
+    <!--    $.ajax({-->
+    <!--        type: 'GET',-->
+    <!--        url: '/data',-->
+    <!--        success: function(data) {            -->
+    <!--            if (first_refresh_data_call) {-->
+    <!--                $('#loading_modal').modal('hide');-->
+    <!--                first_refresh_data_call = false;-->
+    <!--            }-->
+    <!--        },-->
+    <!--        error: function (error) {-->
+    <!--            if (first_refresh_data_call) {-->
+    <!--                $('#loading_modal').modal('hide');-->
+    <!--                first_refresh_data_call = false;-->
+    <!--            }-->
 
-$(document).ready(function() {
-    $('#loading_modal').modal('show');
+    <!--            if (!connection_lost_dialog_shown) {-->
+    <!--                notify_warning('Error refreshing data: ' + error);-->
+    <!--            }-->
+    <!--        }-->
+    <!--    });-->
+    }
 
-    // Call the refreshData function every 1 seconds
-    setInterval(refreshData, 1000);
-});
+    $(document).ready(function() {
+        $('#loading_modal').modal('show');
 
-function notify_success(message) {
-    $('#success_notification_message').html(message);
-    $("#success_notification").fadeIn();
-    setTimeout(function () {
-        $("#success_notification").fadeOut();
-    }, 5000);
-}
+        $('#addItem').click(function() {
+                var newItem = $('<tr class="item">' +
+                    '<td class="col-6"><input type="text" class="form-control" name="description[]" required></td>' +
+                    '<td class="col-2"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
+                    '<td class="col-3"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
+                    '<td class="col-1"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
+                    '</tr>');
+                $('#itemsContainer').append(newItem);
+        });
 
-function notify_warning(message) {
-    $('#warning_notification_message').html(message);
-    $("#warning_notification").fadeIn();
-    setTimeout(function () {
-        $("#warning_notification").fadeOut();
-    }, 5000);
-}
+        $(document).on('click', '.removeItem', function() {
+            $(this).closest('tr').remove();
+        });
 
+        // Call the refreshData function every 1 seconds
+        setInterval(refreshData, 1000);
+    });
 
+    // Function to set today's date
+    function setNewInvoiceTodayDate() {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
 
+        today = yyyy + '-' + mm + '-' + dd;
+        $('#new_invoice_date').val(today);
+    }
 
+    function notify_success(message) {
+        $('#success_notification_message').html(message);
+        $("#success_notification").fadeIn();
+        setTimeout(function () {
+            $("#success_notification").fadeOut();
+        }, 5000);
+    }
+
+    function notify_warning(message) {
+        $('#warning_notification_message').html(message);
+        $("#warning_notification").fadeIn();
+        setTimeout(function () {
+            $("#warning_notification").fadeOut();
+        }, 5000);
+    }
 </script>
 
 {% endblock %}

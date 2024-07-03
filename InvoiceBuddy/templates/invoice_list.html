@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice List</title>
+    <style>
+        .paid { color: green; }
+        .unpaid { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Invoice List</h1>
+    <table border="1">
+        <tr>
+            <th>Invoice Number</th>
+            <th>Date</th>
+            <th>Customer Name</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for invoice in invoices %}
+        <tr>
+            <td>{{ invoice.invoice_number }}</td>
+            <td>{{ invoice.date }}</td>
+            <td>{{ invoice.customer_name }}</td>
+            <td>${{ "%.2f"|format(invoice.total_amount) }}</td>
+            <td class="{{ 'paid' if invoice.paid else 'unpaid' }}">
+                {{ 'Paid' if invoice.paid else 'Unpaid' }}
+            </td>
+            <td>
+                <a href="{{ url_for('download_invoice', invoice_id=invoice.id) }}">Download</a> |
+                <a href="{{ url_for('toggle_paid', invoice_id=invoice.id) }}">
+                    {{ 'Mark as Unpaid' if invoice.paid else 'Mark as Paid' }}
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><a href="{{ url_for('generate_invoice') }}">Generate New Invoice</a></p>
+</body>
+</html>

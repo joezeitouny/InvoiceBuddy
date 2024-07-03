@@ -45,6 +45,8 @@ if __name__ == '__main__':
             options.web_port = data['web_application']['web_port']
             options.log_module = utils.try_parse_bool(data['log']['log_module'])
             options.log_level = data['log']['log_level']
+            options.invoice_number = utils.try_parse_int(data['invoice_number'])
+            options.proposal_number = utils.try_parse_int(data['proposal_number'])
         except Exception as e:
             print(f'Error while parsing the specified JSON configuration file. Details {e}\r\n')
             parser.print_help()
