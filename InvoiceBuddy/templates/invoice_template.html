@@ -18,12 +18,15 @@
     <div class="invoice">
         <div class="header">
             <h1>Invoice #{{ invoice_number }}</h1>
-            <p>Date: {{ date }}</p>
+            <p>Date: {{ invoice_date }}</p>
+            <p>Reference Number: {{ reference_number }}</p>
         </div>
         <div class="details">
             <p><strong>Customer:</strong> {{ customer_name }}</p>
+            <p><strong>Description:</strong> {{ description }}</p>
             <table>
                 <tr>
+                    <th>Title</th>
                     <th>Description</th>
                     <th>Quantity</th>
                     <th>Price</th>
@@ -31,6 +34,7 @@
                 </tr>
                 {% for item in items %}
                 <tr>
+                    <td>{{ item.title }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.quantity }}</td>
                     <td>${{ "%.2f"|format(item.price) }}</td>

@@ -29,14 +29,20 @@
                 <h5 class="modal-title">New Invoice</h5>
             </div>
             <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                <label for="invoice_number">Invoice Number:</label>
+                <label for="new_invoice_number">Invoice Number:</label>
                 <input id="new_invoice_number" type="text" name="invoice_number" style="text-align: right;" required><br>
 
-                <label for="date">Date:</label>
+                <label for="new_invoice_date">Date:</label>
                 <input id="new_invoice_date" type="date" name="date" required><br>
 
-                <label for="customer_name">Customer Name:</label>
-                <input type="text" name="customer_name" required><br>
+                <label for="new_invoice_reference_number">Reference Number:</label>
+                <input id="new_invoice_reference_number" type="text" name="invoice_reference_number"><br>
+
+                <label for="new_invoice_customer_name">Customer Name:</label>
+                <input id="new_invoice_customer_name" type="text" name="customer_name" required><br>
+
+                <label for="new_invoice_description">Description:</label>
+                <textarea id="new_invoice_description" name="description" rows="3" required></textarea><br>
 
                 <h2>Items</h2>
                 <div class="table-responsive">
@@ -50,22 +56,22 @@
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody id="itemsContainer">
-                        <tr class="item">
-                            <td class="col-4"><input type="text" class="form-control" name="title[]" required>
-                            </td>
-                            <td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>
-                            <td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1"
-                                                     value="1" required></td>
-                            <td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0"
-                                                     value="0" required>
-                            </td>
-                            <td class="col-1" style="text-align: center;">
-                                <button type="button" class="btn btn-danger btn-sm removeItem">
-                                    <span><i class="bi bi-trash"></i></span>
-                                </button>
-                            </td>
-                        </tr>
+                        <tbody id="invoiceItemsContainer">
+                            <tr class="invoiceItem">
+                                <td class="col-4"><input type="text" class="form-control" name="title[]" required>
+                                </td>
+                                <td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>
+                                <td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1"
+                                                         value="1" required></td>
+                                <td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0"
+                                                         value="0" required>
+                                </td>
+                                <td class="col-1" style="text-align: center;">
+                                    <button type="button" class="btn btn-danger btn-sm removeItem">
+                                        <span><i class="bi bi-trash"></i></span>
+                                    </button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -167,13 +173,50 @@
             }
         });
 
-        $('#itemsContainer tr.item:not(:first)').remove();
+        $('#invoiceItemsContainer tr.item:not(:first)').remove();
 
         // Clear the inputs of the first row
-        var firstRow = $('#itemsContainer tr.item:first');
+        var firstRow = $('#invoiceItemsContainer tr.item:first');
         firstRow.find('input[type="text"]').val('');
         firstRow.find('input[name="quantity[]"]').val('1');
         firstRow.find('input[name="price[]"]').val('0');
+    }
+
+    function generateInvoice() {
+        var items = [];
+        $('.invoiceItem').each(function() {
+            var item = {
+                title: $(this).find('input[name="title[]"]').val(),
+                description: $(this).find('textarea[name="description[]"]').val(),
+                quantity: parseInt($(this).find('input[name="quantity[]"]').val()),
+                price: parseFloat($(this).find('input[name="price[]"]').val())
+            };
+            items.push(item);
+        });
+
+        $.ajax({
+            url: '/generate_invoice',
+            method: 'POST',
+            data: {
+                invoice_number: $('#new_invoice_number').val(),
+                invoice_date: $('#new_invoice_date').val(),
+                customer_name: $('#new_invoice_customer_name').val(),
+                reference_number: $('#new_invoice_reference_number').val(),
+                description: $('#new_invoice_description').val(),
+                items: JSON.stringify(items)
+            },
+            success: function(data) {
+                $('#loading_modal').modal('hide');
+                if (!response)
+                    notify_warning('Error while creating a new invoice');
+                else
+                    notify_success('New invoice successfully created!');
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while creating a new invoice! Reason: ' + error);
+            }
+        });
     }
 
     function refreshData() {

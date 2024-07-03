@@ -21,11 +21,12 @@ db = SQLAlchemy(app)
 class Invoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     invoice_number = db.Column(db.String(50), unique=True, nullable=False)
-    date = db.Column(db.Date, nullable=False)
+    invoice_date = db.Column(db.Date, nullable=False)
     customer_name = db.Column(db.String(100), nullable=False)
+    reference_number = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text, nullable=False)
     items = db.Column(db.Text, nullable=False)  # Store items as JSON
     total_amount = db.Column(db.Float, nullable=False)
-    description = db.Column(db.Text, nullable=False)
     pdf_path = db.Column(db.String(255), nullable=False)
     paid = db.Column(db.Boolean, default=False)
 
@@ -33,11 +34,12 @@ class Invoice(db.Model):
 class Proposal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     proposal_number = db.Column(db.String(50), unique=True, nullable=False)
-    date = db.Column(db.Date, nullable=False)
+    proposal_date = db.Column(db.Date, nullable=False)
     customer_name = db.Column(db.String(100), nullable=False)
+    reference_number = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text, nullable=False)
     items = db.Column(db.Text, nullable=False)  # Store items as JSON
     total_amount = db.Column(db.Float, nullable=False)
-    description = db.Column(db.Text, nullable=False)
     pdf_path = db.Column(db.String(255), nullable=False)
     accepted = db.Column(db.Boolean, default=False)
 
@@ -121,11 +123,12 @@ def generate_invoice():
 
         invoice_data = {
             'invoice_number': request.form['invoice_number'],
-            'date': datetime.strptime(request.form['date'], '%Y-%m-%d').date(),
+            'invoice_date': datetime.strptime(request.form['invoice_date'], '%Y-%m-%d').date(),
             'customer_name': request.form['customer_name'],
+            'reference_number': request.form['reference_number'],
+            'description': request.form['description'],
             'items': items,
-            'total_amount': total_amount,
-            'description': request.form['description']
+            'total_amount': total_amount
         }
 
         html = render_template('invoice_template.html', **invoice_data)
@@ -139,8 +142,10 @@ def generate_invoice():
 
         new_invoice = Invoice(
             invoice_number=invoice_data['invoice_number'],
-            date=invoice_data['date'],
+            invoice_date=invoice_data['invoice_date'],
             customer_name=invoice_data['customer_name'],
+            reference_number=invoice_data['reference_number'],
+            description=invoice_data['description'],
             items=json.dumps(items),
             total_amount=total_amount,
             pdf_path=pdf_path,
