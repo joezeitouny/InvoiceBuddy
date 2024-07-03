@@ -23,14 +23,14 @@
 </div>
 
 <div id="new_invoice_modal" tabindex="-1" class="modal fade" data-backdrop="static" xmlns="http://www.w3.org/1999/html">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
         <div class="modal-content">
             <div class="modal-header bg-success text-light">
                 <h5 class="modal-title">New Invoice</h5>
             </div>
             <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                 <label for="invoice_number">Invoice Number:</label>
-                <input id="new_invoice_number" type="text" name="invoice_number" required><br>
+                <input id="new_invoice_number" type="text" name="invoice_number" style="text-align: right;" required><br>
 
                 <label for="date">Date:</label>
                 <input id="new_invoice_date" type="date" name="date" required><br>
@@ -43,6 +43,7 @@
                     <table class="table table-bordered" id="itemsTable">
                         <thead>
                         <tr>
+                            <th>Title</th>
                             <th>Description</th>
                             <th>Quantity</th>
                             <th>Price</th>
@@ -51,14 +52,15 @@
                         </thead>
                         <tbody id="itemsContainer">
                         <tr class="item">
-                            <td class="col-6"><input type="text" class="form-control" name="description[]" required>
+                            <td class="col-4"><input type="text" class="form-control" name="title[]" required>
                             </td>
-                            <td class="col-2"><input type="number" class="form-control" name="quantity[]" min="1"
+                            <td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>
+                            <td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1"
                                                      value="1" required></td>
-                            <td class="col-3"><input type="number" class="form-control" name="price[]" step="1" min="0"
+                            <td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0"
                                                      value="0" required>
                             </td>
-                            <td class="col-1">
+                            <td class="col-1" style="text-align: center;">
                                 <button type="button" class="btn btn-danger btn-sm removeItem">
                                     <span><i class="bi bi-trash"></i></span>
                                 </button>
@@ -206,10 +208,11 @@
 
         $('#addItem').click(function() {
                 var newItem = $('<tr class="item">' +
-                    '<td class="col-6"><input type="text" class="form-control" name="description[]" required></td>' +
-                    '<td class="col-2"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
-                    '<td class="col-3"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
-                    '<td class="col-1"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
+                    '<td class="col-4"><input type="text" class="form-control" name="title[]" required></td>' +
+                    '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
+                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
+                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
                 $('#itemsContainer').append(newItem);
         });

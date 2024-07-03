@@ -45,3 +45,13 @@
     background-color: #007bff;
     color: #fff;
 }
+
+#itemsTable textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+#itemsTable td {
+    vertical-align: middle;
+    horizontal-align: middle;
+}
