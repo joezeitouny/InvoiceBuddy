@@ -2,6 +2,7 @@
   "output_path": "",
   "tmp_path": "",
   "filename_prefix": "InvoiceBuddy_",
+  "currency_symbol": "EUR",
   "web_application": {
     "web_launch_browser_during_startup": "True",
     "web_port": "5001"
@@ -10,9 +11,22 @@
     "log_module": "True",
     "log_level": "INFO"
   },
-  "invoice_number": 1,
-  "invoice_valid_for_days": 5,
-  "proposal_number": 1,
-  "proposal_valid_for_days": 5,
-  "currency_symbol": "€"
+  "invoice": {
+    "invoice_number": 1,
+    "invoice_valid_for_days": 5,
+    "invoice_terms_and_conditions": ""
+  },
+  "proposal": {
+    "proposal_number": 1,
+    "proposal_valid_for_days": 5
+  },
+  "seller": {
+    "seller_name": "",
+    "seller_address": "",
+    "seller_phone": "",
+    "seller_email": "",
+    "seller_iban": "",
+    "seller_bic": "",
+    "seller_paypal_address": ""
+  }
 }

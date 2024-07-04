@@ -194,7 +194,8 @@
                 title: $(this).find('input[name="title[]"]').val(),
                 description: $(this).find('textarea[name="description[]"]').val(),
                 quantity: parseInt($(this).find('input[name="quantity[]"]').val()),
-                price: parseFloat($(this).find('input[name="price[]"]').val())
+                price: parseFloat($(this).find('input[name="price[]"]').val()),
+                amount: parseInt($(this).find('input[name="quantity[]"]').val()) * parseFloat($(this).find('input[name="price[]"]').val())
             };
             items.push(item);
         });
@@ -256,14 +257,14 @@
         $('#loading_modal').modal('show');
 
         $('#addItem').click(function() {
-                var newItem = $('<tr class="item">' +
+                var newItem = $('<tr class="invoiceItem">' +
                     '<td class="col-4"><input type="text" class="form-control" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
                     '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
                     '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
-                $('#itemsContainer').append(newItem);
+                $('#invoiceItemsContainer').append(newItem);
         });
 
         $(document).on('click', '.removeItem', function() {

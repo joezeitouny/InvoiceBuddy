@@ -107,7 +107,7 @@ def new_invoice_number():
         with open(f'{application_modules.get_options().configuration_path}', 'r') as file:
             data = json.load(file)
 
-        invoice_number = data['invoice_number']
+        invoice_number = data['invoice']['invoice_number']
     except FileNotFoundError:
         application_modules.get_log_manager().info(
             f"Error: The file '{application_modules.get_options().configuration_path}' was not found while trying to "
@@ -139,7 +139,16 @@ def generate_invoice():
             'reference_number': request.form['reference_number'],
             'description': request.form['description'],
             'items': items,
-            'total_amount': total_amount
+            'total_amount': total_amount,
+            'seller_name': application_modules.get_options().seller_name,
+            'seller_address': application_modules.get_options().seller_address,
+            'seller_phone': application_modules.get_options().seller_phone,
+            'seller_email': application_modules.get_options().seller_email,
+            'seller_iban': application_modules.get_options().seller_iban,
+            'seller_bic': application_modules.get_options().seller_bic,
+            'seller_paypal_address': application_modules.get_options().seller_paypal_address,
+            'currency_symbol': application_modules.get_options().currency_symbol,
+            'invoice_terms_and_conditions': application_modules.get_options().invoice_terms_and_conditions
         }
 
         html = render_template('invoice_template.html', **invoice_data)
@@ -176,8 +185,8 @@ def generate_invoice():
             with open(f'{application_modules.get_options().configuration_path}', 'r') as file:
                 data = json.load(file)
 
-            invoice_number = data['invoice_number']
-            data['invoice_number'] = utils.try_parse_int(invoice_number) + 1
+            invoice_number = data['invoice']['invoice_number']
+            data['invoice']['invoice_number'] = utils.try_parse_int(invoice_number) + 1
 
             with open(f'{application_modules.get_options().configuration_path}', 'w') as file:
                 json.dump(data, file, indent=4)

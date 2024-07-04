@@ -5,47 +5,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice #{{ invoice_number }}</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .invoice { width: 800px; margin: 0 auto; }
-        .header { text-align: center; }
-        .details { margin-top: 20px; }
-        .details table { width: 100%; border-collapse: collapse; }
-        .details th, .details td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .total { margin-top: 20px; text-align: right; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .invoice {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+        .contact-info {
+            margin-bottom: 20px;
+        }
+        .bill-to {
+            margin-bottom: 20px;
+        }
+        .invoice-details {
+            margin-bottom: 20px;
+        }
+        .invoice-details table {
+            width: 100%;
+        }
+        .invoice-details td {
+            padding: 5px 0;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .items-table th {
+            background-color: #f2f2f2;
+        }
+        .total {
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .terms {
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
     <div class="invoice">
         <div class="header">
-            <h1>Invoice #{{ invoice_number }}</h1>
-            <p>Date: {{ invoice_date }}</p>
-            <p>Due Date: {{ due_date }}</p>
-            <p>Reference Number: {{ reference_number }}</p>
+            <h1>INVOICE</h1>
+            <div class="contact-info">
+                {{ seller_name }}<br>
+                {{ seller_address }}<br>
+                Phone: {{ seller_phone }}<br>
+                Email: {{ seller_email }}<br>
+                IBAN: {{ seller_iban }}<br>
+                BIC / SWIFT Code: {{ seller_bic }}
+            </div>
         </div>
-        <div class="details">
-            <p><strong>Customer:</strong> {{ customer_name }}</p>
-            <p><strong>Description:</strong> {{ description }}</p>
+
+        <div class="bill-to">
+            <strong>BILL TO</strong><br>
+            {{ customer_name }}
+        </div>
+
+        <div class="invoice-details">
             <table>
                 <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Subtotal</th>
+                    <td><strong>Invoice No#:</strong> {{ invoice_number }}</td>
+                    <td><strong>Invoice Date:</strong> {{ invoice_date }}</td>
                 </tr>
-                {% for item in items %}
                 <tr>
-                    <td>{{ item.title }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>${{ "%.2f"|format(item.price) }}</td>
-                    <td>${{ "%.2f"|format(item.quantity * item.price) }}</td>
+                    <td><strong>Reference:</strong> {{ reference_number }}</td>
+                    <td><strong>Due Date:</strong> {{ due_date }}</td>
                 </tr>
-                {% endfor %}
             </table>
         </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>QUANTITY</th>
+                    <th>ITEMS & DESCRIPTION</th>
+                    <th>PRICE</th>
+                    <th>AMOUNT ({{ currency_symbol }})</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.quantity }}</td>
+                    <td>
+                        <strong>{{ item.title }}</strong><br>
+                        {{ item.description | safe }}
+                    </td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <div class="total">
-            <h2>Total: ${{ "%.2f"|format(total_amount) }}</h2>
+            Total {{ currency_symbol }} {{ total_amount }}
+        </div>
+
+        <div class="terms">
+            <strong>Terms and Conditions</strong><br>
+            {{ invoice_terms_and_conditions }}
         </div>
     </div>
 </body>

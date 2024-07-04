@@ -40,16 +40,24 @@ if __name__ == '__main__':
             options.output_path = data['output_path']
             options.tmp_path = data['tmp_path']
             options.filename_prefix = data['filename_prefix']
+            options.currency_symbol = data['currency_symbol']
             options.web_launch_browser_during_startup = utils.try_parse_bool(
                 data['web_application']['web_launch_browser_during_startup'])
             options.web_port = data['web_application']['web_port']
             options.log_module = utils.try_parse_bool(data['log']['log_module'])
             options.log_level = data['log']['log_level']
-            options.invoice_number = utils.try_parse_int(data['invoice_number'])
-            options.invoice_valid_for_days = utils.try_parse_int(data['invoice_valid_for_days'])
-            options.proposal_number = utils.try_parse_int(data['proposal_number'])
-            options.proposal_valid_for_days = utils.try_parse_int(data['proposal_valid_for_days'])
-            options.currency_symbol = data['currency_symbol']
+            options.invoice_number = utils.try_parse_int(data['invoice']['invoice_number'])
+            options.invoice_valid_for_days = utils.try_parse_int(data['invoice']['invoice_valid_for_days'])
+            options.invoice_terms_and_conditions = data['invoice']['invoice_terms_and_conditions']
+            options.proposal_number = utils.try_parse_int(data['proposal']['proposal_number'])
+            options.proposal_valid_for_days = utils.try_parse_int(data['proposal']['proposal_valid_for_days'])
+            options.seller_name = data['seller']['seller_name']
+            options.seller_address = data['seller']['seller_address']
+            options.seller_phone = data['seller']['seller_phone']
+            options.seller_email = data['seller']['seller_email']
+            options.seller_iban = data['seller']['seller_iban']
+            options.seller_bic = data['seller']['seller_bic']
+            options.seller_paypal_address = data['seller']['seller_paypal_address']
         except Exception as e:
             print(f'Error while parsing the specified JSON configuration file. Details {e}\r\n')
             parser.print_help()
