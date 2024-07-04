@@ -82,7 +82,7 @@
                 <button type="button" id="addItem" class="btn btn-primary mb-3">Add Item</button>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="hideNewInvoiceModal()">Close</button>
                 <button type="button" class="btn btn-primary" onclick="generateInvoice()">Create</button>
             </div>
         </div>
@@ -157,6 +157,10 @@
 <script type="text/javascript">
     first_refresh_data_call = true;
     const newInvoiceModal = new bootstrap.Modal(document.getElementById('new_invoice_modal'), {backdrop: 'static'});
+
+    function hideNewInvoiceModal() {
+        newInvoiceModal.hide();
+    }
 
     function showNewInvoiceModal() {
         $('#loading_modal').modal('show');
