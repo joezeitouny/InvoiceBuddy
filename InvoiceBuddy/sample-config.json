@@ -11,5 +11,8 @@
     "log_level": "INFO"
   },
   "invoice_number": 1,
-  "proposal_number": 1
+  "invoice_valid_for_days": 5,
+  "proposal_number": 1,
+  "proposal_valid_for_days": 5,
+  "currency_symbol": "€"
 }

@@ -15,6 +15,7 @@
         <tr>
             <th>Proposal Number</th>
             <th>Date</th>
+            <th>Due Date</th>
             <th>Reference Number</th>
             <th>Customer Name</th>
             <th>Total Amount</th>
@@ -24,7 +25,8 @@
         {% for invoice in invoices %}
         <tr>
             <td>{{ proposal.proposal_number }}</td>
-            <td>{{ proposal.date }}</td>
+            <td>{{ proposal.proposal_date }}</td>
+            <td>{{ proposal.due_date }}</td>
             <td>{{ proposal.reference_number }}</td>
             <td>{{ proposal.customer_name }}</td>
             <td>${{ "%.2f"|format(proposal.total_amount) }}</td>

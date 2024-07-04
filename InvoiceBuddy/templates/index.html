@@ -35,6 +35,9 @@
                 <label for="new_invoice_date">Date:</label>
                 <input id="new_invoice_date" type="date" name="date" required><br>
 
+                <label for="new_invoice_due_date">Due Date:</label>
+                <input id="new_invoice_due_date" type="date" name="date" required><br>
+
                 <label for="new_invoice_reference_number">Reference Number:</label>
                 <input id="new_invoice_reference_number" type="text" name="invoice_reference_number"><br>
 
@@ -105,7 +108,8 @@
             <tr>
                 <th scope="col">Number</th>
                 <th scope="col">Date</th>
-                <th scope="col">Client</th>
+                <th scope="col">Due Date</th>
+                <th scope="col">Customer Name</th>
                 <th scope="col">Total Amount</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -131,7 +135,8 @@
             <tr>
                 <th scope="col">Number</th>
                 <th scope="col">Date</th>
-                <th scope="col">Client</th>
+                <th scope="col">Due Date</th>
+                <th scope="col">Customer Name</th>
                 <th scope="col">Total Amount</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -156,7 +161,7 @@
     function showNewInvoiceModal() {
         $('#loading_modal').modal('show');
 
-        setNewInvoiceTodayDate();
+        setNewInvoiceDate();
 
         $.ajax({
             type: 'GET',
@@ -200,6 +205,7 @@
             data: {
                 invoice_number: $('#new_invoice_number').val(),
                 invoice_date: $('#new_invoice_date').val(),
+                due_date: $('#new_invoice_due_date').val(),
                 customer_name: $('#new_invoice_customer_name').val(),
                 reference_number: $('#new_invoice_reference_number').val(),
                 description: $('#new_invoice_description').val(),
@@ -269,7 +275,7 @@
     });
 
     // Function to set today's date
-    function setNewInvoiceTodayDate() {
+    function setNewInvoiceDate() {
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, '0');
         var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -277,6 +283,16 @@
 
         today = yyyy + '-' + mm + '-' + dd;
         $('#new_invoice_date').val(today);
+
+        // Compute the due date
+        var dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + {{ invoice_valid_for_days }});
+        var dd = String(dueDate.getDate()).padStart(2, '0');
+        var mm = String(dueDate.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = dueDate.getFullYear();
+
+        dueDate = yyyy + '-' + mm + '-' + dd;
+        $('#new_invoice_due_date').val(dueDate);
     }
 
     function notify_success(message) {

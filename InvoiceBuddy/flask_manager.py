@@ -3,7 +3,7 @@ import webbrowser
 from flask import render_template, request, make_response, send_file, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import pdfkit
-from datetime import datetime
+from datetime import datetime, timedelta
 from rich.console import Console
 import os
 import json
@@ -13,8 +13,7 @@ from InvoiceBuddy import globals, utils
 from InvoiceBuddy.log_manager import LogManager
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{globals.DATABASE_NAME}.db'
-app.config['INVOICE_FOLDER'] = globals.INVOICE_FOLDER
-app.config['PROPOSALS_FOLDER'] = globals.PROPOSAL_FOLDER
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
@@ -22,6 +21,7 @@ class Invoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     invoice_number = db.Column(db.String(50), unique=True, nullable=False)
     invoice_date = db.Column(db.Date, nullable=False)
+    due_date = db.Column(db.Date, nullable=False)
     customer_name = db.Column(db.String(100), nullable=False)
     reference_number = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -35,6 +35,7 @@ class Proposal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     proposal_number = db.Column(db.String(50), unique=True, nullable=False)
     proposal_date = db.Column(db.Date, nullable=False)
+    due_date = db.Column(db.Date, nullable=False)
     customer_name = db.Column(db.String(100), nullable=False)
     reference_number = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -75,6 +76,10 @@ class FlaskManager:
         global application_modules
         application_modules = ApplicationModules(self._options, _log_manager)
 
+        # Create tables before running the app
+        with app.app_context():
+            db.create_all()
+
         if self._options.web_launch_browser_during_startup:
             webbrowser.open(f'http://localhost:{self._options.web_port}')
 
@@ -86,8 +91,13 @@ def index():
     # Get application name and version
     application_name = utils.get_application_name()
     application_version = utils.get_application_version()
+    invoice_valid_for_days = application_modules.get_options().invoice_valid_for_days
+    proposal_valid_for_days = application_modules.get_options().proposal_valid_for_days
+    currency_symbol = application_modules.get_options().currency_symbol
 
-    return render_template('index.html', application_name=application_name, application_version=application_version)
+    return render_template('index.html', application_name=application_name,
+                           application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
+                           proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol)
 
 
 @app.route('/new_invoice_number')
@@ -124,6 +134,7 @@ def generate_invoice():
         invoice_data = {
             'invoice_number': request.form['invoice_number'],
             'invoice_date': datetime.strptime(request.form['invoice_date'], '%Y-%m-%d').date(),
+            'due_date': datetime.strptime(request.form['due_date'], '%Y-%m-%d').date(),
             'customer_name': request.form['customer_name'],
             'reference_number': request.form['reference_number'],
             'description': request.form['description'],
@@ -134,15 +145,17 @@ def generate_invoice():
         html = render_template('invoice_template.html', **invoice_data)
         pdf = pdfkit.from_string(html, False)
 
-        if not os.path.exists(app.config['INVOICE_FOLDER']):
-            os.makedirs(app.config['INVOICE_FOLDER'])
-        pdf_path = os.path.join(app.config['INVOICE_FOLDER'], f"invoice_{invoice_data['invoice_number']}.pdf")
+        invoice_folder = os.path.join(application_modules.get_options().output_path, globals.INVOICE_FOLDER)
+        if not os.path.exists(invoice_folder):
+            os.makedirs(invoice_folder)
+        pdf_path = os.path.join(f"{invoice_folder}", f"{invoice_data['invoice_number']}.pdf")
         with open(pdf_path, 'wb') as pdf_file:
             pdf_file.write(pdf)
 
         new_invoice = Invoice(
             invoice_number=invoice_data['invoice_number'],
             invoice_date=invoice_data['invoice_date'],
+            due_date=invoice_data['due_date'],
             customer_name=invoice_data['customer_name'],
             reference_number=invoice_data['reference_number'],
             description=invoice_data['description'],
@@ -156,7 +169,7 @@ def generate_invoice():
 
         response = make_response(pdf)
         response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = f'attachment; filename=invoice_{invoice_data["invoice_number"]}.pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename={invoice_data["invoice_number"]}.pdf'
 
         try:
             # Open the configuration JSON file
