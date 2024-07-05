@@ -37,7 +37,7 @@
         </div>
     </div>
 </div>
-<div class="container-fluid p-0 m-0">
+<div class="container-fluid p-0 m-0 text-light">
     <div class="row p-3 m-3 bg-secondary">
         <div class="col p-0">
             <div class="row">
@@ -95,29 +95,29 @@
     <table class="items-table">
         <thead>
         <tr>
-            <th>QUANTITY</th>
+            <th>QTY</th>
             <th>ITEMS & DESCRIPTION</th>
-            <th>PRICE</th>
-            <th>AMOUNT ({{ currency_symbol }})</th>
+            <th style="text-align:right;">PRICE</th>
+            <th style="text-align:right;">AMOUNT ({{ currency_symbol }})</th>
         </tr>
         </thead>
         <tbody>
         {% for item in items %}
         <tr>
-            <td width="100">{{ item.quantity }}</td>
+            <td width="50" style="text-align:center;">{{ item.quantity }}</td>
             <td width="500">
                 <strong>{{ item.title }}</strong><br>
                 {{ item.description | safe }}
             </td>
-            <td width="200">{{ item.price }}</td>
-            <td width="200">{{ item.amount }}</td>
+            <td width="200" style="text-align:right;">{{ item.price }}</td>
+            <td width="250" style="text-align:right;">{{ item.amount }}</td>
         </tr>
         {% endfor %}
         </tbody>
         <tfoot>
         <tr>
             <td colspan="3"><strong>Total</strong></td>
-            <td><strong>{{ currency_symbol }} {{ total_amount }}</strong></td>
+            <td style="text-align:right;"><strong>{{ currency_symbol }} {{ total_amount }}</strong></td>
         </tr>
         </tfoot>
         <style>
