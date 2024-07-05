@@ -191,7 +191,21 @@
         firstRow.find('input[name="price[]"]').val('0');
     }
 
+    function loadNewTabWithInvoiceID(invoice_id) {
+        var url = '/view_invoice?invoice_id=' + encodeURIComponent(invoice_id);
+
+        // Load the invoice with the specified number in a new tab
+        let newTab = window.open(url, '_blank');
+
+        // Check if the new tab was successfully opened and focus on it.
+        if (newTab) {
+            newTab.focus();
+        }
+    }
+
     function generateInvoice() {
+        $('#loading_modal').modal('show');
+
         var items = [];
         $('.invoiceItem').each(function() {
             var item = {
@@ -216,12 +230,15 @@
                 description: $('#new_invoice_description').val(),
                 items: JSON.stringify(items)
             },
-            success: function(data) {
+            success: function(invoice_id) {
                 $('#loading_modal').modal('hide');
-                if (!response)
+                if (!invoice_id)
                     notify_warning('Error while creating a new invoice');
-                else
+                else {
                     notify_success('New invoice successfully created!');
+                    // Call the function with your desired source code.
+                    loadNewTabWithInvoiceID(invoice_id);
+                }
             },
             error: function (error) {
                 $('#loading_modal').modal('hide');

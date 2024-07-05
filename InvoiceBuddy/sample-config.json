@@ -21,6 +21,7 @@
     "proposal_valid_for_days": 5
   },
   "seller": {
+    "seller_logo_path": "",
     "seller_name": "",
     "seller_address": "",
     "seller_phone": "",

@@ -3,7 +3,7 @@ import webbrowser
 from flask import render_template, request, make_response, send_file, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import pdfkit
-from datetime import datetime, timedelta
+from datetime import datetime
 from rich.console import Console
 import os
 import json
@@ -27,6 +27,16 @@ class Invoice(db.Model):
     description = db.Column(db.Text, nullable=False)
     items = db.Column(db.Text, nullable=False)  # Store items as JSON
     total_amount = db.Column(db.Float, nullable=False)
+    seller_logo_path = db.Column(db.String(255), nullable=False)
+    seller_name = db.Column(db.String(100), nullable=False)
+    seller_address = db.Column(db.String(100), nullable=False)
+    seller_phone = db.Column(db.String(100), nullable=False)
+    seller_email = db.Column(db.String(100), nullable=False)
+    seller_iban = db.Column(db.String(100), nullable=False)
+    seller_bic = db.Column(db.String(100), nullable=False)
+    seller_paypal_address = db.Column(db.String(100), nullable=False)
+    currency_symbol = db.Column(db.String(100), nullable=False)
+    invoice_terms_and_conditions = db.Column(db.Text, nullable=False)
     pdf_path = db.Column(db.String(255), nullable=False)
     paid = db.Column(db.Boolean, default=False)
 
@@ -41,6 +51,16 @@ class Proposal(db.Model):
     description = db.Column(db.Text, nullable=False)
     items = db.Column(db.Text, nullable=False)  # Store items as JSON
     total_amount = db.Column(db.Float, nullable=False)
+    seller_logo_path = db.Column(db.String(255), nullable=False)
+    seller_name = db.Column(db.String(100), nullable=False)
+    seller_address = db.Column(db.String(100), nullable=False)
+    seller_phone = db.Column(db.String(100), nullable=False)
+    seller_email = db.Column(db.String(100), nullable=False)
+    seller_iban = db.Column(db.String(100), nullable=False)
+    seller_bic = db.Column(db.String(100), nullable=False)
+    seller_paypal_address = db.Column(db.String(100), nullable=False)
+    currency_symbol = db.Column(db.String(100), nullable=False)
+    proposal_terms_and_conditions = db.Column(db.Text, nullable=False)
     pdf_path = db.Column(db.String(255), nullable=False)
     accepted = db.Column(db.Boolean, default=False)
 
@@ -140,6 +160,7 @@ def generate_invoice():
             'description': request.form['description'],
             'items': items,
             'total_amount': total_amount,
+            'seller_logo_path': application_modules.get_options().seller_logo_path,
             'seller_name': application_modules.get_options().seller_name,
             'seller_address': application_modules.get_options().seller_address,
             'seller_phone': application_modules.get_options().seller_phone,
@@ -152,14 +173,14 @@ def generate_invoice():
         }
 
         html = render_template('invoice_template.html', **invoice_data)
-        pdf = pdfkit.from_string(html, False)
-
-        invoice_folder = os.path.join(application_modules.get_options().output_path, globals.INVOICE_FOLDER)
-        if not os.path.exists(invoice_folder):
-            os.makedirs(invoice_folder)
-        pdf_path = os.path.join(f"{invoice_folder}", f"{invoice_data['invoice_number']}.pdf")
-        with open(pdf_path, 'wb') as pdf_file:
-            pdf_file.write(pdf)
+        # pdf = pdfkit.from_string(html, False)
+        #
+        # invoice_folder = os.path.join(application_modules.get_options().output_path, globals.INVOICE_FOLDER)
+        # if not os.path.exists(invoice_folder):
+        #     os.makedirs(invoice_folder)
+        # pdf_path = os.path.join(f"{invoice_folder}", f"{invoice_data['invoice_number']}.pdf")
+        # with open(pdf_path, 'wb') as pdf_file:
+        #     pdf_file.write(pdf)
 
         new_invoice = Invoice(
             invoice_number=invoice_data['invoice_number'],
@@ -170,15 +191,26 @@ def generate_invoice():
             description=invoice_data['description'],
             items=json.dumps(items),
             total_amount=total_amount,
-            pdf_path=pdf_path,
+            seller_logo_path=invoice_data['seller_logo_path'],
+            seller_name=invoice_data['seller_name'],
+            seller_address=invoice_data['seller_address'],
+            seller_phone=invoice_data['seller_phone'],
+            seller_email=invoice_data['seller_email'],
+            seller_iban=invoice_data['seller_iban'],
+            seller_bic=invoice_data['seller_bic'],
+            seller_paypal_address=invoice_data['seller_paypal_address'],
+            currency_symbol=invoice_data['currency_symbol'],
+            invoice_terms_and_conditions=invoice_data['invoice_terms_and_conditions'],
+            pdf_path="pdf_path",
             paid=False
         )
+
         db.session.add(new_invoice)
         db.session.commit()
 
-        response = make_response(pdf)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = f'attachment; filename={invoice_data["invoice_number"]}.pdf'
+        # response = make_response(pdf)
+        # response.headers['Content-Type'] = 'application/pdf'
+        # response.headers['Content-Disposition'] = f'attachment; filename={invoice_data["invoice_number"]}.pdf'
 
         try:
             # Open the configuration JSON file
@@ -202,7 +234,37 @@ def generate_invoice():
             application_modules.get_log_manager().info(
                 f'An unexpected error occurred while trying to save a new invoice number. Details {e}')
 
-        return response
+        return jsonify(new_invoice.id)
+
+
+@app.route('/view_invoice', methods=['GET'])
+def view_invoice():
+    if request.method == 'GET':
+        invoice_id = request.args.get('invoice_id')
+        invoice = Invoice.query.get_or_404(invoice_id)
+
+        invoice_data = {
+            'invoice_number': invoice.invoice_number,
+            'invoice_date': invoice.invoice_date,
+            'due_date': invoice.due_date,
+            'customer_name': invoice.customer_name,
+            'reference_number': invoice.reference_number,
+            'description': invoice.description,
+            'items': json.loads(invoice.items),
+            'total_amount': invoice.total_amount,
+            'seller_logo_path': invoice.seller_logo_path,
+            'seller_name': invoice.seller_name,
+            'seller_address': invoice.seller_address,
+            'seller_phone': invoice.seller_phone,
+            'seller_email': invoice.seller_email,
+            'seller_iban': invoice.seller_iban,
+            'seller_bic': invoice.seller_bic,
+            'seller_paypal_address': invoice.seller_paypal_address,
+            'currency_symbol': invoice.currency_symbol,
+            'invoice_terms_and_conditions': invoice.invoice_terms_and_conditions
+        }
+
+        return render_template('invoice_template.html', **invoice_data)
 
 
 @app.route('/invoices')

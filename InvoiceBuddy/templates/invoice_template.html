@@ -3,128 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice #{{ invoice_number }}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .invoice {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .header {
-            margin-bottom: 30px;
-        }
-        .header h1 {
-            color: #4a4a4a;
-            margin-bottom: 5px;
-        }
-        .contact-info {
-            margin-bottom: 20px;
-        }
-        .bill-to {
-            margin-bottom: 20px;
-        }
-        .invoice-details {
-            margin-bottom: 20px;
-        }
-        .invoice-details table {
-            width: 100%;
-        }
-        .invoice-details td {
-            padding: 5px 0;
-        }
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .items-table th, .items-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        .items-table th {
-            background-color: #f2f2f2;
-        }
-        .total {
-            text-align: right;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        .terms {
-            margin-top: 30px;
-            font-size: 0.9em;
-        }
-    </style>
+
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/bootstrap-icons/bootstrap-icons.css">
+    <script src="/static/jquery-3.7.1.min.js"></script>
+    <script src="/static/popper.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+    <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"-->
+    <!--          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"-->
+    <!--            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"-->
+    <!--            crossorigin="anonymous"></script>-->
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/main.css" type="text/css">
+
+    <title>Invoice {{ invoice_number }}</title>
 </head>
 <body>
-    <div class="invoice">
-        <div class="header">
+<div class="container-fluid p-0 m-0">
+    <div class="row p-0 m-0">
+        <div class="col-4 p-3">
+            <img src="" alt="Seller Logo"
+                 style="width:200px; height:150px">
+        </div>
+        <div class="col-8 text-end">
             <h1>INVOICE</h1>
-            <div class="contact-info">
-                {{ seller_name }}<br>
-                {{ seller_address }}<br>
-                Phone: {{ seller_phone }}<br>
-                Email: {{ seller_email }}<br>
-                IBAN: {{ seller_iban }}<br>
-                BIC / SWIFT Code: {{ seller_bic }}
-            </div>
-        </div>
-
-        <div class="bill-to">
-            <strong>BILL TO</strong><br>
-            {{ customer_name }}
-        </div>
-
-        <div class="invoice-details">
-            <table>
-                <tr>
-                    <td><strong>Invoice No#:</strong> {{ invoice_number }}</td>
-                    <td><strong>Invoice Date:</strong> {{ invoice_date }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Reference:</strong> {{ reference_number }}</td>
-                    <td><strong>Due Date:</strong> {{ due_date }}</td>
-                </tr>
-            </table>
-        </div>
-
-        <table class="items-table">
-            <thead>
-                <tr>
-                    <th>QUANTITY</th>
-                    <th>ITEMS & DESCRIPTION</th>
-                    <th>PRICE</th>
-                    <th>AMOUNT ({{ currency_symbol }})</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <td>{{ item.quantity }}</td>
-                    <td>
-                        <strong>{{ item.title }}</strong><br>
-                        {{ item.description | safe }}
-                    </td>
-                    <td>{{ item.price }}</td>
-                    <td>{{ item.amount }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="total">
-            Total {{ currency_symbol }} {{ total_amount }}
-        </div>
-
-        <div class="terms">
-            <strong>Terms and Conditions</strong><br>
-            {{ invoice_terms_and_conditions }}
+            <strong>{{ seller_name }}</strong><br>
+            {{ seller_address }}<br>
+            Phone: {{ seller_phone }}<br>
+            Email: {{ seller_email }}<br>
         </div>
     </div>
+</div>
+<div class="container-fluid p-0 m-0">
+    <div class="row p-3 m-3 bg-secondary">
+        <div class="col p-0">
+            <div class="row">
+                <div class="col-auto">
+                    <strong>Invoice No#:</strong>
+                </div>
+                <div class="col">
+                    {{ invoice_number }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <strong>Invoice Date:</strong>
+                </div>
+                <div class="col">
+                    {{ invoice_date }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <strong>Reference:</strong>
+                </div>
+                <div class="col">
+                    {{ reference_number }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <strong>Due Date:</strong>
+                </div>
+                <div class="col">
+                    {{ due_date }}
+                </div>
+            </div>
+        </div>
+        <div class="col text-end align-self-end">
+            <div class="row justify-content-end">
+                {{ total_amount }} {{ currency_symbol }}<br>
+                <strong>AMOUNT DUE</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-4 ms-4">
+    <strong>BILL TO</strong><br>
+    {{ customer_name }}
+</div>
+
+<div class="mb-2 ms-4">
+    {{ description | safe }}
+</div>
+
+<div class="container-fluid p-0 mt-0 px-4 mb-3">
+    <table class="items-table">
+        <thead>
+        <tr>
+            <th>QUANTITY</th>
+            <th>ITEMS & DESCRIPTION</th>
+            <th>PRICE</th>
+            <th>AMOUNT ({{ currency_symbol }})</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+        <tr>
+            <td width="100">{{ item.quantity }}</td>
+            <td width="500">
+                <strong>{{ item.title }}</strong><br>
+                {{ item.description | safe }}
+            </td>
+            <td width="200">{{ item.price }}</td>
+            <td width="200">{{ item.amount }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="3"><strong>Total</strong></td>
+            <td><strong>{{ currency_symbol }} {{ total_amount }}</strong></td>
+        </tr>
+        </tfoot>
+        <style>
+            /* This will create a horizontal line above (header) and below (footer) each cell */
+            th, td {
+              border-top: 1px solid black;
+              border-bottom: 1px solid black;
+            }
+
+            /* Optional - this will add padding around the cells content */
+            th, td {
+              padding: 10px;
+            }
+
+            /* If you don't want the lines for all columns, specify which ones by their index (0-indexed), like so:
+               For column 1 only
+              th:first-child {
+                  border-top: none;
+              } */
+
+            /* Same goes for footer */
+            tfoot tr td:first-child {
+                border-top: none;
+            }
+        </style>
+    </table>
+</div>
+
+<div class="mb-5 ms-4">
+    <strong>Terms and conditions</strong><br>
+    {{ invoice_terms_and_conditions | safe }}
+</div>
+
+<footer>
+    <div class="container-fluid p-0 ms-4">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col-auto">
+                        <strong>IBAN:</strong>
+                    </div>
+                    <div class="col">
+                        {{ seller_iban }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-auto">
+                        <strong>BIC / SWIFT Code:</strong>
+                    </div>
+                    <div class="col">
+                        {{ seller_bic }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                {{ seller_paypal_address }}
+            </div>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>
