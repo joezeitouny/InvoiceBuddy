@@ -30,6 +30,7 @@ class Invoice(db.Model):
     seller_logo_path = db.Column(db.String(255), nullable=False)
     seller_name = db.Column(db.String(100), nullable=False)
     seller_address = db.Column(db.String(100), nullable=False)
+    seller_country = db.Column(db.String(100), nullable=False)
     seller_phone = db.Column(db.String(100), nullable=False)
     seller_email = db.Column(db.String(100), nullable=False)
     seller_iban = db.Column(db.String(100), nullable=False)
@@ -54,6 +55,7 @@ class Proposal(db.Model):
     seller_logo_path = db.Column(db.String(255), nullable=False)
     seller_name = db.Column(db.String(100), nullable=False)
     seller_address = db.Column(db.String(100), nullable=False)
+    seller_country = db.Column(db.String(100), nullable=False)
     seller_phone = db.Column(db.String(100), nullable=False)
     seller_email = db.Column(db.String(100), nullable=False)
     seller_iban = db.Column(db.String(100), nullable=False)
@@ -163,6 +165,7 @@ def generate_invoice():
             'seller_logo_path': application_modules.get_options().seller_logo_path,
             'seller_name': application_modules.get_options().seller_name,
             'seller_address': application_modules.get_options().seller_address,
+            'seller_country': application_modules.get_options().seller_country,
             'seller_phone': application_modules.get_options().seller_phone,
             'seller_email': application_modules.get_options().seller_email,
             'seller_iban': application_modules.get_options().seller_iban,
@@ -194,6 +197,7 @@ def generate_invoice():
             seller_logo_path=invoice_data['seller_logo_path'],
             seller_name=invoice_data['seller_name'],
             seller_address=invoice_data['seller_address'],
+            seller_country=invoice_data['seller_country'],
             seller_phone=invoice_data['seller_phone'],
             seller_email=invoice_data['seller_email'],
             seller_iban=invoice_data['seller_iban'],
@@ -255,6 +259,7 @@ def view_invoice():
             'seller_logo_path': invoice.seller_logo_path,
             'seller_name': invoice.seller_name,
             'seller_address': invoice.seller_address,
+            'seller_country': invoice.seller_country,
             'seller_phone': invoice.seller_phone,
             'seller_email': invoice.seller_email,
             'seller_iban': invoice.seller_iban,

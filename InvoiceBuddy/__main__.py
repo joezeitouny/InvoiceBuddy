@@ -54,6 +54,7 @@ if __name__ == '__main__':
             options.seller_logo_path = data['seller']['seller_logo_path']
             options.seller_name = data['seller']['seller_name']
             options.seller_address = data['seller']['seller_address']
+            options.seller_country = data['seller']['seller_country']
             options.seller_phone = data['seller']['seller_phone']
             options.seller_email = data['seller']['seller_email']
             options.seller_iban = data['seller']['seller_iban']

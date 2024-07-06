@@ -10,18 +10,12 @@
     <script src="/static/popper.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 
-    <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"-->
-    <!--          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">-->
-    <!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"-->
-    <!--            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"-->
-    <!--            crossorigin="anonymous"></script>-->
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/main.css" type="text/css">
 
     <title>Invoice {{ invoice_number }}</title>
 </head>
-<body>
+<body style="line-height: 1;">
 <div class="container-fluid p-0 m-0">
     <div class="row p-0 m-0">
         <div class="col-4 p-3">
@@ -32,13 +26,14 @@
             <h1>INVOICE</h1>
             <strong>{{ seller_name }}</strong><br>
             {{ seller_address }}<br>
+            {{ seller_country }}<br>
             Phone: {{ seller_phone }}<br>
             Email: {{ seller_email }}<br>
         </div>
     </div>
 </div>
-<div class="container-fluid p-0 m-0 text-light">
-    <div class="row p-3 m-3 bg-secondary">
+<div class="container-fluid p-0 m-0">
+    <div class="row p-3 m-3" style="background-color: rgb(240, 237, 232);">
         <div class="col p-0">
             <div class="row">
                 <div class="col-auto">
@@ -75,8 +70,18 @@
         </div>
         <div class="col text-end align-self-end">
             <div class="row justify-content-end">
-                {{ total_amount }} {{ currency_symbol }}<br>
-                <strong>AMOUNT DUE</strong>
+                <table class="header-table">
+                    <tr>
+                        <td>
+                            {{ total_amount }} {{ currency_symbol }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>AMOUNT DUE</strong>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
@@ -87,7 +92,7 @@
     {{ customer_name }}
 </div>
 
-<div class="mb-2 ms-4">
+<div class="mb-4 ms-4">
     {{ description | safe }}
 </div>
 
@@ -95,48 +100,37 @@
     <table class="items-table">
         <thead>
         <tr>
-            <th>QTY</th>
-            <th>ITEMS & DESCRIPTION</th>
-            <th style="text-align:right;">PRICE</th>
-            <th style="text-align:right;">AMOUNT ({{ currency_symbol }})</th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;">QTY</th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;">ITEMS & DESCRIPTION</th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">PRICE</th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">AMOUNT ({{ currency_symbol }})</th>
         </tr>
         </thead>
         <tbody>
         {% for item in items %}
         <tr>
-            <td width="50" style="text-align:center;">{{ item.quantity }}</td>
-            <td width="500">
+            <td width="50" style="padding: 5px; text-align:center;">{{ item.quantity }}</td>
+            <td width="500" style="padding: 5px;">
                 <strong>{{ item.title }}</strong><br>
                 {{ item.description | safe }}
             </td>
-            <td width="200" style="text-align:right;">{{ item.price }}</td>
-            <td width="250" style="text-align:right;">{{ item.amount }}</td>
+            <td width="200" style="padding: 5px; text-align:right;">{{ item.price }}</td>
+            <td width="250" style="padding: 5px; text-align:right;">{{ item.amount }}</td>
         </tr>
         {% endfor %}
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="3"><strong>Total</strong></td>
-            <td style="text-align:right;"><strong>{{ currency_symbol }} {{ total_amount }}</strong></td>
+            <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;" colspan="3"><strong>Total</strong></td>
+            <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;"><strong>{{ currency_symbol }} {{ total_amount }}</strong></td>
         </tr>
         </tfoot>
         <style>
-            /* This will create a horizontal line above (header) and below (footer) each cell */
-            th, td {
-              border-top: 1px solid black;
-              border-bottom: 1px solid black;
-            }
-
-            /* Optional - this will add padding around the cells content */
-            th, td {
-              padding: 10px;
-            }
-
             /* If you don't want the lines for all columns, specify which ones by their index (0-indexed), like so:
                For column 1 only
-              th:first-child {
-                  border-top: none;
-              } */
+            th:first-child {
+               border-top: none;
+            } */
 
             /* Same goes for footer */
             tfoot tr td:first-child {
