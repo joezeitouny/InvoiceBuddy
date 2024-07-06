@@ -101,9 +101,14 @@
         <thead>
         <tr>
             <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;">QTY</th>
-            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;">ITEMS & DESCRIPTION</th>
-            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">PRICE</th>
-            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">AMOUNT ({{ currency_symbol }})</th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;">ITEMS & DESCRIPTION
+            </th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">
+                PRICE
+            </th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">
+                AMOUNT ({{ currency_symbol }})
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -121,22 +126,12 @@
         </tbody>
         <tfoot>
         <tr>
-            <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;" colspan="3"><strong>Total</strong></td>
-            <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;"><strong>{{ currency_symbol }} {{ total_amount }}</strong></td>
+            <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;" colspan="3"><strong>Total</strong>
+            </td>
+            <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">
+                <strong>{{ currency_symbol }} {{ total_amount }}</strong></td>
         </tr>
         </tfoot>
-        <style>
-            /* If you don't want the lines for all columns, specify which ones by their index (0-indexed), like so:
-               For column 1 only
-            th:first-child {
-               border-top: none;
-            } */
-
-            /* Same goes for footer */
-            tfoot tr td:first-child {
-                border-top: none;
-            }
-        </style>
     </table>
 </div>
 
@@ -174,4 +169,13 @@
 </footer>
 
 </body>
+
+<script type="text/javascript">
+    {% if show_print_dialog %}
+    $(document).ready(function() {
+        window.print();
+    });
+    {% endif %}
+</script>
+
 </html>

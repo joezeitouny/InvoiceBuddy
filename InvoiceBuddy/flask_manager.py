@@ -152,6 +152,9 @@ def generate_invoice():
     if request.method == 'POST':
         items = json.loads(request.form['items'])
         total_amount = sum(item['quantity'] * item['price'] for item in items)
+        for item in items:
+            item['price'] = "{:.2f}".format(item['price'])
+            item['amount'] = "{:.2f}".format(item['amount'])
 
         invoice_data = {
             'invoice_number': request.form['invoice_number'],
@@ -245,6 +248,7 @@ def generate_invoice():
 def view_invoice():
     if request.method == 'GET':
         invoice_id = request.args.get('invoice_id')
+        show_print_dialog = request.args.get('show_print_dialog')
         invoice = Invoice.query.get_or_404(invoice_id)
 
         invoice_data = {
@@ -255,7 +259,7 @@ def view_invoice():
             'reference_number': invoice.reference_number,
             'description': invoice.description,
             'items': json.loads(invoice.items),
-            'total_amount': invoice.total_amount,
+            'total_amount': "{:.2f}".format(invoice.total_amount),
             'seller_logo_path': invoice.seller_logo_path,
             'seller_name': invoice.seller_name,
             'seller_address': invoice.seller_address,
@@ -266,7 +270,8 @@ def view_invoice():
             'seller_bic': invoice.seller_bic,
             'seller_paypal_address': invoice.seller_paypal_address,
             'currency_symbol': invoice.currency_symbol,
-            'invoice_terms_and_conditions': invoice.invoice_terms_and_conditions
+            'invoice_terms_and_conditions': invoice.invoice_terms_and_conditions,
+            'show_print_dialog': show_print_dialog
         }
 
         return render_template('invoice_template.html', **invoice_data)

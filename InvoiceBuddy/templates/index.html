@@ -191,8 +191,12 @@
         firstRow.find('input[name="price[]"]').val('0');
     }
 
-    function loadNewTabWithInvoiceID(invoice_id) {
+    function loadNewTabWithInvoiceID(invoice_id, show_print_dialog) {
         var url = '/view_invoice?invoice_id=' + encodeURIComponent(invoice_id);
+
+        if (show_print_dialog) {
+            url += '&show_print_dialog'
+        }
 
         // Load the invoice with the specified number in a new tab
         let newTab = window.open(url, '_blank');
@@ -237,7 +241,7 @@
                 else {
                     notify_success('New invoice successfully created!');
                     // Call the function with your desired source code.
-                    loadNewTabWithInvoiceID(invoice_id);
+                    loadNewTabWithInvoiceID(invoice_id, true);
                 }
             },
             error: function (error) {
