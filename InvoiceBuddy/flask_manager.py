@@ -334,12 +334,44 @@ def list_invoices():
     return jsonify(json_invoices)
 
 
+@app.route('/active_invoices')
+def list_active_invoices():
+    invoices = Invoice.query.filter(Invoice.paid == False).all()
+    json_invoices = [invoice.to_dict() for invoice in invoices]
+
+    return jsonify(json_invoices)
+
+
+@app.route('/past_invoices')
+def list_past_invoices():
+    invoices = Invoice.query.filter(Invoice.paid == True).all()
+    json_invoices = [invoice.to_dict() for invoice in invoices]
+
+    return jsonify(json_invoices)
+
+
 @app.route('/proposals')
 def list_proposals():
     proposals = Proposal.query.all()
-    json_invoices = [proposal.to_dict() for proposal in proposals]
+    json_proposals = [proposal.to_dict() for proposal in proposals]
 
-    return jsonify(json_invoices)
+    return jsonify(json_proposals)
+
+
+@app.route('/active_proposals')
+def list_active_proposals():
+    proposals = Proposal.query.filter(Proposal.accepted == False).all()
+    json_proposals = [proposal.to_dict() for proposal in proposals]
+
+    return jsonify(json_proposals)
+
+
+@app.route('/past_proposals')
+def list_past_proposals():
+    proposals = Proposal.query.filter(Proposal.accepted == True).all()
+    json_proposals = [proposal.to_dict() for proposal in proposals]
+
+    return jsonify(json_proposals)
 
 
 @app.route('/download/<int:invoice_id>')

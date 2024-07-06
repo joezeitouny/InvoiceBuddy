@@ -296,7 +296,7 @@
     function refreshData() {
         $.ajax({
             type: 'GET',
-            url: '/invoices',
+            url: '/active_invoices',
             success: function(data) {
                 if (first_refresh_data_call) {
                     $('#loading_modal').modal('hide');
