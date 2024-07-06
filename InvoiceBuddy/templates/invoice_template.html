@@ -141,9 +141,9 @@
 </div>
 
 <footer>
-    <div class="container-fluid p-0 ms-4">
-        <div class="row">
-            <div class="col">
+    <div class="container-fluid mx-4">
+        <div class="row p-0">
+            <div class="col p-0">
                 <div class="row">
                     <div class="col-auto">
                         <strong>IBAN:</strong>
@@ -161,8 +161,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
-                {{ seller_paypal_address }}
+            <div class="col p-0">
+                <span>
+                    <img src="/static/paypal-logo.jpg">
+                    {{ seller_paypal_address }}
+                </span>
             </div>
         </div>
     </div>
