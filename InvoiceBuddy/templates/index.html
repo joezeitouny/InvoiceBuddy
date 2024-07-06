@@ -240,6 +240,10 @@
                     notify_warning('Error while creating a new invoice');
                 else {
                     notify_success('New invoice successfully created!');
+
+                    // hide the create invoice form
+                    hideNewInvoiceModal();
+
                     // Call the function with your desired source code.
                     loadNewTabWithInvoiceID(invoice_id, true);
                 }
