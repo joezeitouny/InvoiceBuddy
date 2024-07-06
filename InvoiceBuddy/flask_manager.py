@@ -42,6 +42,33 @@ class Invoice(db.Model):
     pdf_path = db.Column(db.String(255), nullable=False)
     paid = db.Column(db.Boolean, default=False)
 
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            invoice_number=self.invoice_number,
+            invoice_date=self.invoice_date.strftime('%Y/%m/%d'),
+            due_date=self.due_date.strftime('%Y/%m/%d'),
+            customer_name=self.customer_name,
+            reference_number=self.reference_number,
+            description=self.description,
+            items=json.loads(self.items),
+            total_amount=self.total_amount,
+            seller_logo_path=self.seller_logo_path,
+            seller_name=self.seller_name,
+            seller_address=self.seller_address,
+            seller_country=self.seller_country,
+            seller_phone=self.seller_phone,
+            seller_email=self.seller_email,
+            seller_iban=self.seller_iban,
+            seller_bic=self.seller_bic,
+            seller_paypal_address=self.seller_paypal_address,
+            currency_symbol=self.currency_symbol,
+            currency_name=self.currency_name,
+            invoice_terms_and_conditions=self.invoice_terms_and_conditions,
+            pdf_path=self.pdf_path,
+            paid=self.paid
+        )
+
 
 class Proposal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,6 +94,33 @@ class Proposal(db.Model):
     proposal_terms_and_conditions = db.Column(db.Text, nullable=False)
     pdf_path = db.Column(db.String(255), nullable=False)
     accepted = db.Column(db.Boolean, default=False)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            invoice_number=self.proposal_number,
+            invoice_date=self.proposal_date.strftime('%Y/%m/%d'),
+            due_date=self.due_date.strftime('%Y/%m/%d'),
+            customer_name=self.customer_name,
+            reference_number=self.reference_number,
+            description=self.description,
+            items=json.loads(self.items),
+            total_amount=self.total_amount,
+            seller_logo_path=self.seller_logo_path,
+            seller_name=self.seller_name,
+            seller_address=self.seller_address,
+            seller_country=self.seller_country,
+            seller_phone=self.seller_phone,
+            seller_email=self.seller_email,
+            seller_iban=self.seller_iban,
+            seller_bic=self.seller_bic,
+            seller_paypal_address=self.seller_paypal_address,
+            currency_symbol=self.currency_symbol,
+            currency_name=self.currency_name,
+            proposal_terms_and_conditions=self.proposal_terms_and_conditions,
+            pdf_path=self.pdf_path,
+            accepted=self.accepted
+        )
 
 
 class ApplicationModules:
@@ -183,16 +237,6 @@ def generate_invoice():
             'invoice_terms_and_conditions': application_modules.get_options().invoice_terms_and_conditions
         }
 
-        html = render_template('invoice_template.html', **invoice_data)
-        # pdf = pdfkit.from_string(html, False)
-        #
-        # invoice_folder = os.path.join(application_modules.get_options().output_path, globals.INVOICE_FOLDER)
-        # if not os.path.exists(invoice_folder):
-        #     os.makedirs(invoice_folder)
-        # pdf_path = os.path.join(f"{invoice_folder}", f"{invoice_data['invoice_number']}.pdf")
-        # with open(pdf_path, 'wb') as pdf_file:
-        #     pdf_file.write(pdf)
-
         new_invoice = Invoice(
             invoice_number=invoice_data['invoice_number'],
             invoice_date=invoice_data['invoice_date'],
@@ -220,10 +264,6 @@ def generate_invoice():
 
         db.session.add(new_invoice)
         db.session.commit()
-
-        # response = make_response(pdf)
-        # response.headers['Content-Type'] = 'application/pdf'
-        # response.headers['Content-Disposition'] = f'attachment; filename={invoice_data["invoice_number"]}.pdf'
 
         try:
             # Open the configuration JSON file
@@ -289,13 +329,17 @@ def view_invoice():
 @app.route('/invoices')
 def list_invoices():
     invoices = Invoice.query.all()
-    return render_template('invoice_list.html', invoices=invoices)
+    json_invoices = [invoice.to_dict() for invoice in invoices]
+
+    return jsonify(json_invoices)
 
 
 @app.route('/proposals')
 def list_proposals():
     proposals = Proposal.query.all()
-    return render_template('proposal_list.html', proposals=proposals)
+    json_invoices = [proposal.to_dict() for proposal in proposals]
+
+    return jsonify(json_invoices)
 
 
 @app.route('/download/<int:invoice_id>')

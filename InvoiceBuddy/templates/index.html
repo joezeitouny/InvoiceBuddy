@@ -146,6 +146,7 @@
                 <th scope="col">Number</th>
                 <th scope="col">Date</th>
                 <th scope="col">Due Date</th>
+                <th scope="col">Reference Number</th>
                 <th scope="col">Customer Name</th>
                 <th scope="col">Total Amount</th>
                 <th scope="col">Actions</th>
@@ -293,30 +294,69 @@
     }
 
     function refreshData() {
-        if (first_refresh_data_call) {
-            $('#loading_modal').modal('hide');
-            first_refresh_data_call = false;
-        }
-    <!--    $.ajax({-->
-    <!--        type: 'GET',-->
-    <!--        url: '/data',-->
-    <!--        success: function(data) {            -->
-    <!--            if (first_refresh_data_call) {-->
-    <!--                $('#loading_modal').modal('hide');-->
-    <!--                first_refresh_data_call = false;-->
-    <!--            }-->
-    <!--        },-->
-    <!--        error: function (error) {-->
-    <!--            if (first_refresh_data_call) {-->
-    <!--                $('#loading_modal').modal('hide');-->
-    <!--                first_refresh_data_call = false;-->
-    <!--            }-->
+        $.ajax({
+            type: 'GET',
+            url: '/invoices',
+            success: function(data) {
+                if (first_refresh_data_call) {
+                    $('#loading_modal').modal('hide');
+                    first_refresh_data_call = false;
+                }
 
-    <!--            if (!connection_lost_dialog_shown) {-->
-    <!--                notify_warning('Error refreshing data: ' + error);-->
-    <!--            }-->
-    <!--        }-->
-    <!--    });-->
+                // Populate active invoices section
+                const activeInvoicesTable = document.getElementById('active_invoices_table').getElementsByTagName('tbody')[0];
+                // clear all the old rows first
+                const activeInvoicesTableRowCount = activeInvoicesTable.rows.length;
+
+                // Start from the last row and go backwards to avoid index shift
+                for (let i = activeInvoicesTableRowCount - 1; i >= 0; i--) {
+                    activeInvoicesTable.deleteRow(i);
+                }
+
+                activeInvoicesTotalAmount = 0;
+                // Repopulate the table
+                for (const [entry, values] of Object.entries(data)) {
+                        const row = activeInvoicesTable.insertRow();
+                        const cell1 = row.insertCell(0);
+                        const cell2 = row.insertCell(1);
+                        const cell3 = row.insertCell(2);
+                        const cell4 = row.insertCell(3);
+                        const cell5 = row.insertCell(4);
+                        const cell6 = row.insertCell(5);
+                        const cell7 = row.insertCell(6);
+
+                        cell1.innerHTML = values.invoice_number;
+                        cell2.innerHTML = values.invoice_date;
+                        cell3.innerHTML = values.due_date;
+                        cell4.innerHTML = values.reference_number;
+                        cell5.innerHTML = values.customer_name;
+                        cell6.innerHTML = values.total_amount;
+                        cell7.innerHTML = `<button type="button" class="btn btn-primary toggle-paid-button" data-id="${values.id}">Mark as paid</button>`;
+
+                        activeInvoicesTotalAmount += values.total_amount;
+                }
+
+                document.getElementById('active_invoices_count_value').innerHTML = Object.entries(data).length;
+                document.getElementById('active_invoices_total_amount_value').innerHTML = activeInvoicesTotalAmount;
+
+                // Handle delete button clicks
+                $('.toggle-paid-button').on('click', function () {
+                    const invoice_id = $(this).data('id');
+
+                    // TODO: implement code here
+                });
+            },
+            error: function (error) {
+                if (first_refresh_data_call) {
+                    $('#loading_modal').modal('hide');
+                    first_refresh_data_call = false;
+                }
+
+                if (!connection_lost_dialog_shown) {
+                    notify_warning('Error refreshing data: ' + error);
+                }
+            }
+        });
     }
 
     $(document).ready(function() {
