@@ -41,6 +41,7 @@ if __name__ == '__main__':
             options.tmp_path = data['tmp_path']
             options.filename_prefix = data['filename_prefix']
             options.currency_symbol = data['currency_symbol']
+            options.currency_name = data['currency_name']
             options.web_launch_browser_during_startup = utils.try_parse_bool(
                 data['web_application']['web_launch_browser_during_startup'])
             options.web_port = data['web_application']['web_port']

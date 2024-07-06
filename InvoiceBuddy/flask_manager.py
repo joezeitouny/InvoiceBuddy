@@ -37,6 +37,7 @@ class Invoice(db.Model):
     seller_bic = db.Column(db.String(100), nullable=False)
     seller_paypal_address = db.Column(db.String(100), nullable=False)
     currency_symbol = db.Column(db.String(100), nullable=False)
+    currency_name = db.Column(db.String(100), nullable=False)
     invoice_terms_and_conditions = db.Column(db.Text, nullable=False)
     pdf_path = db.Column(db.String(255), nullable=False)
     paid = db.Column(db.Boolean, default=False)
@@ -62,6 +63,7 @@ class Proposal(db.Model):
     seller_bic = db.Column(db.String(100), nullable=False)
     seller_paypal_address = db.Column(db.String(100), nullable=False)
     currency_symbol = db.Column(db.String(100), nullable=False)
+    currency_name = db.Column(db.String(100), nullable=False)
     proposal_terms_and_conditions = db.Column(db.Text, nullable=False)
     pdf_path = db.Column(db.String(255), nullable=False)
     accepted = db.Column(db.Boolean, default=False)
@@ -116,10 +118,12 @@ def index():
     invoice_valid_for_days = application_modules.get_options().invoice_valid_for_days
     proposal_valid_for_days = application_modules.get_options().proposal_valid_for_days
     currency_symbol = application_modules.get_options().currency_symbol
+    currency_name = application_modules.get_options().currency_name
 
     return render_template('index.html', application_name=application_name,
                            application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
-                           proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol)
+                           proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol,
+                           currency_name=currency_name)
 
 
 @app.route('/new_invoice_number')
@@ -175,6 +179,7 @@ def generate_invoice():
             'seller_bic': application_modules.get_options().seller_bic,
             'seller_paypal_address': application_modules.get_options().seller_paypal_address,
             'currency_symbol': application_modules.get_options().currency_symbol,
+            'currency_name': application_modules.get_options().currency_name,
             'invoice_terms_and_conditions': application_modules.get_options().invoice_terms_and_conditions
         }
 
@@ -207,6 +212,7 @@ def generate_invoice():
             seller_bic=invoice_data['seller_bic'],
             seller_paypal_address=invoice_data['seller_paypal_address'],
             currency_symbol=invoice_data['currency_symbol'],
+            currency_name=invoice_data['currency_name'],
             invoice_terms_and_conditions=invoice_data['invoice_terms_and_conditions'],
             pdf_path="pdf_path",
             paid=False
@@ -248,7 +254,9 @@ def generate_invoice():
 def view_invoice():
     if request.method == 'GET':
         invoice_id = request.args.get('invoice_id')
-        show_print_dialog = request.args.get('show_print_dialog')
+        show_print_dialog = False
+        if not request.args.get('show_print_dialog') is None:
+            show_print_dialog = True
         invoice = Invoice.query.get_or_404(invoice_id)
 
         invoice_data = {
@@ -270,6 +278,7 @@ def view_invoice():
             'seller_bic': invoice.seller_bic,
             'seller_paypal_address': invoice.seller_paypal_address,
             'currency_symbol': invoice.currency_symbol,
+            'currency_name': invoice.currency_name,
             'invoice_terms_and_conditions': invoice.invoice_terms_and_conditions,
             'show_print_dialog': show_print_dialog
         }

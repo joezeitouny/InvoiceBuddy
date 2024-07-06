@@ -73,7 +73,7 @@
                 <table class="header-table">
                     <tr>
                         <td>
-                            {{ total_amount }} {{ currency_symbol }}
+                            {{ total_amount }} {{ currency_name }}
                         </td>
                     </tr>
                     <tr>
@@ -129,7 +129,7 @@
             <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;" colspan="3"><strong>Total</strong>
             </td>
             <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">
-                <strong>{{ currency_symbol }} {{ total_amount }}</strong></td>
+                <strong>{{ currency_name }} {{ total_amount }}</strong></td>
         </tr>
         </tfoot>
     </table>
@@ -171,11 +171,11 @@
 </body>
 
 <script type="text/javascript">
-    {% if show_print_dialog %}
     $(document).ready(function() {
+        {% if show_print_dialog %}
         window.print();
+        {% endif %}
     });
-    {% endif %}
 </script>
 
 </html>

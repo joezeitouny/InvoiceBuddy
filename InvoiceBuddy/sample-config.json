@@ -2,7 +2,8 @@
   "output_path": "",
   "tmp_path": "",
   "filename_prefix": "InvoiceBuddy_",
-  "currency_symbol": "EUR",
+  "currency_symbol": "€",
+  "currency_name": "EUR",
   "web_application": {
     "web_launch_browser_during_startup": "True",
     "web_port": "5001"
