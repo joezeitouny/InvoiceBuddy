@@ -14,6 +14,7 @@
                 <th scope="col">Customer Name</th>
                 <th scope="col">Description</th>
                 <th scope="col">Total Amount</th>
+                <th scope="col">Status</th>
                 <th scope="col">Actions</th>
             </tr>
             </thead>
@@ -55,6 +56,7 @@ function refreshData(page) {
                     const cell6 = row.insertCell(5);
                     const cell7 = row.insertCell(6);
                     const cell8 = row.insertCell(7);
+                    const cell9 = row.insertCell(8);
 
                     cell1.innerHTML = values.proposal_number;
                     cell2.innerHTML = values.proposal_date;
@@ -63,7 +65,12 @@ function refreshData(page) {
                     cell5.innerHTML = values.customer_name;
                     cell6.innerHTML = values.description;
                     cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
-                    cell8.innerHTML = `<button type="button" class="btn btn-primary view-proposal-button" data-id="${values.id}" data-proposal-number="${values.proposal_number}">View</button>`;
+                    if (values.status == 1) {
+                        cell8.innerHTML = 'Accepted';
+                    } else if (values.status == 2) {
+                        cell8.innerHTML = 'Rejected';
+                    }
+                    cell9.innerHTML = `<button type="button" class="btn btn-primary view-proposal-button" data-id="${values.id}" data-proposal-number="${values.proposal_number}">View</button>`;
             }
 
             // Handle view proposal button clicks

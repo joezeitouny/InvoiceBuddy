@@ -37,7 +37,7 @@ class Invoice(db.Model):
     currency_symbol = db.Column(db.String(100), nullable=False)
     currency_name = db.Column(db.String(100), nullable=False)
     invoice_terms_and_conditions = db.Column(db.Text, nullable=False)
-    paid = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Integer, nullable=False, default=0)
 
     def to_dict(self):
         return dict(
@@ -61,7 +61,7 @@ class Invoice(db.Model):
             currency_symbol=self.currency_symbol,
             currency_name=self.currency_name,
             invoice_terms_and_conditions=self.invoice_terms_and_conditions,
-            paid=self.paid
+            status=self.status
         )
 
 
@@ -86,7 +86,7 @@ class Proposal(db.Model):
     currency_symbol = db.Column(db.String(100), nullable=False)
     currency_name = db.Column(db.String(100), nullable=False)
     proposal_terms_and_conditions = db.Column(db.Text, nullable=False)
-    accepted = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Integer, nullable=False, default=0)
 
     def to_dict(self):
         return dict(
@@ -110,7 +110,7 @@ class Proposal(db.Model):
             currency_symbol=self.currency_symbol,
             currency_name=self.currency_name,
             proposal_terms_and_conditions=self.proposal_terms_and_conditions,
-            accepted=self.accepted
+            status=self.status
         )
 
 
@@ -249,7 +249,8 @@ def generate_invoice():
             'seller_paypal_address': application_modules.get_options().seller_paypal_address,
             'currency_symbol': application_modules.get_options().currency_symbol,
             'currency_name': application_modules.get_options().currency_name,
-            'invoice_terms_and_conditions': application_modules.get_options().invoice_terms_and_conditions
+            'invoice_terms_and_conditions': application_modules.get_options().invoice_terms_and_conditions,
+            'status': 0
         }
 
         new_invoice = Invoice(
@@ -272,7 +273,7 @@ def generate_invoice():
             currency_symbol=invoice_data['currency_symbol'],
             currency_name=invoice_data['currency_name'],
             invoice_terms_and_conditions=invoice_data['invoice_terms_and_conditions'],
-            paid=False
+            status=invoice_data['status']
         )
 
         db.session.add(new_invoice)
@@ -331,7 +332,8 @@ def generate_proposal():
             'seller_paypal_address': application_modules.get_options().seller_paypal_address,
             'currency_symbol': application_modules.get_options().currency_symbol,
             'currency_name': application_modules.get_options().currency_name,
-            'proposal_terms_and_conditions': application_modules.get_options().proposal_terms_and_conditions
+            'proposal_terms_and_conditions': application_modules.get_options().proposal_terms_and_conditions,
+            'status': 0
         }
 
         new_proposal = Proposal(
@@ -354,7 +356,7 @@ def generate_proposal():
             currency_symbol=proposal_data['currency_symbol'],
             currency_name=proposal_data['currency_name'],
             proposal_terms_and_conditions=proposal_data['proposal_terms_and_conditions'],
-            accepted=False
+            status=proposal_data['status']
         )
 
         db.session.add(new_proposal)
@@ -414,6 +416,7 @@ def view_invoice():
             'currency_symbol': invoice.currency_symbol,
             'currency_name': invoice.currency_name,
             'invoice_terms_and_conditions': invoice.invoice_terms_and_conditions,
+            'status': invoice.status,
             'show_print_dialog': show_print_dialog
         }
 
@@ -449,6 +452,7 @@ def view_proposal():
             'currency_symbol': proposal.currency_symbol,
             'currency_name': proposal.currency_name,
             'proposal_terms_and_conditions': proposal.proposal_terms_and_conditions,
+            'status': proposal.status,
             'show_print_dialog': show_print_dialog
         }
 
@@ -465,7 +469,7 @@ def list_invoices():
 
 @app.route('/active_invoices')
 def list_active_invoices():
-    invoices = Invoice.query.filter(Invoice.paid == False).all()
+    invoices = Invoice.query.filter(Invoice.status == 0).all()
     json_invoices = [invoice.to_dict() for invoice in invoices]
 
     return jsonify(json_invoices)
@@ -495,7 +499,7 @@ def list_past_invoices():
     start_idx = (page - 1) * items_per_page
     end_idx = start_idx + items_per_page
 
-    invoices = Invoice.query.filter(Invoice.paid == True).all()
+    invoices = Invoice.query.filter(Invoice.status != 0).all()
     paginated_data = [invoice.to_dict() for invoice in invoices[start_idx:end_idx]]
 
     total_number_of_pages = math.floor(len(invoices) / items_per_page)
@@ -513,7 +517,7 @@ def list_past_invoices():
 
 @app.route('/past_invoices_count')
 def past_invoices_count():
-    invoices = Invoice.query.filter(Invoice.paid == True).all()
+    invoices = Invoice.query.filter(Invoice.status != 0).all()
 
     return jsonify(len(invoices))
 
@@ -528,7 +532,7 @@ def list_proposals():
 
 @app.route('/active_proposals')
 def list_active_proposals():
-    proposals = Proposal.query.filter(Proposal.accepted == False).all()
+    proposals = Proposal.query.filter(Proposal.status == 0).all()
     json_proposals = [proposal.to_dict() for proposal in proposals]
 
     return jsonify(json_proposals)
@@ -558,7 +562,7 @@ def list_past_proposals():
     start_idx = (page - 1) * items_per_page
     end_idx = start_idx + items_per_page
 
-    proposals = Proposal.query.filter(Proposal.accepted == True).all()
+    proposals = Proposal.query.filter(Proposal.status != 0).all()
     paginated_data = [proposal.to_dict() for proposal in proposals[start_idx:end_idx]]
 
     total_number_of_pages = math.floor(len(proposals) / items_per_page)
@@ -576,9 +580,28 @@ def list_past_proposals():
 
 @app.route('/past_proposals_count')
 def past_proposals_count():
-    proposals = Proposal.query.filter(Proposal.accepted == True).all()
+    proposals = Proposal.query.filter(Proposal.status != 0).all()
 
     return jsonify(len(proposals))
+
+
+@app.route('/mark_invoice_canceled', methods=['POST'])
+def mark_invoice_canceled():
+    if request.method == 'POST':
+        try:
+            invoice_number = request.form['invoice_number']
+            invoice = Invoice.query.filter(Invoice.invoice_number == invoice_number).first()
+            invoice.status = 2
+
+            db.session.commit()
+
+            return jsonify(True)
+        except Exception as e:
+            application_modules.get_log_manager().warning(
+                f"Exception occurred while trying to mark invoice as canceled. Details: {e}")
+            return jsonify(False)
+
+    return jsonify(False)
 
 
 @app.route('/mark_invoice_paid', methods=['POST'])
@@ -587,7 +610,7 @@ def mark_invoice_paid():
         try:
             invoice_number = request.form['invoice_number']
             invoice = Invoice.query.filter(Invoice.invoice_number == invoice_number).first()
-            invoice.paid = True
+            invoice.status = 1
             db.session.commit()
 
             return jsonify(True)
@@ -599,13 +622,32 @@ def mark_invoice_paid():
     return jsonify(False)
 
 
+@app.route('/mark_proposal_rejected', methods=['POST'])
+def mark_proposal_rejected():
+    if request.method == 'POST':
+        try:
+            proposal_number = request.form['proposal_number']
+            proposal = Proposal.query.filter(Proposal.proposal_number == proposal_number).first()
+            proposal.status = 2
+
+            db.session.commit()
+
+            return jsonify(True)
+        except Exception as e:
+            application_modules.get_log_manager().warning(
+                f"Exception occurred while trying to mark proposal as rejected. Details: {e}")
+            return jsonify(False)
+
+    return jsonify(False)
+
+
 @app.route('/mark_proposal_accepted', methods=['POST'])
 def mark_proposal_accepted():
     if request.method == 'POST':
         try:
             proposal_number = request.form['proposal_number']
             proposal = Proposal.query.filter(Proposal.proposal_number == proposal_number).first()
-            proposal.accepted = True
+            proposal.status = 1
 
             # create a new invoice from the accepted proposal
             invoice_number = new_invoice_number()
@@ -629,7 +671,7 @@ def mark_proposal_accepted():
                 currency_symbol=proposal.currency_symbol,
                 currency_name=proposal.currency_name,
                 invoice_terms_and_conditions=application_modules.get_options().invoice_terms_and_conditions,
-                paid=False
+                status=0
             )
             db.session.add(new_invoice)
             db.session.commit()
@@ -637,7 +679,7 @@ def mark_proposal_accepted():
             return jsonify(True)
         except Exception as e:
             application_modules.get_log_manager().warning(
-                f"Exception occurred while trying to mark invoice as paid. Details: {e}")
+                f"Exception occurred while trying to mark proposal as accepted. Details: {e}")
             return jsonify(False)
 
     return jsonify(False)
