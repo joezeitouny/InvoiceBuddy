@@ -15,11 +15,12 @@
   "invoice": {
     "invoice_number": 1,
     "invoice_valid_for_days": 5,
-    "invoice_terms_and_conditions": ""
+    "invoice_terms_and_conditions": "Payment to be made within 5 days using the payment information below."
   },
   "proposal": {
     "proposal_number": 1,
-    "proposal_valid_for_days": 5
+    "proposal_valid_for_days": 5,
+    "proposal_terms_and_conditions": "Proposal is valid for 5 days."
   },
   "seller": {
     "seller_logo_path": "",

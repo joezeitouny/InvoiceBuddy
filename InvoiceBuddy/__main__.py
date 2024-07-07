@@ -52,6 +52,7 @@ if __name__ == '__main__':
             options.invoice_terms_and_conditions = data['invoice']['invoice_terms_and_conditions']
             options.proposal_number = utils.try_parse_int(data['proposal']['proposal_number'])
             options.proposal_valid_for_days = utils.try_parse_int(data['proposal']['proposal_valid_for_days'])
+            options.proposal_terms_and_conditions = data['proposal']['proposal_terms_and_conditions']
             options.seller_logo_path = data['seller']['seller_logo_path']
             options.seller_name = data['seller']['seller_name']
             options.seller_address = data['seller']['seller_address']

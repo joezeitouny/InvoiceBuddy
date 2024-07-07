@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/bootstrap-icons/bootstrap-icons.css">
+    <script src="/static/jquery-3.7.1.min.js"></script>
+    <script src="/static/popper.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/main.css" type="text/css">
+
+    <title>Proposal {{ proposal_number }}</title>
+</head>
+<body style="line-height: 1;">
+<div class="container-fluid p-0 m-0">
+    <div class="row p-0 m-0">
+        <div class="col-4 p-3">
+            <img src="" alt="Seller Logo"
+                 style="width:200px; height:150px">
+        </div>
+        <div class="col-8 text-end">
+            <h1>ESTIMATE</h1>
+            <strong>{{ seller_name }}</strong><br>
+            {{ seller_address }}<br>
+            {{ seller_country }}<br>
+            Phone: {{ seller_phone }}<br>
+            Email: {{ seller_email }}<br>
+        </div>
+    </div>
+</div>
+<div class="container-fluid p-0 m-0">
+    <div class="row p-3 m-3" style="background-color: rgb(240, 237, 232);">
+        <div class="col p-0">
+            <div class="row">
+                <div class="col-auto">
+                    <strong>Proposal No#:</strong>
+                </div>
+                <div class="col">
+                    {{ proposal_number }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <strong>Proposal Date:</strong>
+                </div>
+                <div class="col">
+                    {{ proposal_date }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <strong>Reference:</strong>
+                </div>
+                <div class="col">
+                    {{ reference_number }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <strong>Due Date:</strong>
+                </div>
+                <div class="col">
+                    {{ due_date }}
+                </div>
+            </div>
+        </div>
+        <div class="col text-end align-self-end">
+            <div class="row justify-content-end">
+                <table class="header-table">
+                    <tr>
+                        <td>
+                            {{ total_amount }} {{ currency_name }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>AMOUNT DUE</strong>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-4 ms-4">
+    <strong>BILL TO</strong><br>
+    {{ customer_name }}
+</div>
+
+<div class="mb-4 ms-4">
+    {{ description | safe }}
+</div>
+
+<div class="container-fluid p-0 mt-0 px-4 mb-3">
+    <table class="items-table">
+        <thead>
+        <tr>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;">QTY</th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;">ITEMS & DESCRIPTION
+            </th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">
+                PRICE
+            </th>
+            <th style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">
+                AMOUNT ({{ currency_symbol }})
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+        <tr>
+            <td width="50" style="padding: 5px; text-align:center;">{{ item.quantity }}</td>
+            <td width="500" style="padding: 5px;">
+                <strong>{{ item.title }}</strong><br>
+                {{ item.description | safe }}
+            </td>
+            <td width="200" style="padding: 5px; text-align:right;">{{ item.price }}</td>
+            <td width="250" style="padding: 5px; text-align:right;">{{ item.amount }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;" colspan="3"><strong>Total</strong>
+            </td>
+            <td style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px; text-align:right;">
+                <strong>{{ currency_name }} {{ total_amount }}</strong></td>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+
+<div class="mb-5 ms-4">
+    <strong>Terms and conditions</strong><br>
+    {{ proposal_terms_and_conditions | safe }}
+</div>
+
+</body>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        {% if show_print_dialog %}
+        window.print();
+        {% endif %}
+    });
+</script>
+
+</html>

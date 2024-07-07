@@ -42,6 +42,26 @@
     </div>
 </div>
 
+<div id="mark_proposal_as_accepted_modal" tabindex="-1" class="modal fade" data-backdrop="static" xmlns="http://www.w3.org/1999/html">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Exit Trade?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to mark proposal "<span id="markProposalModalValue"></span>" as accepted?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="MarkProposalAsAcceptedActionButton" type="button" onclick="markProposalAsAccepted()" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="new_invoice_modal" tabindex="-1" class="modal fade" data-backdrop="static" xmlns="http://www.w3.org/1999/html">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
         <div class="modal-content">
@@ -103,7 +123,7 @@
 
                 <h2>Items</h2>
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="itemsTable">
+                    <table class="table table-bordered" id="invoiceItemsTable">
                         <thead>
                         <tr>
                             <th>Title</th>
@@ -134,13 +154,117 @@
                     </table>
                 </div>
 
-                <button type="button" id="addItem" class="btn btn-primary mb-3">Add Item</button>
+                <button type="button" id="addInvoiceItem" class="btn btn-primary mb-3">Add Item</button>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="hideNewInvoiceModal()">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#new_invoice_modal').modal('hide');">
                     Close
                 </button>
-                <button type="button" class="btn btn-primary" onclick="generateInvoice()">Create</button>
+                <button type="button" class="btn btn-primary" onclick="generateInvoice()">Create Invoice</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="new_proposal_modal" tabindex="-1" class="modal fade" data-backdrop="static" xmlns="http://www.w3.org/1999/html">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">New Proposal</h5>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div class="container border rounded-1 p-1">
+                    <div class="row">
+                        <div class="col-auto">
+                            <label class="form-label" for="new_proposal_number">Proposal Number</label>
+                        </div>
+                        <div class="col">
+                            <input id="new_proposal_number" class="form-control p-0" type="text" placeholder="Proposal Number" name="proposal_number"
+                                   required><br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto">
+                            <label class="form-label" for="new_proposal_date">Invoice Date</label>
+                        </div>
+                        <div class="col">
+                            <input id="new_proposal_date" class="form-control p-0" type="date" name="date" required><br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto">
+                            <label class="form-label" for="new_proposal_due_date">Due Date</label>
+                        </div>
+                        <div class="col">
+                            <input id="new_proposal_due_date" class="form-control p-0" type="date" name="date" required><br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto">
+                            <label class="form-label" for="new_proposal_reference_number">Reference Number</label>
+                        </div>
+                        <div class="col">
+                            <input id="new_proposal_reference_number" class="form-control p-0" type="text" placeholder="Reference Number" name="proposal_reference_number"><br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto">
+                            <label class="form-label" for="new_proposal_customer_name">Customer Name</label>
+                        </div>
+                        <div class="col">
+                            <input id="new_proposal_customer_name" class="form-control p-0" placeholder="Customer Name" type="text" name="customer_name" required><br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-label" for="new_proposal_description">Description</label>
+                        </div>
+                        <div class="col-12">
+                            <textarea class="container form-control p-0" id="new_proposal_description" name="description" rows="3" required></textarea><br>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Items</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="proposalItemsTable">
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="proposalItemsContainer">
+                        <tr class="proposalItem">
+                            <td class="col-4"><input type="text" class="form-control" name="title[]" required>
+                            </td>
+                            <td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea>
+                            </td>
+                            <td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1"
+                                                     value="1" required></td>
+                            <td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0"
+                                                     value="0" required>
+                            </td>
+                            <td class="col-1" style="text-align: center;">
+                                <button type="button" class="btn btn-danger btn-sm removeItem">
+                                    <span><i class="bi bi-trash"></i></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" id="addProposalItem" class="btn btn-primary mb-3">Add Item</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#new_proposal_modal').modal('hide');">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" onclick="generateProposal()">Create Proposal</button>
             </div>
         </div>
     </div>
@@ -214,13 +338,6 @@
 </div>
 
 <script type="text/javascript">
-    first_refresh_data_call = true;
-    const newInvoiceModal = new bootstrap.Modal(document.getElementById('new_invoice_modal'), {backdrop: 'static'});
-
-    function hideNewInvoiceModal() {
-        newInvoiceModal.hide();
-    }
-
     function showNewInvoiceModal() {
         $('#loading_modal').modal('show');
 
@@ -233,7 +350,7 @@
                 $('#loading_modal').modal('hide');
                 $('#new_invoice_number').val(data);
 
-                newInvoiceModal.show();
+                $('#new_invoice_modal').modal('show');
             },
             error: function (error) {
                 $('#loading_modal').modal('hide');
@@ -250,8 +367,53 @@
         firstRow.find('input[name="price[]"]').val('0');
     }
 
+    function showNewProposalModal() {
+        $('#loading_modal').modal('show');
+
+        setNewProposalDate();
+
+        $.ajax({
+            type: 'GET',
+            url: '/new_proposal_number',
+            success: function(data) {
+                $('#loading_modal').modal('hide');
+                $('#new_proposal_number').val(data);
+
+                $('#new_proposal_modal').modal('show');
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while retrieving a new proposal number! Reason: ' + error);
+            }
+        });
+
+        $('#proposalItemsContainer tr.item:not(:first)').remove();
+
+        // Clear the inputs of the first row
+        var firstRow = $('#proposalItemsContainer tr.item:first');
+        firstRow.find('input[type="text"]').val('');
+        firstRow.find('input[name="quantity[]"]').val('1');
+        firstRow.find('input[name="price[]"]').val('0');
+    }
+
     function loadNewTabWithInvoiceID(invoice_id, show_print_dialog) {
         var url = '/view_invoice?invoice_id=' + encodeURIComponent(invoice_id);
+
+        if (show_print_dialog) {
+            url += '&show_print_dialog'
+        }
+
+        // Load the invoice with the specified number in a new tab
+        let newTab = window.open(url, '_blank');
+
+        // Check if the new tab was successfully opened and focus on it.
+        if (newTab) {
+            newTab.focus();
+        }
+    }
+
+    function loadNewTabWithProposalID(proposal_id, show_print_dialog) {
+        var url = '/view_proposal?proposal_id=' + encodeURIComponent(proposal_id);
 
         if (show_print_dialog) {
             url += '&show_print_dialog'
@@ -301,7 +463,7 @@
                     notify_success('New invoice successfully created!');
 
                     // hide the create invoice form
-                    hideNewInvoiceModal();
+                    $('#new_invoice_modal').modal('hide');
 
                     // Call the function with your desired source code.
                     loadNewTabWithInvoiceID(invoice_id, true);
@@ -314,11 +476,56 @@
         });
     }
 
+    function generateProposal() {
+        $('#loading_modal').modal('show');
+
+        var items = [];
+        $('.proposalItem').each(function() {
+            var item = {
+                title: $(this).find('input[name="title[]"]').val(),
+                description: $(this).find('textarea[name="description[]"]').val(),
+                quantity: parseInt($(this).find('input[name="quantity[]"]').val()),
+                price: parseFloat($(this).find('input[name="price[]"]').val()),
+                amount: parseInt($(this).find('input[name="quantity[]"]').val()) * parseFloat($(this).find('input[name="price[]"]').val())
+            };
+            items.push(item);
+        });
+
+        $.ajax({
+            url: '/generate_proposal',
+            method: 'POST',
+            data: {
+                proposal_number: $('#new_proposal_number').val(),
+                proposal_date: $('#new_proposal_date').val(),
+                due_date: $('#new_proposal_due_date').val(),
+                customer_name: $('#new_proposal_customer_name').val(),
+                reference_number: $('#new_proposal_reference_number').val(),
+                description: $('#new_proposal_description').val(),
+                items: JSON.stringify(items)
+            },
+            success: function(proposal_id) {
+                $('#loading_modal').modal('hide');
+                if (!proposal_id)
+                    notify_warning('Error while creating a new proposal');
+                else {
+                    notify_success('New proposal successfully created!');
+
+                    // hide the create invoice form
+                    $('#new_proposal_modal').modal('hide');
+
+                    // Call the function with your desired source code.
+                    loadNewTabWithProposalID(proposal_id, true);
+                }
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while creating a new proposal! Reason: ' + error);
+            }
+        });
+    }
+
     function refreshData() {
-        if (first_refresh_data_call) {
-            $('#loading_modal').modal('hide');
-            first_refresh_data_call = false;
-        }
+        $('#loading_modal').modal('show');
 
         $.ajax({
             type: 'GET',
@@ -372,22 +579,82 @@
                 });
             },
             error: function (error) {
-                if (first_refresh_data_call) {
-                    $('#loading_modal').modal('hide');
-                    first_refresh_data_call = false;
-                }
+                $('#loading_modal').modal('hide');
 
                 if (!connection_lost_dialog_shown) {
-                    notify_warning('Error refreshing data: ' + error);
+                    notify_warning('Error refreshing active invoices: ' + error);
                 }
+                return;
             }
         });
+
+        $.ajax({
+            type: 'GET',
+            url: '/active_proposals',
+            success: function(data) {
+                // Populate active proposals section
+                const activeProposalsTable = document.getElementById('active_proposals_table').getElementsByTagName('tbody')[0];
+                // clear all the old rows first
+                const activeProposalsTableRowCount = activeProposalsTable.rows.length;
+
+                // Start from the last row and go backwards to avoid index shift
+                for (let i = activeProposalsTableRowCount - 1; i >= 0; i--) {
+                    activeProposalsTable.deleteRow(i);
+                }
+
+                activeProposalsTotalAmount = 0;
+                // Repopulate the table
+                for (const [entry, values] of Object.entries(data)) {
+                        const row = activeProposalsTable.insertRow();
+                        const cell1 = row.insertCell(0);
+                        const cell2 = row.insertCell(1);
+                        const cell3 = row.insertCell(2);
+                        const cell4 = row.insertCell(3);
+                        const cell5 = row.insertCell(4);
+                        const cell6 = row.insertCell(5);
+                        const cell7 = row.insertCell(6);
+
+                        cell1.innerHTML = values.proposal_number;
+                        cell2.innerHTML = values.proposal_date;
+                        cell3.innerHTML = values.due_date;
+                        cell4.innerHTML = values.reference_number;
+                        cell5.innerHTML = values.customer_name;
+                        cell6.innerHTML = values.total_amount;
+                        cell7.innerHTML = `<button type="button" class="btn btn-primary mark-accepted-button" data-proposal-number="${values.proposal_number}">Mark as accepted</button>`;
+
+                        activeProposalsTotalAmount += values.total_amount;
+                }
+
+                document.getElementById('active_proposals_count_value').innerHTML = Object.entries(data).length;
+                document.getElementById('active_proposals_total_amount_value').innerHTML = activeProposalsTotalAmount + ' {{ currency_name }}';
+
+                // Handle delete button clicks
+                $('.mark-accepted-button').on('click', function () {
+                    const proposal_number = $(this).data('proposal-number');
+
+                    // Set the value in the modal's prompt text
+                    $('#markProposalModalValue').text(invoice_number);
+
+                    $('#mark_proposal_as_accepted_modal').modal('show');
+                });
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+
+                if (!connection_lost_dialog_shown) {
+                    notify_warning('Error refreshing active proposals: ' + error);
+                }
+                return;
+            }
+        });
+
+        $('#loading_modal').modal('hide');
     }
 
     $(document).ready(function() {
         $('#loading_modal').modal('show');
 
-        $('#addItem').click(function() {
+        $('#addInvoiceItem').click(function() {
                 var newItem = $('<tr class="invoiceItem">' +
                     '<td class="col-4"><input type="text" class="form-control" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
@@ -396,6 +663,17 @@
                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
                 $('#invoiceItemsContainer').append(newItem);
+        });
+
+        $('#addProposalItem').click(function() {
+                var newItem = $('<tr class="proposalItem">' +
+                    '<td class="col-4"><input type="text" class="form-control" name="title[]" required></td>' +
+                    '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
+                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
+                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
+                    '</tr>');
+                $('#proposalItemsContainer').append(newItem);
         });
 
         $(document).on('click', '.removeItem', function() {
@@ -432,6 +710,33 @@
         });
     }
 
+    function markProposalAsAccepted() {
+        $('#loading_modal').modal('show');
+        $.ajax({
+            url: '/mark_proposal_accepted',
+            method: 'POST',
+            data: {
+                proposal_number: $('#markProposalModalValue').text(),
+            },
+            success: function(response) {
+                $('#loading_modal').modal('hide');
+                if (!response)
+                    notify_warning('Error while trying to mark proposal as accepted. Please try again!');
+                else {
+                    notify_success('Proposal successfully marked as accepted!');
+
+                    $('#mark_proposal_as_accepted_modal').modal('hide');
+
+                    refreshData();
+                }
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while trying to mark proposal as accepted! Reason: ' + error);
+            }
+        });
+    }
+
     // Function to set today's date
     function setNewInvoiceDate() {
         var today = new Date();
@@ -451,6 +756,27 @@
 
         dueDate = yyyy + '-' + mm + '-' + dd;
         $('#new_invoice_due_date').val(dueDate);
+    }
+
+    // Function to set today's date
+    function setNewProposalDate() {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+        $('#new_proposal_date').val(today);
+
+        // Compute the due date
+        var dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + {{ invoice_valid_for_days }});
+        var dd = String(dueDate.getDate()).padStart(2, '0');
+        var mm = String(dueDate.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = dueDate.getFullYear();
+
+        dueDate = yyyy + '-' + mm + '-' + dd;
+        $('#new_proposal_due_date').val(dueDate);
     }
 
     function notify_success(message) {
