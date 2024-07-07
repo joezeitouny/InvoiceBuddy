@@ -66,9 +66,9 @@ function refreshData(page) {
                     cell6.innerHTML = values.description;
                     cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
                     if (values.status == 1) {
-                        cell8.innerHTML = 'Paid';
+                        cell8.innerHTML = '<div class="bg-success text-light text-center">Paid</div>';
                     } else if (values.status == 2) {
-                        cell8.innerHTML = 'Canceled';
+                        cell8.innerHTML = '<div class="bg-danger text-light text-center">Canceled</div>';
                     }
                     cell9.innerHTML = `<button type="button" class="btn btn-primary view-invoice-button me-1" data-id="${values.id}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button" data-id="${values.id}"><i class="bi bi-printer"></i></button>`;
             }
