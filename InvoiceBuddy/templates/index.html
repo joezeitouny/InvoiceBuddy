@@ -571,7 +571,7 @@
                         cell6.innerHTML = values.customer_name;
                         cell7.innerHTML = values.description;
                         cell8.innerHTML = values.total_amount;
-                        cell9.innerHTML = `<button type="button" class="btn btn-primary mark-paid-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">Mark as paid</button>`;
+                        cell9.innerHTML = `<button type="button" class="btn btn-success mark-paid-button mx-1" data-id="${values.id}" data-invoice-number="${values.invoice_number}">Mark as paid</button><button type="button" class="btn btn-primary view-invoice-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">View</button>`;
 
                         activeInvoicesTotalAmount += values.total_amount;
                 }
@@ -588,6 +588,13 @@
                     $('#markInvoiceModalValue').text(invoice_number);
 
                     $('#mark_invoice_as_paid_modal').modal('show');
+                });
+
+                // Handle view invoice button clicks
+                $('.view-invoice-button').on('click', function () {
+                    const invoice_id = $(this).data('id');
+
+                    loadNewTabWithInvoiceID(invoice_id, false);
                 });
             },
             error: function (error) {
@@ -636,7 +643,7 @@
                         cell6.innerHTML = values.customer_name;
                         cell7.innerHTML = values.description;
                         cell8.innerHTML = values.total_amount;
-                        cell9.innerHTML = `<button type="button" class="btn btn-primary mark-accepted-button" data-proposal-number="${values.proposal_number}">Mark as accepted</button>`;
+                        cell9.innerHTML = `<button type="button" class="btn btn-success mark-accepted-button mx-1" data-proposal-number="${values.proposal_number}">Mark as accepted</button><button type="button" class="btn btn-primary view-proposal-button" data-id="${values.id}" data-proposal-number="${values.proposal_number}">View</button>`;
 
                         activeProposalsTotalAmount += values.total_amount;
                 }
@@ -652,6 +659,13 @@
                     $('#markProposalModalValue').text(proposal_number);
 
                     $('#mark_proposal_as_accepted_modal').modal('show');
+                });
+
+                // Handle view proposal button clicks
+                $('.view-proposal-button').on('click', function () {
+                    const proposal_id = $(this).data('id');
+
+                    loadNewTabWithProposalID(proposal_id, false);
                 });
             },
             error: function (error) {

@@ -1,6 +1,6 @@
 import time
 import webbrowser
-from flask import render_template, request, make_response, send_file, redirect, url_for, jsonify
+from flask import render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from rich.console import Console
