@@ -13,11 +13,13 @@
     "log_level": "INFO"
   },
   "invoice": {
+    "invoice_prefix": "INV",
     "invoice_number": 1,
     "invoice_valid_for_days": 5,
     "invoice_terms_and_conditions": "Payment to be made within 5 days using the payment information below."
   },
   "proposal": {
+    "proposal_prefix": "P",
     "proposal_number": 1,
     "proposal_valid_for_days": 5,
     "proposal_terms_and_conditions": "Proposal is valid for 5 days."

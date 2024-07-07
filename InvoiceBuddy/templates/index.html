@@ -287,6 +287,7 @@
         <table class="table table-striped" id="active_invoices_table">
             <thead class="thead-light">
             <tr>
+                <th scope="col">ID</th>
                 <th scope="col">Number</th>
                 <th scope="col">Date</th>
                 <th scope="col">Due Date</th>
@@ -302,7 +303,7 @@
             </tbody>
             <tfoot style="border-top-width: thick;border-bottom-width: thick;">
             <tr>
-                <td colspan="5"><b>Totals</b></td>
+                <td colspan="7"><b>Totals</b></td>
                 <td><strong id="active_invoices_total_amount_value">0 {{ currency_name }}</strong></td>
             </tr>
             </tfoot>
@@ -316,6 +317,7 @@
         <table class="table table-striped" id="active_proposals_table">
             <thead class="thead-light">
             <tr>
+                <th scope="col">ID</th>
                 <th scope="col">Number</th>
                 <th scope="col">Date</th>
                 <th scope="col">Due Date</th>
@@ -331,7 +333,7 @@
             </tbody>
             <tfoot style="border-top-width: thick;border-bottom-width: thick;">
             <tr>
-                <td colspan="5"><b>Totals</b></td>
+                <td colspan="7"><b>Totals</b></td>
                 <td><strong id="active_proposals_total_amount_value">0 {{ currency_name }}</strong></td>
             </tr>
             </tfoot>
@@ -559,15 +561,17 @@
                         const cell6 = row.insertCell(5);
                         const cell7 = row.insertCell(6);
                         const cell8 = row.insertCell(7);
+                        const cell9 = row.insertCell(8);
 
-                        cell1.innerHTML = values.invoice_number;
-                        cell2.innerHTML = values.invoice_date;
-                        cell3.innerHTML = values.due_date;
-                        cell4.innerHTML = values.reference_number;
-                        cell5.innerHTML = values.customer_name;
-                        cell6.innerHTML = values.description;
-                        cell7.innerHTML = values.total_amount;
-                        cell8.innerHTML = `<button type="button" class="btn btn-primary mark-paid-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">Mark as paid</button>`;
+                        cell1.innerHTML = values.id;
+                        cell2.innerHTML = values.invoice_number;
+                        cell3.innerHTML = values.invoice_date;
+                        cell4.innerHTML = values.due_date;
+                        cell5.innerHTML = values.reference_number;
+                        cell6.innerHTML = values.customer_name;
+                        cell7.innerHTML = values.description;
+                        cell8.innerHTML = values.total_amount;
+                        cell9.innerHTML = `<button type="button" class="btn btn-primary mark-paid-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">Mark as paid</button>`;
 
                         activeInvoicesTotalAmount += values.total_amount;
                 }
@@ -575,7 +579,7 @@
                 document.getElementById('active_invoices_count_value').innerHTML = Object.entries(data).length;
                 document.getElementById('active_invoices_total_amount_value').innerHTML = activeInvoicesTotalAmount + ' {{ currency_name }}';
 
-                // Handle delete button clicks
+                // Handle mark as paid button clicks
                 $('.mark-paid-button').on('click', function () {
                     const invoice_id = $(this).data('id');
                     const invoice_number = $(this).data('invoice-number');
@@ -622,15 +626,17 @@
                         const cell6 = row.insertCell(5);
                         const cell7 = row.insertCell(6);
                         const cell8 = row.insertCell(7);
+                        const cell9 = row.insertCell(8);
 
-                        cell1.innerHTML = values.proposal_number;
-                        cell2.innerHTML = values.proposal_date;
-                        cell3.innerHTML = values.due_date;
-                        cell4.innerHTML = values.reference_number;
-                        cell5.innerHTML = values.customer_name;
-                        cell6.innerHTML = values.description;
-                        cell7.innerHTML = values.total_amount;
-                        cell8.innerHTML = `<button type="button" class="btn btn-primary mark-accepted-button" data-proposal-number="${values.proposal_number}">Mark as accepted</button>`;
+                        cell1.innerHTML = values.id;
+                        cell2.innerHTML = values.proposal_number;
+                        cell3.innerHTML = values.proposal_date;
+                        cell4.innerHTML = values.due_date;
+                        cell5.innerHTML = values.reference_number;
+                        cell6.innerHTML = values.customer_name;
+                        cell7.innerHTML = values.description;
+                        cell8.innerHTML = values.total_amount;
+                        cell9.innerHTML = `<button type="button" class="btn btn-primary mark-accepted-button" data-proposal-number="${values.proposal_number}">Mark as accepted</button>`;
 
                         activeProposalsTotalAmount += values.total_amount;
                 }
@@ -638,12 +644,12 @@
                 document.getElementById('active_proposals_count_value').innerHTML = Object.entries(data).length;
                 document.getElementById('active_proposals_total_amount_value').innerHTML = activeProposalsTotalAmount + ' {{ currency_name }}';
 
-                // Handle delete button clicks
+                // Handle mark as accepted button clicks
                 $('.mark-accepted-button').on('click', function () {
                     const proposal_number = $(this).data('proposal-number');
 
                     // Set the value in the modal's prompt text
-                    $('#markProposalModalValue').text(invoice_number);
+                    $('#markProposalModalValue').text(proposal_number);
 
                     $('#mark_proposal_as_accepted_modal').modal('show');
                 });
@@ -655,6 +661,30 @@
                     notify_warning('Error refreshing active proposals: ' + error);
                 }
                 return;
+            }
+        });
+
+        $.ajax({
+            url: '/past_invoices_count',
+            method: 'GET',
+            success: function(response) {
+                $('#past_invoices_count').text(String(response));
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while trying to retrieve past invoices count! Reason: ' + error);
+            }
+        });
+
+        $.ajax({
+            url: '/past_proposals_count',
+            method: 'GET',
+            success: function(response) {
+                $('#past_proposals_count').text(String(response));
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while trying to retrieve past proposals count! Reason: ' + error);
             }
         });
 

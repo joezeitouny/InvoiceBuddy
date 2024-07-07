@@ -93,8 +93,8 @@ class Proposal(db.Model):
     def to_dict(self):
         return dict(
             id=self.id,
-            invoice_number=self.proposal_number,
-            invoice_date=self.proposal_date.strftime('%Y/%m/%d'),
+            proposal_number=self.proposal_number,
+            proposal_date=self.proposal_date.strftime('%Y/%m/%d'),
             due_date=self.due_date.strftime('%Y/%m/%d'),
             customer_name=self.customer_name,
             reference_number=self.reference_number,
@@ -196,7 +196,7 @@ def new_invoice_number():
             f'An unexpected error occurred while trying to retrieve a new invoice number. Details {e}')
         return jsonify(0)
 
-    return jsonify(get_formatted_number(invoice_number))
+    return jsonify(get_formatted_number(application_modules.get_options().invoice_prefix, invoice_number))
 
 
 @app.route('/new_proposal_number')
@@ -221,7 +221,7 @@ def new_proposal_number():
             f'An unexpected error occurred while trying to retrieve a new proposal number. Details {e}')
         return jsonify(0)
 
-    return jsonify(get_formatted_number(proposal_number))
+    return jsonify(get_formatted_number(application_modules.get_options().proposal_prefix, proposal_number))
 
 
 @app.route('/generate_invoice', methods=['POST'])
@@ -488,6 +488,13 @@ def list_past_invoices():
     return jsonify(json_invoices)
 
 
+@app.route('/past_invoices_count')
+def past_invoices_count():
+    invoices = Invoice.query.filter(Invoice.paid == True).all()
+
+    return jsonify(len(invoices))
+
+
 @app.route('/proposals')
 def list_proposals():
     proposals = Proposal.query.all()
@@ -510,6 +517,13 @@ def list_past_proposals():
     json_proposals = [proposal.to_dict() for proposal in proposals]
 
     return jsonify(json_proposals)
+
+
+@app.route('/past_proposals_count')
+def past_proposals_count():
+    proposals = Proposal.query.filter(Proposal.accepted == True).all()
+
+    return jsonify(len(proposals))
 
 
 @app.route('/mark_invoice_paid', methods=['POST'])
@@ -548,7 +562,7 @@ def mark_proposal_accepted():
     return jsonify(False)
 
 
-def get_formatted_number(sequence_number):
+def get_formatted_number(prefix, sequence_number):
     # Get the current year
     current_year = datetime.now().year
 
@@ -556,6 +570,6 @@ def get_formatted_number(sequence_number):
     sequence_str = f'{sequence_number:05d}'
 
     # Concatenate year and sequence number
-    formatted_number = f'{current_year}{sequence_str}'
+    formatted_number = f'{prefix}{current_year}{sequence_str}'
 
     return formatted_number

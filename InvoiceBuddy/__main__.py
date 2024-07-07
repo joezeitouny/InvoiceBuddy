@@ -47,9 +47,11 @@ if __name__ == '__main__':
             options.web_port = data['web_application']['web_port']
             options.log_module = utils.try_parse_bool(data['log']['log_module'])
             options.log_level = data['log']['log_level']
+            options.invoice_prefix = data['invoice']['invoice_prefix']
             options.invoice_number = utils.try_parse_int(data['invoice']['invoice_number'])
             options.invoice_valid_for_days = utils.try_parse_int(data['invoice']['invoice_valid_for_days'])
             options.invoice_terms_and_conditions = data['invoice']['invoice_terms_and_conditions']
+            options.proposal_prefix = data['proposal']['proposal_prefix']
             options.proposal_number = utils.try_parse_int(data['proposal']['proposal_number'])
             options.proposal_valid_for_days = utils.try_parse_int(data['proposal']['proposal_valid_for_days'])
             options.proposal_terms_and_conditions = data['proposal']['proposal_terms_and_conditions']
