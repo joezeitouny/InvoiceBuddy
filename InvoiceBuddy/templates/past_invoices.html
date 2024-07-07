@@ -70,7 +70,7 @@ function refreshData(page) {
                     } else if (values.status == 2) {
                         cell8.innerHTML = 'Canceled';
                     }
-                    cell9.innerHTML = `<button type="button" class="btn btn-primary view-invoice-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">View</button>`;
+                    cell9.innerHTML = `<button type="button" class="btn btn-primary view-invoice-button me-1" data-id="${values.id}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button" data-id="${values.id}"><i class="bi bi-printer"></i></button>`;
             }
 
             // Handle view invoice button clicks
@@ -78,6 +78,13 @@ function refreshData(page) {
                 const invoice_id = $(this).data('id');
 
                 loadNewTabWithInvoiceID(invoice_id, false);
+            });
+
+            // Handle print invoice button clicks
+            $('.print-invoice-button').on('click', function () {
+                const invoice_id = $(this).data('id');
+
+                loadNewTabWithInvoiceID(invoice_id, true);
             });
 
             pagination.empty();

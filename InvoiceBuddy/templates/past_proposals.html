@@ -70,7 +70,7 @@ function refreshData(page) {
                     } else if (values.status == 2) {
                         cell8.innerHTML = 'Rejected';
                     }
-                    cell9.innerHTML = `<button type="button" class="btn btn-primary view-proposal-button" data-id="${values.id}" data-proposal-number="${values.proposal_number}">View</button>`;
+                    cell9.innerHTML = `<button type="button" class="btn btn-primary view-proposal-button me-1" data-id="${values.id}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button" data-id="${values.id}"><i class="bi bi-printer"></i></button>`;
             }
 
             // Handle view proposal button clicks
@@ -78,6 +78,13 @@ function refreshData(page) {
                 const proposal_id = $(this).data('id');
 
                 loadNewTabWithProposalID(proposal_id, false);
+            });
+
+            // Handle print proposal button clicks
+            $('.print-proposal-button').on('click', function () {
+                const proposal_id = $(this).data('id');
+
+                loadNewTabWithProposalID(proposal_id, true);
             });
 
             pagination.empty();
