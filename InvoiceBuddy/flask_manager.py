@@ -25,7 +25,6 @@ class Invoice(db.Model):
     description = db.Column(db.Text, nullable=False)
     items = db.Column(db.Text, nullable=False)  # Store items as JSON
     total_amount = db.Column(db.Float, nullable=False)
-    seller_logo_path = db.Column(db.String(255), nullable=False)
     seller_name = db.Column(db.String(100), nullable=False)
     seller_address = db.Column(db.String(100), nullable=False)
     seller_country = db.Column(db.String(100), nullable=False)
@@ -50,7 +49,6 @@ class Invoice(db.Model):
             description=self.description,
             items=json.loads(self.items),
             total_amount=self.total_amount,
-            seller_logo_path=self.seller_logo_path,
             seller_name=self.seller_name,
             seller_address=self.seller_address,
             seller_country=self.seller_country,
@@ -76,7 +74,6 @@ class Proposal(db.Model):
     description = db.Column(db.Text, nullable=False)
     items = db.Column(db.Text, nullable=False)  # Store items as JSON
     total_amount = db.Column(db.Float, nullable=False)
-    seller_logo_path = db.Column(db.String(255), nullable=False)
     seller_name = db.Column(db.String(100), nullable=False)
     seller_address = db.Column(db.String(100), nullable=False)
     seller_country = db.Column(db.String(100), nullable=False)
@@ -101,7 +98,6 @@ class Proposal(db.Model):
             description=self.description,
             items=json.loads(self.items),
             total_amount=self.total_amount,
-            seller_logo_path=self.seller_logo_path,
             seller_name=self.seller_name,
             seller_address=self.seller_address,
             seller_country=self.seller_country,
@@ -242,7 +238,6 @@ def generate_invoice():
             'description': request.form['description'],
             'items': items,
             'total_amount': total_amount,
-            'seller_logo_path': application_modules.get_options().seller_logo_path,
             'seller_name': application_modules.get_options().seller_name,
             'seller_address': application_modules.get_options().seller_address,
             'seller_country': application_modules.get_options().seller_country,
@@ -265,7 +260,6 @@ def generate_invoice():
             description=invoice_data['description'],
             items=json.dumps(items),
             total_amount=total_amount,
-            seller_logo_path=invoice_data['seller_logo_path'],
             seller_name=invoice_data['seller_name'],
             seller_address=invoice_data['seller_address'],
             seller_country=invoice_data['seller_country'],
@@ -326,7 +320,6 @@ def generate_proposal():
             'description': request.form['description'],
             'items': items,
             'total_amount': total_amount,
-            'seller_logo_path': application_modules.get_options().seller_logo_path,
             'seller_name': application_modules.get_options().seller_name,
             'seller_address': application_modules.get_options().seller_address,
             'seller_country': application_modules.get_options().seller_country,
@@ -349,7 +342,6 @@ def generate_proposal():
             description=proposal_data['description'],
             items=json.dumps(items),
             total_amount=total_amount,
-            seller_logo_path=proposal_data['seller_logo_path'],
             seller_name=proposal_data['seller_name'],
             seller_address=proposal_data['seller_address'],
             seller_country=proposal_data['seller_country'],
@@ -410,7 +402,6 @@ def view_invoice():
             'description': invoice.description,
             'items': json.loads(invoice.items),
             'total_amount': "{:.2f}".format(invoice.total_amount),
-            'seller_logo_path': invoice.seller_logo_path,
             'seller_name': invoice.seller_name,
             'seller_address': invoice.seller_address,
             'seller_country': invoice.seller_country,
@@ -446,7 +437,6 @@ def view_proposal():
             'description': proposal.description,
             'items': json.loads(proposal.items),
             'total_amount': "{:.2f}".format(proposal.total_amount),
-            'seller_logo_path': proposal.seller_logo_path,
             'seller_name': proposal.seller_name,
             'seller_address': proposal.seller_address,
             'seller_country': proposal.seller_country,
