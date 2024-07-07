@@ -78,11 +78,14 @@
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-light" href="/past_invoices">Past Invoices (<span
+                            <a class="nav-link text-light" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/view_past_invoices">Past Invoices (<span
                                     id="past_invoices_count"></span>)</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" href="/past_proposals">Past Proposals (<span
+                            <a class="nav-link text-light" href="/view_past_proposals">Past Proposals (<span
                                     id="past_proposals_count"></span>)</a>
                         </li>
                     </ul>
@@ -163,6 +166,38 @@
             }
         }
     });
+
+    function loadNewTabWithInvoiceID(invoice_id, show_print_dialog) {
+        var url = '/view_invoice?invoice_id=' + encodeURIComponent(invoice_id);
+
+        if (show_print_dialog) {
+            url += '&show_print_dialog'
+        }
+
+        // Load the invoice with the specified number in a new tab
+        let newTab = window.open(url, '_blank');
+
+        // Check if the new tab was successfully opened and focus on it.
+        if (newTab) {
+            newTab.focus();
+        }
+    }
+
+    function loadNewTabWithProposalID(proposal_id, show_print_dialog) {
+        var url = '/view_proposal?proposal_id=' + encodeURIComponent(proposal_id);
+
+        if (show_print_dialog) {
+            url += '&show_print_dialog'
+        }
+
+        // Load the invoice with the specified number in a new tab
+        let newTab = window.open(url, '_blank');
+
+        // Check if the new tab was successfully opened and focus on it.
+        if (newTab) {
+            newTab.focus();
+        }
+    }
 </script>
 
 </body>

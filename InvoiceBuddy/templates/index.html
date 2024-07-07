@@ -287,7 +287,6 @@
         <table class="table table-striped" id="active_invoices_table">
             <thead class="thead-light">
             <tr>
-                <th scope="col">ID</th>
                 <th scope="col">Number</th>
                 <th scope="col">Date</th>
                 <th scope="col">Due Date</th>
@@ -303,7 +302,7 @@
             </tbody>
             <tfoot style="border-top-width: thick;border-bottom-width: thick;">
             <tr>
-                <td colspan="7"><b>Totals</b></td>
+                <td colspan="6"><b>Totals</b></td>
                 <td><strong id="active_invoices_total_amount_value">0 {{ currency_name }}</strong></td>
             </tr>
             </tfoot>
@@ -317,7 +316,6 @@
         <table class="table table-striped" id="active_proposals_table">
             <thead class="thead-light">
             <tr>
-                <th scope="col">ID</th>
                 <th scope="col">Number</th>
                 <th scope="col">Date</th>
                 <th scope="col">Due Date</th>
@@ -333,7 +331,7 @@
             </tbody>
             <tfoot style="border-top-width: thick;border-bottom-width: thick;">
             <tr>
-                <td colspan="7"><b>Totals</b></td>
+                <td colspan="6"><b>Totals</b></td>
                 <td><strong id="active_proposals_total_amount_value">0 {{ currency_name }}</strong></td>
             </tr>
             </tfoot>
@@ -398,38 +396,6 @@
         firstRow.find('input[type="text"]').val('');
         firstRow.find('input[name="quantity[]"]').val('1');
         firstRow.find('input[name="price[]"]').val('0');
-    }
-
-    function loadNewTabWithInvoiceID(invoice_id, show_print_dialog) {
-        var url = '/view_invoice?invoice_id=' + encodeURIComponent(invoice_id);
-
-        if (show_print_dialog) {
-            url += '&show_print_dialog'
-        }
-
-        // Load the invoice with the specified number in a new tab
-        let newTab = window.open(url, '_blank');
-
-        // Check if the new tab was successfully opened and focus on it.
-        if (newTab) {
-            newTab.focus();
-        }
-    }
-
-    function loadNewTabWithProposalID(proposal_id, show_print_dialog) {
-        var url = '/view_proposal?proposal_id=' + encodeURIComponent(proposal_id);
-
-        if (show_print_dialog) {
-            url += '&show_print_dialog'
-        }
-
-        // Load the invoice with the specified number in a new tab
-        let newTab = window.open(url, '_blank');
-
-        // Check if the new tab was successfully opened and focus on it.
-        if (newTab) {
-            newTab.focus();
-        }
     }
 
     function generateInvoice() {
@@ -561,17 +527,15 @@
                         const cell6 = row.insertCell(5);
                         const cell7 = row.insertCell(6);
                         const cell8 = row.insertCell(7);
-                        const cell9 = row.insertCell(8);
 
-                        cell1.innerHTML = values.id;
-                        cell2.innerHTML = values.invoice_number;
-                        cell3.innerHTML = values.invoice_date;
-                        cell4.innerHTML = values.due_date;
-                        cell5.innerHTML = values.reference_number;
-                        cell6.innerHTML = values.customer_name;
-                        cell7.innerHTML = values.description;
-                        cell8.innerHTML = values.total_amount;
-                        cell9.innerHTML = `<button type="button" class="btn btn-success mark-paid-button mx-1" data-id="${values.id}" data-invoice-number="${values.invoice_number}">Mark as paid</button><button type="button" class="btn btn-primary view-invoice-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">View</button>`;
+                        cell1.innerHTML = values.invoice_number;
+                        cell2.innerHTML = values.invoice_date;
+                        cell3.innerHTML = values.due_date;
+                        cell4.innerHTML = values.reference_number;
+                        cell5.innerHTML = values.customer_name;
+                        cell6.innerHTML = values.description;
+                        cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
+                        cell8.innerHTML = `<button type="button" class="btn btn-success mark-paid-button mx-1" data-id="${values.id}" data-invoice-number="${values.invoice_number}">Mark as paid</button><button type="button" class="btn btn-primary view-invoice-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">View</button>`;
 
                         activeInvoicesTotalAmount += values.total_amount;
                 }
@@ -633,17 +597,15 @@
                         const cell6 = row.insertCell(5);
                         const cell7 = row.insertCell(6);
                         const cell8 = row.insertCell(7);
-                        const cell9 = row.insertCell(8);
 
-                        cell1.innerHTML = values.id;
-                        cell2.innerHTML = values.proposal_number;
-                        cell3.innerHTML = values.proposal_date;
-                        cell4.innerHTML = values.due_date;
-                        cell5.innerHTML = values.reference_number;
-                        cell6.innerHTML = values.customer_name;
-                        cell7.innerHTML = values.description;
-                        cell8.innerHTML = values.total_amount;
-                        cell9.innerHTML = `<button type="button" class="btn btn-success mark-accepted-button mx-1" data-proposal-number="${values.proposal_number}">Mark as accepted</button><button type="button" class="btn btn-primary view-proposal-button" data-id="${values.id}" data-proposal-number="${values.proposal_number}">View</button>`;
+                        cell1.innerHTML = values.proposal_number;
+                        cell2.innerHTML = values.proposal_date;
+                        cell3.innerHTML = values.due_date;
+                        cell4.innerHTML = values.reference_number;
+                        cell5.innerHTML = values.customer_name;
+                        cell6.innerHTML = values.description;
+                        cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
+                        cell8.innerHTML = `<button type="button" class="btn btn-success mark-accepted-button mx-1" data-proposal-number="${values.proposal_number}">Mark as accepted</button><button type="button" class="btn btn-primary view-proposal-button" data-id="${values.id}" data-proposal-number="${values.proposal_number}">View</button>`;
 
                         activeProposalsTotalAmount += values.total_amount;
                 }

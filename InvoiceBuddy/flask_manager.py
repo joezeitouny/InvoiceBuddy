@@ -1,3 +1,4 @@
+import math
 import time
 import webbrowser
 from flask import render_template, request, jsonify
@@ -470,12 +471,44 @@ def list_active_invoices():
     return jsonify(json_invoices)
 
 
+@app.route('/view_past_invoices')
+def view_past_invoices():
+    # Get application name and version
+    application_name = utils.get_application_name()
+    application_version = utils.get_application_version()
+    invoice_valid_for_days = application_modules.get_options().invoice_valid_for_days
+    proposal_valid_for_days = application_modules.get_options().proposal_valid_for_days
+    currency_symbol = application_modules.get_options().currency_symbol
+    currency_name = application_modules.get_options().currency_name
+
+    return render_template('past_invoices.html', application_name=application_name,
+                           application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
+                           proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol,
+                           currency_name=currency_name)
+
+
 @app.route('/past_invoices')
 def list_past_invoices():
-    invoices = Invoice.query.filter(Invoice.paid == True).all()
-    json_invoices = [invoice.to_dict() for invoice in invoices]
+    page = int(request.args.get('page', 1))
+    items_per_page = globals.PAST_INVOICES_TABLE_ITEMS_PER_PAGE
 
-    return jsonify(json_invoices)
+    start_idx = (page - 1) * items_per_page
+    end_idx = start_idx + items_per_page
+
+    invoices = Invoice.query.filter(Invoice.paid == True).all()
+    paginated_data = [invoice.to_dict() for invoice in invoices[start_idx:end_idx]]
+
+    total_number_of_pages = math.floor(len(invoices) / items_per_page)
+    if len(invoices) % items_per_page != 0:
+        total_number_of_pages += 1
+
+    total_number_of_invoices = len(invoices)
+
+    data = {'past_invoices': paginated_data,
+            'total_number_of_pages': total_number_of_pages,
+            'total_number_of_invoices': total_number_of_invoices}
+
+    return jsonify(data)
 
 
 @app.route('/past_invoices_count')
@@ -501,12 +534,44 @@ def list_active_proposals():
     return jsonify(json_proposals)
 
 
+@app.route('/view_past_proposals')
+def view_past_proposals():
+    # Get application name and version
+    application_name = utils.get_application_name()
+    application_version = utils.get_application_version()
+    invoice_valid_for_days = application_modules.get_options().invoice_valid_for_days
+    proposal_valid_for_days = application_modules.get_options().proposal_valid_for_days
+    currency_symbol = application_modules.get_options().currency_symbol
+    currency_name = application_modules.get_options().currency_name
+
+    return render_template('past_proposals.html', application_name=application_name,
+                           application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
+                           proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol,
+                           currency_name=currency_name)
+
+
 @app.route('/past_proposals')
 def list_past_proposals():
-    proposals = Proposal.query.filter(Proposal.accepted == True).all()
-    json_proposals = [proposal.to_dict() for proposal in proposals]
+    page = int(request.args.get('page', 1))
+    items_per_page = globals.PAST_PROPOSALS_TABLE_ITEMS_PER_PAGE
 
-    return jsonify(json_proposals)
+    start_idx = (page - 1) * items_per_page
+    end_idx = start_idx + items_per_page
+
+    proposals = Proposal.query.filter(Proposal.accepted == True).all()
+    paginated_data = [proposal.to_dict() for proposal in proposals[start_idx:end_idx]]
+
+    total_number_of_pages = math.floor(len(proposals) / items_per_page)
+    if len(proposals) % items_per_page != 0:
+        total_number_of_pages += 1
+
+    total_number_of_proposals = len(proposals)
+
+    data = {'past_proposals': paginated_data,
+            'total_number_of_pages': total_number_of_pages,
+            'total_number_of_proposals': total_number_of_proposals}
+
+    return jsonify(data)
 
 
 @app.route('/past_proposals_count')
