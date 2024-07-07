@@ -292,6 +292,7 @@
                 <th scope="col">Due Date</th>
                 <th scope="col">Reference Number</th>
                 <th scope="col">Customer Name</th>
+                <th scope="col">Description</th>
                 <th scope="col">Total Amount</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -320,6 +321,7 @@
                 <th scope="col">Due Date</th>
                 <th scope="col">Reference Number</th>
                 <th scope="col">Customer Name</th>
+                <th scope="col">Description</th>
                 <th scope="col">Total Amount</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -465,7 +467,9 @@
                     // hide the create invoice form
                     $('#new_invoice_modal').modal('hide');
 
-                    // Call the function with your desired source code.
+                    refreshData();
+
+                    // show the newly created invoice
                     loadNewTabWithInvoiceID(invoice_id, true);
                 }
             },
@@ -513,7 +517,9 @@
                     // hide the create invoice form
                     $('#new_proposal_modal').modal('hide');
 
-                    // Call the function with your desired source code.
+                    refreshData();
+
+                    // show the newly created proposal
                     loadNewTabWithProposalID(proposal_id, true);
                 }
             },
@@ -552,14 +558,16 @@
                         const cell5 = row.insertCell(4);
                         const cell6 = row.insertCell(5);
                         const cell7 = row.insertCell(6);
+                        const cell8 = row.insertCell(7);
 
                         cell1.innerHTML = values.invoice_number;
                         cell2.innerHTML = values.invoice_date;
                         cell3.innerHTML = values.due_date;
                         cell4.innerHTML = values.reference_number;
                         cell5.innerHTML = values.customer_name;
-                        cell6.innerHTML = values.total_amount;
-                        cell7.innerHTML = `<button type="button" class="btn btn-primary mark-paid-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">Mark as paid</button>`;
+                        cell6.innerHTML = values.description;
+                        cell7.innerHTML = values.total_amount;
+                        cell8.innerHTML = `<button type="button" class="btn btn-primary mark-paid-button" data-id="${values.id}" data-invoice-number="${values.invoice_number}">Mark as paid</button>`;
 
                         activeInvoicesTotalAmount += values.total_amount;
                 }
@@ -613,14 +621,16 @@
                         const cell5 = row.insertCell(4);
                         const cell6 = row.insertCell(5);
                         const cell7 = row.insertCell(6);
+                        const cell8 = row.insertCell(7);
 
                         cell1.innerHTML = values.proposal_number;
                         cell2.innerHTML = values.proposal_date;
                         cell3.innerHTML = values.due_date;
                         cell4.innerHTML = values.reference_number;
                         cell5.innerHTML = values.customer_name;
-                        cell6.innerHTML = values.total_amount;
-                        cell7.innerHTML = `<button type="button" class="btn btn-primary mark-accepted-button" data-proposal-number="${values.proposal_number}">Mark as accepted</button>`;
+                        cell6.innerHTML = values.description;
+                        cell7.innerHTML = values.total_amount;
+                        cell8.innerHTML = `<button type="button" class="btn btn-primary mark-accepted-button" data-proposal-number="${values.proposal_number}">Mark as accepted</button>`;
 
                         activeProposalsTotalAmount += values.total_amount;
                 }
