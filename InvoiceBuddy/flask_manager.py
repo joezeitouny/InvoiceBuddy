@@ -380,20 +380,30 @@ def download_invoice(invoice_id):
     return send_file(invoice.pdf_path, as_attachment=True)
 
 
-@app.route('/toggle_paid/<int:invoice_id>')
-def toggle_paid(invoice_id):
-    invoice = Invoice.query.get_or_404(invoice_id)
-    invoice.paid = not invoice.paid
-    db.session.commit()
-    return redirect(url_for('list_invoices'))
+@app.route('/mark_invoice_paid', methods=['POST'])
+def mark_invoice_paid():
+    if request.method == 'POST':
+        try:
+            invoice_number = request.form['invoice_number']
+            invoice = Invoice.query.filter(Invoice.invoice_number == invoice_number).first()
+            invoice.paid = True
+            db.session.commit()
+
+            return jsonify(True)
+        except Exception as e:
+            application_modules.get_log_manager().warning(
+                f"Exception occurred while trying to mark invoice as paid. Details: {e}")
+            return jsonify(False)
+
+    return jsonify(False)
 
 
-@app.route('/toggle_accepted/<int:proposal_id>')
-def toggle_accepted(proposal_id):
-    proposal = Proposal.query.get_or_404(proposal_id)
-    proposal.accepted = not proposal.accepted
+@app.route('/mark_proposal_accepted/<string:proposal_number>')
+def mark_proposal_accepted(proposal_number):
+    proposal = Proposal.query.filter(Proposal.proposal_number == proposal_number).all()
+    proposal.accepted = True
     db.session.commit()
-    return redirect(url_for('list_proposals'))
+    return jsonify(True)
 
 
 def get_formatted_number(sequence_number):
