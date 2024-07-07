@@ -3,7 +3,7 @@ import time
 import webbrowser
 from flask import render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
 from rich.console import Console
 import json
 
@@ -604,8 +604,34 @@ def mark_proposal_accepted():
     if request.method == 'POST':
         try:
             proposal_number = request.form['proposal_number']
-            proposal = Invoice.query.filter(Proposal.proposal_number == proposal_number).first()
+            proposal = Proposal.query.filter(Proposal.proposal_number == proposal_number).first()
             proposal.accepted = True
+
+            # create a new invoice from the accepted proposal
+            invoice_number = new_invoice_number()
+            new_invoice = Invoice(
+                invoice_number=invoice_number.json,
+                invoice_date=datetime.now(),
+                due_date=datetime.now() + timedelta(days=application_modules.get_options().invoice_valid_for_days),
+                customer_name=proposal.customer_name,
+                reference_number=proposal.reference_number,
+                description=proposal.description,
+                items=proposal.items,
+                total_amount=proposal.total_amount,
+                seller_name=proposal.seller_name,
+                seller_address=proposal.seller_address,
+                seller_country=proposal.seller_country,
+                seller_phone=proposal.seller_phone,
+                seller_email=proposal.seller_email,
+                seller_iban=proposal.seller_iban,
+                seller_bic=proposal.seller_bic,
+                seller_paypal_address=proposal.seller_paypal_address,
+                currency_symbol=proposal.currency_symbol,
+                currency_name=proposal.currency_name,
+                invoice_terms_and_conditions=application_modules.get_options().invoice_terms_and_conditions,
+                paid=False
+            )
+            db.session.add(new_invoice)
             db.session.commit()
 
             return jsonify(True)
