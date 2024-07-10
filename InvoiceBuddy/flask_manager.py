@@ -192,7 +192,7 @@ def upload_seller_logo():
         file = request.files['seller_logo']
 
         current_dir = os.getcwd()
-        resulting_path = os.path.join(current_dir, "static", "seller_logo.png")
+        resulting_path = os.path.join(current_dir, "static", "seller-logo.png")
 
         if file:
             try:
