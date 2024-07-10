@@ -1,11 +1,12 @@
 import math
 import time
 import webbrowser
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, send_file
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from rich.console import Console
 import json
+import os
 
 from InvoiceBuddy import app
 from InvoiceBuddy import globals, utils
@@ -169,6 +170,39 @@ def index():
                            application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
                            proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol,
                            currency_name=currency_name)
+
+
+@app.route('/upload_config', methods=['POST'])
+def upload_config():
+    if 'config_file' in request.files:
+        file = request.files['config_file']
+        if file and is_json_file(file.filename):
+            try:
+                file.save(application_modules.get_options().configuration_path)
+                # Store the uploaded JSON file on your server
+                return 'System configuration updated successfully!'
+            except Exception as e:
+                return f'Error while trying to update the configuration on the server. Details: {e}'
+    return 'Invalid file type'
+
+
+@app.route('/upload_seller_logo', methods=['POST'])
+def upload_seller_logo():
+    if 'seller_logo' in request.files:
+        file = request.files['seller_logo']
+
+        current_dir = os.getcwd()
+        resulting_path = os.path.join(current_dir, "static", "seller_logo.png")
+
+        if file:
+            try:
+                file.save(resulting_path)
+                # Store the uploaded JSON file on your server
+                return 'Seller logo successfully updated!'
+            except Exception as e:
+                return f'Error while trying to update the seller logo on the server. Details: {e}'
+
+    return 'Invalid file type'
 
 
 @app.route('/new_invoice_number')
@@ -685,6 +719,19 @@ def mark_proposal_accepted():
     return jsonify(False)
 
 
+@app.route('/seller_logo')
+def seller_logo():
+    pass
+    # # Assuming 'get_image_data' is a function that retrieves the image data.
+    # image_data = get_image_data(image_id)
+    #
+    # return send_file(
+    #     make_response(image_data),
+    #     attachment_filename='my_image.jpg',
+    #     mimetype='jpg'
+    # )
+
+
 def get_formatted_number(prefix, sequence_number):
     # Get the current year
     current_year = datetime.now().year
@@ -696,3 +743,8 @@ def get_formatted_number(prefix, sequence_number):
     formatted_number = f'{prefix}{current_year}{sequence_str}'
 
     return formatted_number
+
+
+def is_json_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() == 'json'

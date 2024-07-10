@@ -39,16 +39,30 @@
                     <div class="row mb-2">
                         <div id="system_configuration_card" class="card border">
                             <div class="card-body p-0">
-                                <h5 class="card-title">System Configuration</h5>
                                 <form action="/upload_config" method="POST" enctype="multipart/form-data">
-                                    <div class="container d-flex p-1 align-items-center">
-                                        <div class="col-9 col-sm-10">
-                                            <input type="file" name="config_file" accept=".json">
-                                        </div>
-                                        <div class="col-2">
-                                            <button type="submit" class="btn btn-primary">Upload</button>
-                                        </div>
+                                    <h5 class="card-title">System Configuration</h5>
+                                    <div class="mb-2">
+                                    <label for="configFormFile" class="form-label">Upload JSON configuration
+                                        file</label>
+                                    <input class="form-control" type="file" id="configFormFile" name="config_file" accept=".json">
                                     </div>
+
+                                    <button type="submit" class="btn btn-primary mb-1">Upload Configuration</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div id="seller_logo_card" class="card border">
+                            <div class="card-body p-0">
+                                <form action="/upload_seller_logo" method="POST" enctype="multipart/form-data">
+                                    <h5 class="card-title">Seller Logo</h5>
+                                    <div class="mb-2">
+                                    <label for="sellerLogoFormFile" class="form-label">Upload new logo</label>
+                                    <input class="form-control" type="file" id="sellerLogoFormFile" name="seller_logo" accept="image/*">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary mb-1">Upload Logo</button>
                                 </form>
                             </div>
                         </div>
