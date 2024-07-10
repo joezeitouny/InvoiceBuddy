@@ -144,20 +144,27 @@
     <div class="container-fluid mx-4">
         <div class="row p-0">
             <div class="col p-0">
-                <div class="row">
+                <div class="row align-items-center">
                     <div class="col-auto">
-                        <strong>IBAN:</strong>
+                        <img src="/static/seller-qr-code.png" alt="Seller QR Code" style="width:80px; height:80px">
                     </div>
                     <div class="col">
-                        {{ seller_iban }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-auto">
-                        <strong>BIC / SWIFT Code:</strong>
-                    </div>
-                    <div class="col">
-                        {{ seller_bic }}
+                        <div class="row">
+                            <div class="col-auto">
+                                <strong>IBAN:</strong>
+                            </div>
+                            <div class="col">
+                                {{ seller_iban }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <strong>BIC / SWIFT Code:</strong>
+                            </div>
+                            <div class="col">
+                                {{ seller_bic }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from rich.console import Console
 import json
 import os
+import qrcode
 
 from InvoiceBuddy import app
 from InvoiceBuddy import globals, utils
@@ -429,6 +430,10 @@ def view_invoice():
         if not request.args.get('show_print_dialog') is None:
             show_print_dialog = True
         invoice = Invoice.query.get_or_404(invoice_id)
+
+        img = qrcode.make(invoice.seller_iban)
+        type(img)  # qrcode.image.pil.PilImage
+        img.save(os.path.join("static", "seller-qr-code.png"))
 
         invoice_data = {
             'invoice_number': invoice.invoice_number,
