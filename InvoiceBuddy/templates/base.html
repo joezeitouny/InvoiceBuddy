@@ -167,48 +167,57 @@
              xmlns="http://www.w3.org/1999/html">
             <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
                 <div class="modal-content">
-                    <div class="modal-header bg-success text-light">
-                        <h5 class="modal-title">New Item</h5>
-                    </div>
-                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                        <div class="container border rounded-1 p-1">
-                            <div class="row">
-                                <div class="col-auto">
-                                    <label class="form-label" for="new_item_title">Title</label>
-                                </div>
-                                <div class="col">
-                                    <input id="new_item_title" class="form-control p-0" type="text"
-                                           placeholder="Item title" name="title" required><br>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <label class="form-label" for="new_item_description">Description</label>
-                                </div>
-                                <div class="col-12">
+                    <form id="add_item_form" class="needs-validation" novalidate>
+                        <div class="modal-header bg-success text-light">
+                            <h5 class="modal-title">New Item</h5>
+                        </div>
+                        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                            <div class="container border rounded-1 p-1">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="new_item_title">Title</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="new_item_title" class="form-control p-0" type="text"
+                                                   placeholder="Item title" name="title" required><br>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <label class="form-label" for="new_item_description">Description</label>
+                                        </div>
+                                        <div class="col-12">
                                 <textarea class="container form-control p-0" id="new_item_description"
-                                          name="description" rows="3" placeholder="Item description" required></textarea><br>
+                                          name="description" rows="3" placeholder="Item description"
+                                          required></textarea><br>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="new_item_price">Price</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="new_item_price" class="form-control p-0" type="number"
+                                                   placeholder="Item price" name="price" required><br>
+                                        </div>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid input.
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-auto">
-                                    <label class="form-label" for="new_item_price">Price</label>
-                                </div>
-                                <div class="col">
-                                    <input id="new_item_price" class="form-control p-0" type="number"
-                                           placeholder="Item price" name="price" required><br>
-                                </div>
+
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                onclick="$('#new_item_modal').modal('hide');">
-                            Close
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="addItem()">Add Item
-                        </button>
-                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                    onclick="$('#new_item_modal').modal('hide');">
+                                Close
+                            </button>
+                            <button type="submit" class="btn btn-primary" onclick="addItem()">Add Item
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -317,7 +326,9 @@
                         </div>
 
                         <button type="button" id="addInvoiceItem" class="btn btn-primary mb-3">Add item</button>
-                        <button type="button" id="populateInvoiceItems" class="btn btn-secondary mb-3">Add from template</button>
+                        <button type="button" id="populateInvoiceItems" class="btn btn-secondary mb-3">Add from
+                            template
+                        </button>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal"
@@ -549,6 +560,11 @@
 
     function showNewItemModal() {
         $('#new_item_modal').modal('show');
+
+        // clear up the form fields
+        $('#new_item_title').val('');
+        $('#new_item_description').val('');
+        $('#new_item_price').val('');
     }
 
     function showNewInvoiceModal() {
@@ -610,6 +626,10 @@
     }
 
     function addItem() {
+        form = document.getElementById('add_item_form');
+        if (!form.checkValidity())
+            return;
+
         $('#loading_modal').modal('show');
 
         $.ajax({
@@ -791,6 +811,22 @@
             $("#warning_notification").fadeOut();
         }, 5000);
     }
+
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            //if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            //}
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
 </script>
 
 </body>
