@@ -116,6 +116,21 @@ class Proposal(db.Model):
         )
 
 
+class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            title=self.title,
+            description=self.description,
+            price=self.price
+        )
+
+
 class ApplicationModules:
     def __init__(self, options, log_manager: LogManager):
         self._options = options
@@ -254,6 +269,27 @@ def new_proposal_number():
         return jsonify(0)
 
     return jsonify(get_formatted_number(application_modules.get_options().proposal_prefix, proposal_number))
+
+
+@app.route('/add_item', methods=['POST'])
+def add_item():
+    if request.method == 'POST':
+        item_data = {
+            'title': request.form['title'],
+            'description': request.form['description'],
+            'price': request.form['price']
+        }
+
+        new_item = Item(
+            title=item_data['title'],
+            description=item_data['description'],
+            price=item_data['price']
+        )
+
+        db.session.add(new_item)
+        db.session.commit()
+
+        return jsonify(new_item.id)
 
 
 @app.route('/generate_invoice', methods=['POST'])
@@ -624,6 +660,25 @@ def past_proposals_count():
     return jsonify(len(proposals))
 
 
+@app.route('/delete_item', methods=['POST'])
+def delete_item():
+    if request.method == 'POST':
+        try:
+            item_id = request.form['item_id']
+
+            item_to_delete = db.session.query(Item).filter_by(id=item_id).one()
+            db.session.delete(item_to_delete)
+            db.session.commit()
+
+            return jsonify(True)
+        except Exception as e:
+            application_modules.get_log_manager().warning(
+                f"Exception occurred while trying to delete item. Details: {e}")
+            return jsonify(False)
+
+    return jsonify(False)
+
+
 @app.route('/mark_invoice_canceled', methods=['POST'])
 def mark_invoice_canceled():
     if request.method == 'POST':
@@ -722,6 +777,46 @@ def mark_proposal_accepted():
             return jsonify(False)
 
     return jsonify(False)
+
+
+@app.route('/view_items')
+def view_items():
+    # Get application name and version
+    application_name = utils.get_application_name()
+    application_version = utils.get_application_version()
+    invoice_valid_for_days = application_modules.get_options().invoice_valid_for_days
+    proposal_valid_for_days = application_modules.get_options().proposal_valid_for_days
+    currency_symbol = application_modules.get_options().currency_symbol
+    currency_name = application_modules.get_options().currency_name
+
+    return render_template('items.html', application_name=application_name,
+                           application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
+                           proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol,
+                           currency_name=currency_name)
+
+
+@app.route('/items')
+def list_items():
+    page = int(request.args.get('page', 1))
+    items_per_page = globals.ITEMS_ITEMS_PER_PAGE
+
+    start_idx = (page - 1) * items_per_page
+    end_idx = start_idx + items_per_page
+
+    items = Item.query.all()
+    paginated_data = [item.to_dict() for item in items[start_idx:end_idx]]
+
+    total_number_of_pages = math.floor(len(items) / items_per_page)
+    if len(items) % items_per_page != 0:
+        total_number_of_pages += 1
+
+    total_number_of_invoices = len(items)
+
+    data = {'items': paginated_data,
+            'total_number_of_pages': total_number_of_pages,
+            'total_number_of_items': total_number_of_invoices}
+
+    return jsonify(data)
 
 
 @app.route('/seller_logo')

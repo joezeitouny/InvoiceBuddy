@@ -97,6 +97,9 @@
                             <a class="nav-link text-light" href="/">Home</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-light" href="/view_items">Items</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-light" href="/view_past_invoices">Past Invoices (<span
                                     id="past_invoices_count"></span>)</a>
                         </li>
@@ -111,6 +114,10 @@
                         <div class="col-auto p-1 me-2">
                             <div class="row px-0 mx-0">
                                 <span class="px-0 mx-0">
+                                    <button class="ms-2 btn btn-secondary" type="submit"
+                                            onclick="showNewItemModal()" style="font-size: 0.9rem;">
+                                            <span>New Item</span>
+                                    </button>
                                     <button class="ms-2 btn btn-warning" type="submit"
                                             onclick="showNewProposalModal()" style="font-size: 0.9rem;">
                                             <span>New Proposal</span>
@@ -151,6 +158,56 @@
                         <div class="spinner-border" role="status">
                         </div>
                         <h5 class="mt-2">Loading...</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="new_item_modal" tabindex="-1" class="modal fade" data-backdrop="static"
+             xmlns="http://www.w3.org/1999/html">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-light">
+                        <h5 class="modal-title">New Item</h5>
+                    </div>
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                        <div class="container border rounded-1 p-1">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label class="form-label" for="new_item_title">Title</label>
+                                </div>
+                                <div class="col">
+                                    <input id="new_item_title" class="form-control p-0" type="text"
+                                           placeholder="Item title" name="title" required><br>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label" for="new_item_description">Description</label>
+                                </div>
+                                <div class="col-12">
+                                <textarea class="container form-control p-0" id="new_item_description"
+                                          name="description" rows="3" placeholder="Item description" required></textarea><br>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label class="form-label" for="new_item_price">Price</label>
+                                </div>
+                                <div class="col">
+                                    <input id="new_item_price" class="form-control p-0" type="number"
+                                           placeholder="Item price" name="price" required><br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                onclick="$('#new_item_modal').modal('hide');">
+                            Close
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="addItem()">Add Item
+                        </button>
                     </div>
                 </div>
             </div>
@@ -259,7 +316,8 @@
                             </table>
                         </div>
 
-                        <button type="button" id="addInvoiceItem" class="btn btn-primary mb-3">Add Item</button>
+                        <button type="button" id="addInvoiceItem" class="btn btn-primary mb-3">Add item</button>
+                        <button type="button" id="populateInvoiceItems" class="btn btn-secondary mb-3">Add from template</button>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal"
@@ -489,6 +547,10 @@
         }
     }
 
+    function showNewItemModal() {
+        $('#new_item_modal').modal('show');
+    }
+
     function showNewInvoiceModal() {
         $('#loading_modal').modal('show');
 
@@ -545,6 +607,35 @@
         firstRow.find('input[type="text"]').val('');
         firstRow.find('input[name="quantity[]"]').val('1');
         firstRow.find('input[name="price[]"]').val('0');
+    }
+
+    function addItem() {
+        $('#loading_modal').modal('show');
+
+        $.ajax({
+            url: '/add_item',
+            method: 'POST',
+            data: {
+                title: $('#new_item_title').val(),
+                description: $('#new_item_description').val(),
+                price: $('#new_item_price').val()
+            },
+            success: function(item_id) {
+                $('#loading_modal').modal('hide');
+                if (!item_id)
+                    notify_warning('Error while creating a new item');
+                else {
+                    notify_success('New item successfully created!');
+
+                    // hide the create item form
+                    $('#new_item_modal').modal('hide');
+                }
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while creating a new item! Reason: ' + error);
+            }
+        });
     }
 
     function generateInvoice() {
