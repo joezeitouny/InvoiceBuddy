@@ -819,17 +819,12 @@ def list_items():
     return jsonify(data)
 
 
-@app.route('/seller_logo')
-def seller_logo():
-    pass
-    # # Assuming 'get_image_data' is a function that retrieves the image data.
-    # image_data = get_image_data(image_id)
-    #
-    # return send_file(
-    #     make_response(image_data),
-    #     attachment_filename='my_image.jpg',
-    #     mimetype='jpg'
-    # )
+@app.route('/get_items_data')
+def get_items_data():
+    items = Item.query.all()
+    json_items = [item.to_dict() for item in items]
+
+    return jsonify(json_items)
 
 
 def get_formatted_number(prefix, sequence_number):

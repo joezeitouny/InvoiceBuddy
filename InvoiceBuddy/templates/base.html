@@ -222,6 +222,9 @@
             </div>
         </div>
 
+        <datalist id="predefinedItems">
+        </datalist>
+
         <div id="new_invoice_modal" tabindex="-1" class="modal fade" data-backdrop="static"
              xmlns="http://www.w3.org/1999/html">
             <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
@@ -309,7 +312,8 @@
                                         </thead>
                                         <tbody id="invoiceItemsContainer">
                                         <tr class="invoiceItem">
-                                            <td class="col-4"><input type="text" class="form-control" name="title[]"
+                                            <td class="col-4"><input type="text" class="form-control"
+                                                                     list="predefinedItems" name="title[]"
                                                                      required>
                                             </td>
                                             <td class="col-5"><textarea class="form-control" name="description[]"
@@ -336,9 +340,6 @@
                             </div>
 
                             <button type="button" id="addInvoiceItem" class="btn btn-primary mb-3">Add item</button>
-                            <button type="button" id="populateInvoiceItems" class="btn btn-secondary mb-3">Add from
-                                template
-                            </button>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal"
@@ -440,7 +441,7 @@
                                         </thead>
                                         <tbody id="proposalItemsContainer">
                                         <tr class="proposalItem">
-                                            <td class="col-4"><input type="text" class="form-control" name="title[]"
+                                            <td class="col-4"><input type="text" class="form-control" list="predefinedItems" name="title[]"
                                                                      required>
                                             </td>
                                             <td class="col-5"><textarea class="form-control" name="description[]"
@@ -624,6 +625,27 @@
         firstRow.find('input[type="text"]').val('');
         firstRow.find('input[name="quantity[]"]').val('1');
         firstRow.find('input[name="price[]"]').val('0');
+
+        $.ajax({
+            type: 'GET',
+            url: '/get_items_data',
+            success: function(data) {
+                const datalist = document.getElementById('predefinedItems');
+
+                // Clear existing options
+                datalist.innerHTML = '';
+
+                // Add new options from the API response
+                data.forEach(item => {
+                  const option = document.createElement('option');
+                  option.value = item.title; // Adjust according to your API response structure
+                  datalist.appendChild(option);
+                });
+            },
+            error: function (error) {
+                notify_warning('Error while populating predefined items! Reason: ' + error);
+            }
+        });
     }
 
     function showNewProposalModal() {
@@ -661,6 +683,27 @@
         firstRow.find('input[type="text"]').val('');
         firstRow.find('input[name="quantity[]"]').val('1');
         firstRow.find('input[name="price[]"]').val('0');
+
+        $.ajax({
+            type: 'GET',
+            url: '/get_items_data',
+            success: function(data) {
+                const datalist = document.getElementById('predefinedItems');
+
+                // Clear existing options
+                datalist.innerHTML = '';
+
+                // Add new options from the API response
+                data.forEach(item => {
+                  const option = document.createElement('option');
+                  option.value = item.title; // Adjust according to your API response structure
+                  datalist.appendChild(option);
+                });
+            },
+            error: function (error) {
+                notify_warning('Error while populating predefined items! Reason: ' + error);
+            }
+        });
     }
 
     function addItem() {
