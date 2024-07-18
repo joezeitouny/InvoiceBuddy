@@ -501,6 +501,9 @@ def view_invoice():
             'show_print_dialog': show_print_dialog
         }
 
+        for item in invoice_data['items']:
+            item['description'] = item['description'].replace('\n', '<br>')
+
         return render_template('invoice_template.html', **invoice_data)
 
 
@@ -536,6 +539,9 @@ def view_proposal():
             'status': proposal.status,
             'show_print_dialog': show_print_dialog
         }
+
+        for item in proposal_data['items']:
+            item['description'] = item['description'].replace('\n', '<br>')
 
         return render_template('proposal_template.html', **proposal_data)
 
