@@ -1,3 +1,8 @@
+## 0.1.1 (2024-07-18)
+
+* Multilines are now better handled when viewing items
+* Version bump to 0.1.1
+
 ## 0.1.0 (2024-07-18)
 
 * Moved database storage to the tmp_path location
