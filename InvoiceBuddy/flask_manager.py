@@ -13,8 +13,6 @@ from InvoiceBuddy import app
 from InvoiceBuddy import globals, utils
 from InvoiceBuddy.log_manager import LogManager
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{globals.DATABASE_NAME}.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 

@@ -3,8 +3,7 @@ import logging
 import optparse
 import os
 
-from InvoiceBuddy import globals, utils
-from InvoiceBuddy.flask_manager import FlaskManager
+from InvoiceBuddy import globals, utils, app
 
 if __name__ == '__main__':
     # Create an options list using the Options Parser
@@ -79,4 +78,8 @@ if __name__ == '__main__':
         elif not options.web_port:
             print(f'Invalid argument: Web module requires port parameter to be provided')
         else:
+            resulting_path = os.path.join(options.tmp_path, f"{globals.DATABASE_NAME}.db")
+            app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{resulting_path}'
+            app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+            from InvoiceBuddy.flask_manager import FlaskManager
             FlaskManager(options)
