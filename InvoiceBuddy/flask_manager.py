@@ -818,6 +818,9 @@ def list_items():
     items = Item.query.all()
     paginated_data = [item.to_dict() for item in items[start_idx:end_idx]]
 
+    for item in paginated_data:
+        item['description'] = item['description'].replace('\n', '<br>')
+
     total_number_of_pages = math.floor(len(items) / items_per_page)
     if len(items) % items_per_page != 0:
         total_number_of_pages += 1
