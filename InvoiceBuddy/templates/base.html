@@ -305,14 +305,14 @@
                                         <tr>
                                             <th>Title</th>
                                             <th>Description</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
+                                            <th>Qty / Hrs</th>
+                                            <th>Price ({{ currency_symbol }})</th>
                                             <th></th>
                                         </tr>
                                         </thead>
                                         <tbody id="invoiceItemsContainer">
                                         <tr class="invoiceItem">
-                                            <td class="col-4"><input type="text" class="form-control"
+                                            <td class="col-4"><input type="text" class="form-control itemTitleInput"
                                                                      list="predefinedItems" name="title[]"
                                                                      required>
                                             </td>
@@ -434,14 +434,14 @@
                                         <tr>
                                             <th>Title</th>
                                             <th>Description</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
+                                            <th>Qty / Hrs</th>
+                                            <th>Price ({{ currency_symbol }})</th>
                                             <th></th>
                                         </tr>
                                         </thead>
                                         <tbody id="proposalItemsContainer">
                                         <tr class="proposalItem">
-                                            <td class="col-4"><input type="text" class="form-control" list="predefinedItems" name="title[]"
+                                            <td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]"
                                                                      required>
                                             </td>
                                             <td class="col-5"><textarea class="form-control" name="description[]"
@@ -514,12 +514,13 @@
     $(document).ready(function() {
         $('#addInvoiceItem').click(function() {
                 var newItem = $('<tr class="invoiceItem">' +
-                    '<td class="col-4"><input type="text" class="form-control" name="title[]" required></td>' +
+                    '<td class="col-4"><input type="text" class="form-control invoiceItemTitleInput" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
                     '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
                     '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
+                newItem.addEventListener('input', populateItemFields);
                 $('#invoiceItemsContainer').append(newItem);
         });
 
@@ -531,12 +532,22 @@
                     '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
+                newItem.addEventListener('input', populateItemFields);
                 $('#proposalItemsContainer').append(newItem);
         });
 
         $(document).on('click', '.removeItem', function() {
             $(this).closest('tr').remove();
         });
+
+        // Add event listener for selection
+        // Select all elements with the classname using querySelectorAll.
+        let elements = document.querySelectorAll('.itemTitleInput');
+
+        for(let i=0; i<elements.length; i++) {
+            // Add an event listener to each selected element.
+            elements[i].addEventListener('input', populateItemFields);
+        }
     });
 
     $(document).ajaxError(function( event, request, settings ) {
@@ -548,6 +559,25 @@
             }
         }
     });
+
+    function populateItemFields(e) {
+        const selectedValue = e.target.value;
+        if (selectedValue.trim() !== '') {
+          const options = document.getElementById('predefinedItems').options;
+          for (let i = 0; i < options.length; i++) {
+            if (options[i].value === selectedValue) {
+                trElement = e.target.parentNode.parentNode;
+                descriptionElement = trElement.querySelector('[name="description[]"]');
+                priceElement = trElement.querySelector('[name="price[]"]');
+
+                descriptionElement.value = options[i].description;
+                priceElement.value = options[i].price;
+
+                break;
+            }
+          }
+        }
+    }
 
     function loadNewTabWithInvoiceID(invoice_id, show_print_dialog) {
         var url = '/view_invoice?invoice_id=' + encodeURIComponent(invoice_id);
@@ -638,7 +668,10 @@
                 // Add new options from the API response
                 data.forEach(item => {
                   const option = document.createElement('option');
-                  option.value = item.title; // Adjust according to your API response structure
+                  option.id = item.id;
+                  option.value = item.title;
+                  option.description = item.description;
+                  option.price = item.price;
                   datalist.appendChild(option);
                 });
             },
@@ -696,7 +729,10 @@
                 // Add new options from the API response
                 data.forEach(item => {
                   const option = document.createElement('option');
-                  option.value = item.title; // Adjust according to your API response structure
+                  option.id = item.id;
+                  option.value = item.title;
+                  option.description = item.description;
+                  option.price = item.price;
                   datalist.appendChild(option);
                 });
             },
