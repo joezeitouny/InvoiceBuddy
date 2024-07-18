@@ -207,8 +207,12 @@ def upload_seller_logo():
     if 'seller_logo' in request.files:
         file = request.files['seller_logo']
 
-        current_dir = os.getcwd()
-        resulting_path = os.path.join(current_dir, "static", "seller-logo.png")
+        # Get the path of the static directory
+        static_folder_path = app.static_folder
+
+        # Get the absolute path
+        absolute_static_path = os.path.abspath(static_folder_path)
+        resulting_path = os.path.join(absolute_static_path, "seller-logo.png")
 
         if file:
             try:
@@ -468,8 +472,12 @@ def view_invoice():
         invoice = Invoice.query.get_or_404(invoice_id)
 
         img = qrcode.make(invoice.seller_iban)
-        type(img)  # qrcode.image.pil.PilImage
-        img.save(os.path.join("static", "seller-qr-code.png"))
+        # Get the path of the static directory
+        static_folder_path = app.static_folder
+
+        # Get the absolute path
+        absolute_static_path = os.path.abspath(static_folder_path)
+        img.save(os.path.join(absolute_static_path, "seller-qr-code.png"))
 
         invoice_data = {
             'invoice_number': invoice.invoice_number,
