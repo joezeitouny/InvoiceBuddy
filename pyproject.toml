@@ -8,7 +8,7 @@ version = "0.0.1"
 authors = [
     { name = "Joe Zeitouny", email = "joezeitouny@gmail.com" },
 ]
-description = "Helps with generating invoices and proposals for freelancers."
+description = "A tool to help with generating invoices and proposals for freelancers or small businesses."
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [

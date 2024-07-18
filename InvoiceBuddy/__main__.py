@@ -10,7 +10,8 @@ if __name__ == '__main__':
     # Create an options list using the Options Parser
     parser = optparse.OptionParser()
     parser.set_description(f'Version {globals.APPLICATION_VERSION}. '
-                           f'Helps with generating invoices and proposals for freelancers.')
+                           f'A tool to help with generating invoices and proposals for freelancers '
+                           f'or small businesses.')
     parser.set_usage(f'python3 -m {globals.APPLICATION_NAME} --config=CONFIGURATION_PATH')
     parser.add_option('--config', dest='configuration_path', type='string', help=f'Path to the configuration file')
 
