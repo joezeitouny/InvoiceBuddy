@@ -16,7 +16,7 @@
     "invoice_prefix": "INV",
     "invoice_number": 1,
     "invoice_valid_for_days": 5,
-    "invoice_terms_and_conditions": "Payment to be made within 5 days using the payment information below."
+    "invoice_terms_and_conditions": "Payment to be made within 5 days using one of the payment options below."
   },
   "proposal": {
     "proposal_prefix": "P",
