@@ -1,3 +1,12 @@
+## 0.1.2 (2024-07-19)
+
+* Added a confirmation modal for deleting items
+* Uploaded seller logo is now visible on the configuration screen
+* UI Layout improvements
+* Added form field validation to the edit item form
+* Added ability to update items
+* Version bump to 0.1.2
+
 ## 0.1.1 (2024-07-18)
 
 * Multilines are now better handled when viewing items
