@@ -1,6 +1,74 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div id="edit_item_modal" tabindex="-1" class="modal fade" data-backdrop="static"
+             xmlns="http://www.w3.org/1999/html">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
+                <div class="modal-content">
+                    <form id="add_item_form" class="needs-validation" novalidate>
+                        <div class="modal-header bg-success text-light">
+                            <h5 class="modal-title">Edit Item</h5>
+                        </div>
+                        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                            <div class="container border rounded-1 p-1">
+                                <div class="form-group">
+                                    <div class="row" style="visibility: hidden; display: none">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="edit_item_id">ID</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="edit_item_id" class="form-control p-0" type="text"
+                                                   placeholder="Item ID" name="id" disabled required><br>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="edit_item_title">Title</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="edit_item_title" class="form-control p-0" type="text"
+                                                   placeholder="Item title" name="title" required><br>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <label class="form-label" for="edit_item_description">Description</label>
+                                        </div>
+                                        <div class="col-12">
+                                <textarea class="container form-control p-0" id="edit_item_description"
+                                          name="description" rows="3" placeholder="Item description"
+                                          required></textarea><br>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="edit_item_price">Price</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="edit_item_price" class="form-control p-0" type="number"
+                                                   placeholder="Item price" name="price" required><br>
+                                        </div>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid input.
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                    onclick="$('#edit_item_modal').modal('hide');">
+                                Close
+                            </button>
+                            <button type="submit" class="btn btn-primary" onclick="updateItem()">Update Item
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 <div class="container mt-4">
     <h2>Items (<span id="items-count-header"></span>)</h2>
     <div class="table-responsive">
@@ -51,10 +119,20 @@ function refreshData(page) {
                     cell1.innerHTML = values.title;
                     cell2.innerHTML = values.description;
                     cell3.innerHTML = values.price + ' {{ currency_name }}';
-                    cell4.innerHTML = `<button type="button" class="btn btn-danger delete-item-button me-1" data-id="${values.id}"><i class="bi bi-trash"></i></button>`;
+                    cell4.innerHTML = `<button type="button" class="btn btn-primary edit-item-button me-1" data-id="${values.id}" data-title="${values.title}" data-description="${values.description}" data-price="${values.price}"><i class="bi bi-pencil-square"></i></button><button type="button" class="btn btn-danger delete-item-button me-1" data-id="${values.id}"><i class="bi bi-trash"></i></button>`;
             }
 
-            // Handle view invoice button clicks
+            // Handle edit item button clicks
+            $('.edit-item-button').on('click', function () {
+                $('#edit_item_id').val($(this).data('id'));
+                $('#edit_item_title').val($(this).data('title'));
+                $('#edit_item_description').val($(this).data('description').replace(/<br>/g, '\n'));
+                $('#edit_item_price').val($(this).data('price'));
+
+                $('#edit_item_modal').modal('show');
+            });
+
+            // Handle delete item button clicks
             $('.delete-item-button').on('click', function () {
                 const item_id = $(this).data('id');
 
@@ -125,6 +203,32 @@ function deleteItemWithID(itemID) {
         method: 'POST',
         data: {
             item_id: itemID
+        },
+        success: function(response) {
+            // hide the loading modal
+            $('#loading_modal').modal('hide');
+
+            refreshData(1);
+        },
+        error: function (error) {
+            $('#loading_modal').modal('hide');
+            notify_warning('Error while trying to delete the specified item! Reason: ' + error);
+        }
+    });
+}
+
+function updateItem() {
+    $('#edit_item_modal').modal('hide');
+    $('#loading_modal').modal('show');
+
+    $.ajax({
+        url: '/update_item',
+        method: 'POST',
+        data: {
+            item_id: $('#edit_item_id').val(),
+            title: $('#edit_item_title').val(),
+            description: $('#edit_item_description').val(),
+            price: $('#edit_item_price').val()
         },
         success: function(response) {
             // hide the loading modal

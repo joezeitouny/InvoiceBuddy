@@ -842,6 +842,32 @@ def get_items_data():
     return jsonify(json_items)
 
 
+@app.route('/update_item', methods=['POST'])
+def update_item():
+    if request.method == 'POST':
+        try:
+            item_id = request.form['item_id']
+            item_to_update = db.session.query(Item).filter(Item.id == item_id).first()
+
+            if item_to_update:
+                # Modify the attributes
+                item_to_update.title = request.form['title']
+                item_to_update.description = request.form['description']
+                item_to_update.price = request.form['price']
+
+                db.session.commit()
+
+                return jsonify(True)
+            else:
+                return jsonify(False)
+        except Exception as e:
+            application_modules.get_log_manager().warning(
+                f"Exception occurred while trying to update item. Details: {e}")
+            return jsonify(False)
+
+    return jsonify(False)
+
+
 def get_formatted_number(prefix, sequence_number):
     # Get the current year
     current_year = datetime.now().year
