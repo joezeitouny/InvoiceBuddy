@@ -70,6 +70,26 @@
     </div>
 </div>
 
+<div id="delete_item_modal" tabindex="-1" class="modal fade" data-backdrop="static" xmlns="http://www.w3.org/1999/html">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete selected item?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete item "<span id="deleteItemModalValue"></span>"?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#delete_item_modal').modal('hide');">Close</button>
+                <button type="button" onclick="deleteItem()" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container mt-4">
     <h2>Items (<span id="items-count-header"></span>)</h2>
     <div class="table-responsive">
@@ -120,7 +140,7 @@
                         cell1.innerHTML = values.title;
                         cell2.innerHTML = values.description;
                         cell3.innerHTML = values.price + ' {{ currency_name }}';
-                        cell4.innerHTML = `<button type="button" class="btn btn-primary edit-item-button me-1" data-id="${values.id}" data-title="${values.title}" data-description="${values.description}" data-price="${values.price}"><i class="bi bi-pencil-square"></i></button><button type="button" class="btn btn-danger delete-item-button me-1" data-id="${values.id}"><i class="bi bi-trash"></i></button>`;
+                        cell4.innerHTML = `<button type="button" class="btn btn-primary edit-item-button me-1" data-id="${values.id}" data-title="${values.title}" data-description="${values.description}" data-price="${values.price}"><i class="bi bi-pencil-square"></i></button><button type="button" class="btn btn-danger delete-item-button me-1" data-id="${values.id}" data-title="${values.title}"><i class="bi bi-trash"></i></button>`;
                 }
 
                 // Handle edit item button clicks
@@ -136,9 +156,12 @@
                 // Handle delete item button clicks
                 $('.delete-item-button').on('click', function () {
                     const item_id = $(this).data('id');
+                    const item_title = $(this).data('title');
 
-                    // Delete the item with the specified ID
-                    deleteItemWithID(item_id);
+                    // Set the value in the modal's prompt text
+                    $('#deleteItemModalValue').data('id', item_id);
+                    $('#deleteItemModalValue').text(item_title);
+                    $('#delete_item_modal').modal('show');
                 });
 
                 pagination.empty();
@@ -196,14 +219,15 @@
         }, 500);
     });
 
-    function deleteItemWithID(itemID) {
+    function deleteItem() {
+        $('#delete_item_modal').modal('hide');
         $('#loading_modal').modal('show');
 
         $.ajax({
             url: '/delete_item',
             method: 'POST',
             data: {
-                item_id: itemID
+                item_id: $('#deleteItemModalValue').data('id')
             },
             success: function(response) {
                 // hide the loading modal
