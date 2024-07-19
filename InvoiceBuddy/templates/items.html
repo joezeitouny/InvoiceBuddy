@@ -5,7 +5,7 @@
              xmlns="http://www.w3.org/1999/html">
             <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
                 <div class="modal-content">
-                    <form id="add_item_form" class="needs-validation" novalidate>
+                    <form id="edit_item_form" class="needs-validation" novalidate>
                         <div class="modal-header bg-success text-light">
                             <h5 class="modal-title">Edit Item</h5>
                         </div>
@@ -218,6 +218,10 @@ function deleteItemWithID(itemID) {
 }
 
 function updateItem() {
+    form = document.getElementById('edit_item_form');
+        if (!form.checkValidity())
+            return;
+
     $('#edit_item_modal').modal('hide');
     $('#loading_modal').modal('show');
 
@@ -242,6 +246,20 @@ function updateItem() {
         }
     });
 }
+
+(function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
 </script>
 
 {% endblock %}
