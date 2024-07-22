@@ -1,3 +1,8 @@
+## 0.1.3 (2024-07-22)
+
+* UI Layout improvements
+* Version bump to 0.1.3
+
 ## 0.1.2 (2024-07-19)
 
 * Added a confirmation modal for deleting items
