@@ -30,15 +30,15 @@ $ pip install -U git+https://github.com/joezeitouny/InvoiceBuddy.git
 
 ### Features
 
-- Ability to generate Excel and / or CSV logs
-- Generate GPX file with GPS coordinates combined with timestamps
-- Ability to generate a summary log for each session
-- Sessions can be tied by the NMEA server, Victron system availability or by a specified time interval
+- Ability to generate invoices and estimates from any browser, desktop or mobile
+- Estimates can be turned into invoices
+- Ability to setup items templates to be used in invoices or estimates
+- Support for IBAN and Paypal payment methods
 
 ### Usage
 
 ```console
-$ python -m InvoiceBuddy --config=CONFIGURATION_FILENAME [options]
+$ python -m InvoiceBuddy --config=CONFIGURATION_FILENAME
 ```
 
 Where CONFIGURATION_FILENAME points to the file where the JSON configuration file is located on your system.
