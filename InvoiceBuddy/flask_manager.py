@@ -377,6 +377,20 @@ def generate_invoice():
         return jsonify(new_invoice.id)
 
 
+@app.route('/get_invoice', methods=['POST'])
+def get_invoice():
+    try:
+        if request.method == 'POST':
+            invoice_id = request.form['invoice_id']
+
+            invoice = Invoice.query.filter(Invoice.id == invoice_id).first()
+
+            return jsonify(invoice.to_dict())
+    except Exception:
+        return jsonify(False)
+
+    return jsonify(False)
+
 @app.route('/generate_proposal', methods=['POST'])
 def generate_proposal():
     if request.method == 'POST':

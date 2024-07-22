@@ -527,26 +527,40 @@
     $(document).ready(function() {
         $('#addInvoiceItem').click(function() {
                 var newItem = $('<tr class="invoiceItem">' +
-                    '<td class="col-4"><input type="text" class="form-control invoiceItemTitleInput" name="title[]" required></td>' +
+                    '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
                     '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
                     '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
-                newItem.addEventListener('input', populateItemFields);
                 $('#invoiceItemsContainer').append(newItem);
+
+                // Select all elements with the classname using querySelectorAll.
+                let elements = document.querySelectorAll('.itemTitleInput');
+
+                for(let i=0; i<elements.length; i++) {
+                    // Add an event listener to each selected element.
+                    elements[i].addEventListener('input', populateItemFields);
+                }
         });
 
         $('#addProposalItem').click(function() {
                 var newItem = $('<tr class="proposalItem">' +
-                    '<td class="col-4"><input type="text" class="form-control" name="title[]" required></td>' +
+                    '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
                     '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
                     '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
-                newItem.addEventListener('input', populateItemFields);
                 $('#proposalItemsContainer').append(newItem);
+
+                // Select all elements with the classname using querySelectorAll.
+                let elements = document.querySelectorAll('.itemTitleInput');
+
+                for(let i=0; i<elements.length; i++) {
+                    // Add an event listener to each selected element.
+                    elements[i].addEventListener('input', populateItemFields);
+                }
         });
 
         $(document).on('click', '.removeItem', function() {
@@ -661,11 +675,12 @@
             }
         });
 
-        $('#invoiceItemsContainer tr.item:not(:first)').remove();
+        $('#invoiceItemsContainer tr:not(:first)').remove();
 
         // Clear the inputs of the first row
-        var firstRow = $('#invoiceItemsContainer tr.item:first');
-        firstRow.find('input[type="text"]').val('');
+        var firstRow = $('#invoiceItemsContainer tr:first');
+        firstRow.find('input[name="title[]"]').val('');
+        firstRow.find('textarea[name="description[]"]').val('');
         firstRow.find('input[name="quantity[]"]').val('1');
         firstRow.find('input[name="price[]"]').val('0');
 
@@ -722,11 +737,12 @@
             }
         });
 
-        $('#proposalItemsContainer tr.item:not(:first)').remove();
+        $('#proposalItemsContainer tr:not(:first)').remove();
 
         // Clear the inputs of the first row
-        var firstRow = $('#proposalItemsContainer tr.item:first');
-        firstRow.find('input[type="text"]').val('');
+        var firstRow = $('#proposalItemsContainer tr:first');
+        firstRow.find('input[name="title[]"]').val('');
+        firstRow.find('textarea[name="description[]"]').val('');
         firstRow.find('input[name="quantity[]"]').val('1');
         firstRow.find('input[name="price[]"]').val('0');
 

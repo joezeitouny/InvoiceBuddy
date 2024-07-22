@@ -178,7 +178,7 @@
                         cell5.innerHTML = values.customer_name;
                         cell6.innerHTML = values.description;
                         cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
-                        cell8.innerHTML = `<button type="button" class="btn btn-danger mark-canceled-button me-1" data-toggle="tooltip" data-placement="top" title="Cancel invoice" data-invoice-number="${values.invoice_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-paid-button me-1" data-toggle="tooltip" data-placement="top" title="Mark invoice as paid" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-cash-coin"></i></button><button type="button" class="btn btn-primary view-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="View invoice" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button" data-toggle="tooltip" data-placement="top" title="Print invoice" data-id="${values.id}"><i class="bi bi-printer"></i></button>`;
+                        cell8.innerHTML = `<button type="button" class="btn btn-danger mark-canceled-button me-1" data-toggle="tooltip" data-placement="top" title="Cancel invoice" data-invoice-number="${values.invoice_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-paid-button me-1" data-toggle="tooltip" data-placement="top" title="Mark invoice as paid" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-cash-coin"></i></button><button type="button" class="btn btn-primary view-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="View invoice" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="Print invoice" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary copy-invoice-button" data-toggle="tooltip" data-placement="top" title="Copy invoice" data-id="${values.id}"><i class="bi bi-copy"></i></button>`;
 
                         activeInvoicesTotalAmount += values.total_amount;
                 }
@@ -219,6 +219,13 @@
                     const invoice_id = $(this).data('id');
 
                     loadNewTabWithInvoiceID(invoice_id, true);
+                });
+
+                // Handle copy invoice button clicks
+                $('.copy-invoice-button').on('click', function () {
+                    const invoice_id = $(this).data('id');
+
+                    copyInvoiceWithInvoiceID(invoice_id);
                 });
             },
             error: function (error) {
@@ -400,6 +407,70 @@
             error: function (error) {
                 $('#loading_modal').modal('hide');
                 notify_warning('Error while trying to mark invoice as paid! Reason: ' + error);
+            }
+        });
+    }
+
+    function copyInvoiceWithInvoiceID(invoice_id) {
+        $('#loading_modal').modal('show');
+        $.ajax({
+            url: '/get_invoice',
+            method: 'POST',
+            data: {
+                invoice_id: invoice_id,
+            },
+            success: function(data) {
+                $('#loading_modal').modal('hide');
+                if (!data)
+                    notify_warning('Error while trying to copy invoice. Please try again!');
+                else {
+                    showNewInvoiceModal();
+
+                    // populate invoice form with the data retrieved
+                    $('#new_invoice_customer_name').val(data['customer_name']);
+                    $('#new_invoice_reference_number').val(data['reference_number']);
+                    $('#new_invoice_description').val(data['description']);
+
+                    if (data['items'] && data['items'].length > 0) {
+                        var firstRow = $('#invoiceItemsContainer tr:first');
+                        firstRow.find('input[name="title[]"]').val(data['items'][0]['title']);
+                        firstRow.find('textarea[name="description[]"]').val(data['items'][0]['description']);
+                        firstRow.find('input[name="quantity[]"]').val(data['items'][0]['quantity']);
+                        firstRow.find('input[name="price[]"]').val(data['items'][0]['price']);
+
+                        if (data['items'].length > 1) {
+                            for(let i=1; i<data['items'].length; i++){
+                                var newItem = $('<tr class="invoiceItem">' +
+                                    '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
+                                    '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
+                                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
+                                    '</tr>');
+                                $('#invoiceItemsContainer').append(newItem);
+
+                                var lastRow = $('#invoiceItemsContainer tr:last');
+                                lastRow.find('input[name="title[]"]').val(data['items'][i]['title']);
+                                lastRow.find('textarea[name="description[]"]').val(data['items'][i]['description']);
+                                lastRow.find('input[name="quantity[]"]').val(data['items'][i]['quantity']);
+                                lastRow.find('input[name="price[]"]').val(data['items'][i]['price']);
+                            }
+                        }
+
+                        // Select all elements with the classname using querySelectorAll.
+                        let elements = document.querySelectorAll('.itemTitleInput');
+
+                        for(let i=0; i<elements.length; i++) {
+                            // Add an event listener to each selected element.
+                            elements[i].addEventListener('input', populateItemFields);
+                        }
+                    }
+
+                }
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while trying to copy selected invoice! Reason: ' + error);
             }
         });
     }
