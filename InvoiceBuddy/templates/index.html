@@ -178,7 +178,7 @@
                         cell5.innerHTML = values.customer_name;
                         cell6.innerHTML = values.description;
                         cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
-                        cell8.innerHTML = `<button type="button" class="btn btn-danger mark-canceled-button me-1" data-toggle="tooltip" data-placement="top" title="Cancel invoice" data-invoice-number="${values.invoice_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-paid-button me-1" data-toggle="tooltip" data-placement="top" title="Mark invoice as paid" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-cash-coin"></i></button><button type="button" class="btn btn-primary view-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="View invoice" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="Print invoice" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary copy-invoice-button" data-toggle="tooltip" data-placement="top" title="Copy invoice" data-id="${values.id}"><i class="bi bi-copy"></i></button>`;
+                        cell8.innerHTML = `<button type="button" class="btn btn-danger mark-canceled-button me-1" data-toggle="tooltip" data-placement="top" title="Cancel invoice" data-invoice-number="${values.invoice_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-paid-button me-1" data-toggle="tooltip" data-placement="top" title="Mark invoice as paid" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-cash-coin"></i></button><button type="button" class="btn btn-primary view-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="View invoice" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="Print invoice" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-invoice-button" data-toggle="tooltip" data-placement="top" title="Duplicate invoice" data-id="${values.id}"><i class="bi bi-copy"></i></button>`;
 
                         activeInvoicesTotalAmount += values.total_amount;
                 }
@@ -221,11 +221,11 @@
                     loadNewTabWithInvoiceID(invoice_id, true);
                 });
 
-                // Handle copy invoice button clicks
-                $('.copy-invoice-button').on('click', function () {
+                // Handle duplicate invoice button clicks
+                $('.duplicate-invoice-button').on('click', function () {
                     const invoice_id = $(this).data('id');
 
-                    copyInvoiceWithInvoiceID(invoice_id);
+                    duplicateInvoiceWithInvoiceID(invoice_id);
                 });
             },
             error: function (error) {
@@ -411,7 +411,7 @@
         });
     }
 
-    function copyInvoiceWithInvoiceID(invoice_id) {
+    function duplicateInvoiceWithInvoiceID(invoice_id) {
         $('#loading_modal').modal('show');
         $.ajax({
             url: '/get_invoice',
@@ -422,7 +422,7 @@
             success: function(data) {
                 $('#loading_modal').modal('hide');
                 if (!data)
-                    notify_warning('Error while trying to copy invoice. Please try again!');
+                    notify_warning('Error while trying to duplicate invoice. Please try again!');
                 else {
                     showNewInvoiceModal();
 
@@ -470,7 +470,7 @@
             },
             error: function (error) {
                 $('#loading_modal').modal('hide');
-                notify_warning('Error while trying to copy selected invoice! Reason: ' + error);
+                notify_warning('Error while trying to duplicate selected invoice! Reason: ' + error);
             }
         });
     }
