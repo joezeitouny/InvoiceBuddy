@@ -1,3 +1,11 @@
+## 0.1.4 (2024-07-22)
+
+* UI Layout improvements
+* Added ability to duplicate invoices 
+* Added ability to duplicate proposals
+* Fixed an issue where autocomplete items on invoices and proposals wasn't working properly
+* Version bump to 0.1.4
+
 ## 0.1.3 (2024-07-22)
 
 * UI Layout improvements
