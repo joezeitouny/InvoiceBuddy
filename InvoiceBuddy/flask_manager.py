@@ -391,6 +391,7 @@ def get_invoice():
 
     return jsonify(False)
 
+
 @app.route('/generate_proposal', methods=['POST'])
 def generate_proposal():
     if request.method == 'POST':
@@ -472,6 +473,21 @@ def generate_proposal():
                 f'An unexpected error occurred while trying to save a new proposal number. Details {e}')
 
         return jsonify(new_proposal.id)
+
+
+@app.route('/get_proposal', methods=['POST'])
+def get_proposal():
+    try:
+        if request.method == 'POST':
+            proposal_id = request.form['proposal_id']
+
+            proposal = Proposal.query.filter(Proposal.id == proposal_id).first()
+
+            return jsonify(proposal.to_dict())
+    except Exception:
+        return jsonify(False)
+
+    return jsonify(False)
 
 
 @app.route('/view_invoice', methods=['GET'])
