@@ -108,6 +108,9 @@
                             <a class="nav-link text-light" href="/">Home</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-light" href="/view_customers">Customers</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-light" href="/view_items">Items</a>
                         </li>
                         <li class="nav-item">
@@ -125,6 +128,10 @@
                         <div class="col-auto p-1 me-2">
                             <div class="row px-0 mx-0">
                                 <span class="px-0 mx-0">
+                                    <button class="ms-2 btn btn-secondary" type="submit"
+                                            onclick="showNewCustomerModal()" style="font-size: 0.9rem;">
+                                            <span>New Customer</span>
+                                    </button>
                                     <button class="ms-2 btn btn-secondary" type="submit"
                                             onclick="showNewItemModal()" style="font-size: 0.9rem;">
                                             <span>New Item</span>
@@ -170,6 +177,92 @@
                         </div>
                         <h5 class="mt-2">Loading...</h5>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="new_customer_modal" tabindex="-1" class="modal fade" data-backdrop="static"
+             xmlns="http://www.w3.org/1999/html">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
+                <div class="modal-content">
+                    <form id="add_customer_form" class="needs-validation" novalidate>
+                        <div class="modal-header bg-secondary text-light">
+                            <h5 class="modal-title">New Customer</h5>
+                        </div>
+                        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                            <div class="container border rounded-1 p-1">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="new_customer_name">Name</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="new_customer_name" class="form-control p-0" type="text"
+                                                   placeholder="Customer Name" name="name" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="new_customer_email">Email</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="new_customer_email" class="form-control p-0" type="text"
+                                                   placeholder="Customer Email" name="email">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="new_customer_phone">Phone</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="new_customer_phone" class="form-control p-0" type="text"
+                                                   placeholder="Customer Phone" name="phone">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="new_customer_address">Address</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="new_customer_address" class="form-control p-0" type="text"
+                                                   placeholder="Customer Address" name="address">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <label class="form-label" for="new_customer_country">Country</label>
+                                        </div>
+                                        <div class="col">
+                                            <input id="new_customer_country" class="form-control p-0" type="text"
+                                                   placeholder="Customer Country" name="country">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <label class="form-label"
+                                                   for="new_customer_description">Description</label>
+                                        </div>
+                                        <div class="col-12">
+                                <textarea class="container form-control p-0" id="new_customer_description"
+                                          name="description" rows="3" placeholder="Customer Description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid input.
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                    onclick="$('#new_customer_modal').modal('hide');">
+                                Close
+                            </button>
+                            <button type="submit" class="btn btn-primary" onclick="addCustomer()">Add Customer
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -234,6 +327,9 @@
             </div>
         </div>
 
+        <datalist id="predefinedCustomers">
+        </datalist>
+
         <datalist id="predefinedItems">
         </datalist>
 
@@ -296,7 +392,8 @@
                                         </div>
                                         <div class="col">
                                             <input id="new_invoice_customer_name" class="form-control p-0"
-                                                   placeholder="Customer Name" type="text" name="customer_name"
+                                                   placeholder="Customer Name" type="text" list="predefinedCustomers"
+                                                   name="customer_name"
                                                    required><br>
                                         </div>
                                     </div>
@@ -425,7 +522,8 @@
                                         </div>
                                         <div class="col">
                                             <input id="new_proposal_customer_name" class="form-control p-0"
-                                                   placeholder="Customer Name" type="text" name="customer_name"
+                                                   placeholder="Customer Name" type="text" list="predefinedCustomers"
+                                                   name="customer_name"
                                                    required><br>
                                         </div>
                                     </div>
@@ -638,6 +736,18 @@
         }
     }
 
+    function showNewCustomerModal() {
+        $('#new_customer_modal').modal('show');
+
+        // clear up the form fields
+        $('#new_customer_name').val('');
+        $('#new_customer_email').val('');
+        $('#new_customer_phone').val('');
+        $('#new_customer_address').val('');
+        $('#new_customer_country').val('');
+        $('#new_item_description').val('');
+    }
+
     function showNewItemModal() {
         $('#new_item_modal').modal('show');
 
@@ -707,6 +817,28 @@
                 notify_warning('Error while populating predefined items! Reason: ' + error);
             }
         });
+
+        $.ajax({
+            type: 'GET',
+            url: '/get_customers_data',
+            success: function(data) {
+                const datalist = document.getElementById('predefinedCustomers');
+
+                // Clear existing options
+                datalist.innerHTML = '';
+
+                // Add new options from the API response
+                data.forEach(customer => {
+                  const option = document.createElement('option');
+                  option.id = customer.id;
+                  option.value = customer.customer_name;
+                  datalist.appendChild(option);
+                });
+            },
+            error: function (error) {
+                notify_warning('Error while populating predefined customers! Reason: ' + error);
+            }
+        });
     }
 
     function showNewProposalModal() {
@@ -767,6 +899,64 @@
             },
             error: function (error) {
                 notify_warning('Error while populating predefined items! Reason: ' + error);
+            }
+        });
+
+        $.ajax({
+            type: 'GET',
+            url: '/get_customers_data',
+            success: function(data) {
+                const datalist = document.getElementById('predefinedCustomers');
+
+                // Clear existing options
+                datalist.innerHTML = '';
+
+                // Add new options from the API response
+                data.forEach(customer => {
+                  const option = document.createElement('option');
+                  option.id = customer.id;
+                  option.value = customer.customer_name;
+                  datalist.appendChild(option);
+                });
+            },
+            error: function (error) {
+                notify_warning('Error while populating predefined customers! Reason: ' + error);
+            }
+        });
+    }
+
+    function addCustomer() {
+        form = document.getElementById('add_customer_form');
+        if (!form.checkValidity())
+            return;
+
+        $('#loading_modal').modal('show');
+
+        $.ajax({
+            url: '/add_customer',
+            method: 'POST',
+            data: {
+                customer_name: $('#new_customer_name').val(),
+                customer_email: $('#new_customer_email').val(),
+                customer_phone: $('#new_customer_phone').val(),
+                customer_address: $('#new_customer_address').val(),
+                customer_country: $('#new_customer_country').val(),
+                description: $('#new_customer_description').val()
+            },
+            success: function(customer_id) {
+                $('#loading_modal').modal('hide');
+                if (!customer_id)
+                    notify_warning('Error while creating a new customer');
+                else {
+                    notify_success('New customer successfully created!');
+
+                    // hide the create customer form
+                    $('#new_customer_modal').modal('hide');
+                }
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while creating a new customer! Reason: ' + error);
             }
         });
     }

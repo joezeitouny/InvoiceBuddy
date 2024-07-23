@@ -16,10 +16,32 @@ from InvoiceBuddy.log_manager import LogManager
 db = SQLAlchemy(app)
 
 
+class Customer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_name = db.Column(db.String(100), nullable=False)
+    customer_email = db.Column(db.String(100), nullable=True)
+    customer_phone = db.Column(db.String(100), nullable=True)
+    customer_address = db.Column(db.String(100), nullable=True)
+    customer_country = db.Column(db.String(100), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            customer_name=self.customer_name,
+            customer_email=self.customer_email,
+            customer_phone=self.customer_phone,
+            customer_address=self.customer_address,
+            customer_country=self.customer_country,
+            description=self.description
+        )
+
+
 class Invoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     invoice_number = db.Column(db.String(50), unique=True, nullable=False)
     invoice_date = db.Column(db.Date, nullable=False)
+    invoice_type = db.Column(db.String(100), nullable=False)
     due_date = db.Column(db.Date, nullable=False)
     customer_name = db.Column(db.String(100), nullable=False)
     reference_number = db.Column(db.String(50), nullable=False)
@@ -44,6 +66,7 @@ class Invoice(db.Model):
             id=self.id,
             invoice_number=self.invoice_number,
             invoice_date=self.invoice_date.strftime('%Y/%m/%d'),
+            invoice_type=self.invoice_type,
             due_date=self.due_date.strftime('%Y/%m/%d'),
             customer_name=self.customer_name,
             reference_number=self.reference_number,
@@ -246,21 +269,12 @@ def new_invoice_number():
             data = json.load(file)
 
         invoice_number = data['invoice']['invoice_number']
-    except FileNotFoundError:
-        application_modules.get_log_manager().info(
-            f"Error: The file '{application_modules.get_options().configuration_path}' was not found while trying to "
-            f"retrieve a new invoice number.")
-        return jsonify(0)
-    except json.JSONDecodeError:
-        application_modules.get_log_manager().info("Error: Failed to decode JSON from the file while trying to "
-                                                   "retrieve a new invoice number.")
-        return jsonify(0)
     except Exception as e:
         application_modules.get_log_manager().info(
             f'An unexpected error occurred while trying to retrieve a new invoice number. Details {e}')
-        return jsonify(0)
+        return -1
 
-    return jsonify(get_formatted_number(application_modules.get_options().invoice_prefix, invoice_number))
+    return get_formatted_number(application_modules.get_options().invoice_prefix, invoice_number)
 
 
 @app.route('/new_proposal_number')
@@ -271,21 +285,12 @@ def new_proposal_number():
             data = json.load(file)
 
         proposal_number = data['proposal']['proposal_number']
-    except FileNotFoundError:
-        application_modules.get_log_manager().info(
-            f"Error: The file '{application_modules.get_options().configuration_path}' was not found while trying to "
-            f"retrieve a new proposal number.")
-        return jsonify(0)
-    except json.JSONDecodeError:
-        application_modules.get_log_manager().info("Error: Failed to decode JSON from the file while trying to "
-                                                   "retrieve a new proposal number.")
-        return jsonify(0)
     except Exception as e:
         application_modules.get_log_manager().info(
             f'An unexpected error occurred while trying to retrieve a new proposal number. Details {e}')
-        return jsonify(0)
+        return -1
 
-    return jsonify(get_formatted_number(application_modules.get_options().proposal_prefix, proposal_number))
+    return get_formatted_number(application_modules.get_options().proposal_prefix, proposal_number)
 
 
 @app.route('/add_item', methods=['POST'])
@@ -309,6 +314,33 @@ def add_item():
         return jsonify(new_item.id)
 
 
+@app.route('/add_customer', methods=['POST'])
+def add_customer():
+    if request.method == 'POST':
+        customer_data = {
+            'name': request.form['customer_name'],
+            'email': request.form['customer_email'],
+            'phone': request.form['customer_phone'],
+            'address': request.form['customer_address'],
+            'country': request.form['customer_country'],
+            'description': request.form['description']
+        }
+
+        new_customer = Customer(
+            customer_name=customer_data['name'],
+            customer_email=customer_data['email'],
+            customer_phone=customer_data['phone'],
+            customer_address=customer_data['address'],
+            customer_country=customer_data['country'],
+            description=customer_data['description'],
+        )
+
+        db.session.add(new_customer)
+        db.session.commit()
+
+        return jsonify(new_customer.id)
+
+
 @app.route('/generate_invoice', methods=['POST'])
 def generate_invoice():
     if request.method == 'POST':
@@ -321,6 +353,7 @@ def generate_invoice():
         invoice_data = {
             'invoice_number': request.form['invoice_number'],
             'invoice_date': datetime.strptime(request.form['invoice_date'], '%Y-%m-%d').date(),
+            'invoice_type': globals.InvoiceType.DEBIT.value,
             'due_date': datetime.strptime(request.form['due_date'], '%Y-%m-%d').date(),
             'customer_name': request.form['customer_name'],
             'reference_number': request.form['reference_number'],
@@ -338,12 +371,13 @@ def generate_invoice():
             'currency_symbol': application_modules.get_options().currency_symbol,
             'currency_name': application_modules.get_options().currency_name,
             'invoice_terms_and_conditions': application_modules.get_options().invoice_terms_and_conditions,
-            'status': 0
+            'status': globals.InvoiceStatus.UNPAID.value
         }
 
         new_invoice = Invoice(
             invoice_number=invoice_data['invoice_number'],
             invoice_date=invoice_data['invoice_date'],
+            invoice_type=invoice_data['invoice_type'],
             due_date=invoice_data['due_date'],
             customer_name=invoice_data['customer_name'],
             reference_number=invoice_data['reference_number'],
@@ -367,27 +401,8 @@ def generate_invoice():
         db.session.add(new_invoice)
         db.session.commit()
 
-        try:
-            # Open the configuration JSON file
-            with open(f'{application_modules.get_options().configuration_path}', 'r') as file:
-                data = json.load(file)
-
-            invoice_number = data['invoice']['invoice_number']
-            data['invoice']['invoice_number'] = utils.try_parse_int(invoice_number) + 1
-
-            with open(f'{application_modules.get_options().configuration_path}', 'w') as file:
-                json.dump(data, file, indent=4)
-        except FileNotFoundError:
-            application_modules.get_log_manager().info(
-                f"Error: The file '{application_modules.get_options().configuration_path}' was not found "
-                f"while trying to "
-                f"save a new invoice number.")
-        except json.JSONDecodeError:
-            application_modules.get_log_manager().info("Error: Failed to decode JSON from the file while trying to "
-                                                       "save a new invoice number.")
-        except Exception as e:
-            application_modules.get_log_manager().info(
-                f'An unexpected error occurred while trying to save a new invoice number. Details {e}')
+        if not update_invoice_number_in_configuration_file():
+            return jsonify(False)
 
         return jsonify(new_invoice.id)
 
@@ -436,7 +451,7 @@ def generate_proposal():
             'currency_symbol': application_modules.get_options().currency_symbol,
             'currency_name': application_modules.get_options().currency_name,
             'proposal_terms_and_conditions': application_modules.get_options().proposal_terms_and_conditions,
-            'status': 0
+            'status': globals.ProposalStatus.UNACCEPTED.value
         }
 
         new_proposal = Proposal(
@@ -525,6 +540,7 @@ def view_invoice():
         invoice_data = {
             'invoice_number': invoice.invoice_number,
             'invoice_date': invoice.invoice_date,
+            'invoice_type': invoice.invoice_type,
             'due_date': invoice.due_date,
             'customer_name': invoice.customer_name,
             'reference_number': invoice.reference_number,
@@ -601,7 +617,7 @@ def list_invoices():
 
 @app.route('/active_invoices')
 def list_active_invoices():
-    invoices = Invoice.query.filter(Invoice.status == 0).all()
+    invoices = Invoice.query.filter(Invoice.status == globals.InvoiceStatus.UNPAID.value).all()
     json_invoices = [invoice.to_dict() for invoice in invoices]
 
     return jsonify(json_invoices)
@@ -631,7 +647,7 @@ def list_past_invoices():
     start_idx = (page - 1) * items_per_page
     end_idx = start_idx + items_per_page
 
-    invoices = Invoice.query.filter(Invoice.status != 0).all()
+    invoices = Invoice.query.filter(Invoice.status != globals.InvoiceStatus.UNPAID.value).all()
     paginated_data = [invoice.to_dict() for invoice in invoices[start_idx:end_idx]]
 
     total_number_of_pages = math.floor(len(invoices) / items_per_page)
@@ -649,7 +665,7 @@ def list_past_invoices():
 
 @app.route('/past_invoices_count')
 def past_invoices_count():
-    invoices = Invoice.query.filter(Invoice.status != 0).all()
+    invoices = Invoice.query.filter(Invoice.status != globals.InvoiceStatus.UNPAID.value).all()
 
     return jsonify(len(invoices))
 
@@ -664,7 +680,7 @@ def list_proposals():
 
 @app.route('/active_proposals')
 def list_active_proposals():
-    proposals = Proposal.query.filter(Proposal.status == 0).all()
+    proposals = Proposal.query.filter(Proposal.status == globals.ProposalStatus.UNACCEPTED.value).all()
     json_proposals = [proposal.to_dict() for proposal in proposals]
 
     return jsonify(json_proposals)
@@ -694,7 +710,7 @@ def list_past_proposals():
     start_idx = (page - 1) * items_per_page
     end_idx = start_idx + items_per_page
 
-    proposals = Proposal.query.filter(Proposal.status != 0).all()
+    proposals = Proposal.query.filter(Proposal.status != globals.ProposalStatus.UNACCEPTED.value).all()
     paginated_data = [proposal.to_dict() for proposal in proposals[start_idx:end_idx]]
 
     total_number_of_pages = math.floor(len(proposals) / items_per_page)
@@ -712,9 +728,28 @@ def list_past_proposals():
 
 @app.route('/past_proposals_count')
 def past_proposals_count():
-    proposals = Proposal.query.filter(Proposal.status != 0).all()
+    proposals = Proposal.query.filter(Proposal.status != globals.ProposalStatus.UNACCEPTED.value).all()
 
     return jsonify(len(proposals))
+
+
+@app.route('/delete_customer', methods=['POST'])
+def delete_customer():
+    if request.method == 'POST':
+        try:
+            customer_id = request.form['customer_id']
+
+            customer_to_delete = db.session.query(Customer).filter_by(id=customer_id).one()
+            db.session.delete(customer_to_delete)
+            db.session.commit()
+
+            return jsonify(True)
+        except Exception as e:
+            application_modules.get_log_manager().warning(
+                f"Exception occurred while trying to delete customer. Details: {e}")
+            return jsonify(False)
+
+    return jsonify(False)
 
 
 @app.route('/delete_item', methods=['POST'])
@@ -742,9 +777,39 @@ def mark_invoice_canceled():
         try:
             invoice_number = request.form['invoice_number']
             invoice = Invoice.query.filter(Invoice.invoice_number == invoice_number).first()
-            invoice.status = 2
+            invoice.status = globals.InvoiceStatus.CANCELED.value
 
+            # create a new debit invoice
+            new_number = new_invoice_number()
+            new_invoice = Invoice(
+                invoice_number=new_number,
+                invoice_date=invoice.invoice_date,
+                invoice_type=globals.InvoiceType.CREDIT.value,
+                due_date=invoice.due_date,
+                customer_name=invoice.customer_name,
+                reference_number=invoice.reference_number,
+                description=invoice.description,
+                items=invoice.items,
+                total_amount=invoice.total_amount * -1,
+                seller_name=invoice.seller_name,
+                seller_address=invoice.seller_address,
+                seller_country=invoice.seller_country,
+                seller_phone=invoice.seller_phone,
+                seller_email=invoice.seller_email,
+                seller_iban=invoice.seller_iban,
+                seller_bic=invoice.seller_bic,
+                seller_paypal_address=invoice.seller_paypal_address,
+                currency_symbol=invoice.currency_symbol,
+                currency_name=invoice.currency_name,
+                invoice_terms_and_conditions=invoice.invoice_terms_and_conditions,
+                status=globals.InvoiceStatus.PAID.value
+            )
+
+            db.session.add(new_invoice)
             db.session.commit()
+
+            if not update_invoice_number_in_configuration_file():
+                raise Exception("Could not update invoice number in configuration file!")
 
             return jsonify(True)
         except Exception as e:
@@ -761,7 +826,7 @@ def mark_invoice_paid():
         try:
             invoice_number = request.form['invoice_number']
             invoice = Invoice.query.filter(Invoice.invoice_number == invoice_number).first()
-            invoice.status = 1
+            invoice.status = globals.InvoiceStatus.PAID.value
             db.session.commit()
 
             return jsonify(True)
@@ -779,7 +844,7 @@ def mark_proposal_rejected():
         try:
             proposal_number = request.form['proposal_number']
             proposal = Proposal.query.filter(Proposal.proposal_number == proposal_number).first()
-            proposal.status = 2
+            proposal.status = globals.ProposalStatus.REJECTED.value
 
             db.session.commit()
 
@@ -798,7 +863,7 @@ def mark_proposal_accepted():
         try:
             proposal_number = request.form['proposal_number']
             proposal = Proposal.query.filter(Proposal.proposal_number == proposal_number).first()
-            proposal.status = 1
+            proposal.status = globals.ProposalStatus.ACCEPTED.value
 
             # create a new invoice from the accepted proposal
             invoice_number = new_invoice_number()
@@ -822,7 +887,7 @@ def mark_proposal_accepted():
                 currency_symbol=proposal.currency_symbol,
                 currency_name=proposal.currency_name,
                 invoice_terms_and_conditions=application_modules.get_options().invoice_terms_and_conditions,
-                status=0
+                status=globals.InvoiceStatus.UNPAID.value
             )
             db.session.add(new_invoice)
             db.session.commit()
@@ -834,6 +899,22 @@ def mark_proposal_accepted():
             return jsonify(False)
 
     return jsonify(False)
+
+
+@app.route('/view_customers')
+def view_customers():
+    # Get application name and version
+    application_name = utils.get_application_name()
+    application_version = utils.get_application_version()
+    invoice_valid_for_days = application_modules.get_options().invoice_valid_for_days
+    proposal_valid_for_days = application_modules.get_options().proposal_valid_for_days
+    currency_symbol = application_modules.get_options().currency_symbol
+    currency_name = application_modules.get_options().currency_name
+
+    return render_template('customers.html', application_name=application_name,
+                           application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
+                           proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol,
+                           currency_name=currency_name)
 
 
 @app.route('/view_items')
@@ -850,6 +931,33 @@ def view_items():
                            application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
                            proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol,
                            currency_name=currency_name)
+
+
+@app.route('/customers')
+def list_customers():
+    page = int(request.args.get('page', 1))
+    items_per_page = globals.CUSTOMERS_ITEMS_PER_PAGE
+
+    start_idx = (page - 1) * items_per_page
+    end_idx = start_idx + items_per_page
+
+    customers = Customer.query.all()
+    paginated_data = [customer.to_dict() for customer in customers[start_idx:end_idx]]
+
+    for item in paginated_data:
+        item['description'] = item['description'].replace('\n', '<br>')
+
+    total_number_of_pages = math.floor(len(customers) / items_per_page)
+    if len(customers) % items_per_page != 0:
+        total_number_of_pages += 1
+
+    total_number_of_customers = len(customers)
+
+    data = {'customers': paginated_data,
+            'total_number_of_pages': total_number_of_pages,
+            'total_number_of_customers': total_number_of_customers}
+
+    return jsonify(data)
 
 
 @app.route('/items')
@@ -870,13 +978,21 @@ def list_items():
     if len(items) % items_per_page != 0:
         total_number_of_pages += 1
 
-    total_number_of_invoices = len(items)
+    total_number_of_items = len(items)
 
     data = {'items': paginated_data,
             'total_number_of_pages': total_number_of_pages,
-            'total_number_of_items': total_number_of_invoices}
+            'total_number_of_items': total_number_of_items}
 
     return jsonify(data)
+
+
+@app.route('/get_customers_data')
+def get_customers_data():
+    customers = Customer.query.all()
+    json_customers = [customer.to_dict() for customer in customers]
+
+    return jsonify(json_customers)
 
 
 @app.route('/get_items_data')
@@ -885,6 +1001,35 @@ def get_items_data():
     json_items = [item.to_dict() for item in items]
 
     return jsonify(json_items)
+
+
+@app.route('/update_customer', methods=['POST'])
+def update_customer():
+    if request.method == 'POST':
+        try:
+            customer_id = request.form['customer_id']
+            customer_to_update = db.session.query(Customer).filter(Customer.id == customer_id).first()
+
+            if customer_to_update:
+                # Modify the attributes
+                customer_to_update.customer_name = request.form['customer_name']
+                customer_to_update.customer_email = request.form['customer_email']
+                customer_to_update.customer_phone = request.form['customer_phone']
+                customer_to_update.customer_address = request.form['customer_address']
+                customer_to_update.customer_country = request.form['customer_country']
+                customer_to_update.description = request.form['description']
+
+                db.session.commit()
+
+                return jsonify(True)
+            else:
+                return jsonify(False)
+        except Exception as e:
+            application_modules.get_log_manager().warning(
+                f"Exception occurred while trying to update item. Details: {e}")
+            return jsonify(False)
+
+    return jsonify(False)
 
 
 @app.route('/update_item', methods=['POST'])
@@ -911,6 +1056,25 @@ def update_item():
             return jsonify(False)
 
     return jsonify(False)
+
+
+def update_invoice_number_in_configuration_file():
+    try:
+        # Open the configuration JSON file
+        with open(f'{application_modules.get_options().configuration_path}', 'r') as file:
+            data = json.load(file)
+
+        invoice_number = data['invoice']['invoice_number']
+        data['invoice']['invoice_number'] = utils.try_parse_int(invoice_number) + 1
+
+        with open(f'{application_modules.get_options().configuration_path}', 'w') as file:
+            json.dump(data, file, indent=4)
+    except Exception as e:
+        application_modules.get_log_manager().info(
+            f'An unexpected error occurred while trying to save a new invoice number. Details {e}')
+        return False
+
+    return True
 
 
 def get_formatted_number(prefix, sequence_number):

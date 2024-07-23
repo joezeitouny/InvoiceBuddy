@@ -23,7 +23,11 @@
                  style="width:200px; height:150px">
         </div>
         <div class="col-8 text-end">
+            {% if invoice_type == 'credit' %}
+            <h1>CREDIT INVOICE</h1>
+            {% else %}
             <h1>INVOICE</h1>
+            {% endif %}
             <strong>{{ seller_name }}</strong><br>
             {{ seller_address }}<br>
             {{ seller_country }}<br>

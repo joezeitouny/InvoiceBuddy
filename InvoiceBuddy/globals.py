@@ -1,3 +1,5 @@
+from enum import Enum
+
 # General
 APPLICATION_NAME = 'InvoiceBuddy'
 APPLICATION_VERSION = '0.1.4'
@@ -19,5 +21,25 @@ PROPOSAL_FOLDER = "proposals"
 
 # Presentation
 ITEMS_ITEMS_PER_PAGE = 10
+CUSTOMERS_ITEMS_PER_PAGE = 10
 PAST_INVOICES_TABLE_ITEMS_PER_PAGE = 10
 PAST_PROPOSALS_TABLE_ITEMS_PER_PAGE = 10
+
+
+# Invoices
+class InvoiceType(Enum):
+    CREDIT = 'credit'
+    DEBIT = 'debit'
+
+
+class InvoiceStatus(Enum):
+    UNPAID = 0
+    PAID = 1
+    CANCELED = 2
+
+
+# Proposals
+class ProposalStatus(Enum):
+    UNACCEPTED = 0
+    ACCEPTED = 1
+    REJECTED = 2
