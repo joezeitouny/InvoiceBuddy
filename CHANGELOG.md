@@ -1,3 +1,10 @@
+## 0.2.0 (2024-07-23)
+
+* Added cutomers model
+* Canceled invoices now generate credit invoices
+* Seller logo is now also stored in the tmp directory so that when the application is updated the previously uploaded seller logo remains
+* Version bump to 0.2.0
+
 ## 0.1.4 (2024-07-22)
 
 * UI Layout improvements
