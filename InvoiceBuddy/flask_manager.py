@@ -160,6 +160,17 @@ class FlaskManager:
         global application_modules
         application_modules = ApplicationModules(self._options, _log_manager)
 
+        # If a seller logo file exists in the tmp folder then copy it to the static folder
+        seller_logo_src_path = os.path.join(self._options.tmp_path, globals.SELLER_LOGO_FILENAME)
+        if utils.check_file_exists(seller_logo_src_path):
+            # Get the path of the static directory
+            static_folder_path = app.static_folder
+
+            # Get the absolute path of the static folder
+            absolute_static_path = os.path.abspath(static_folder_path)
+            seller_logo_dst_path = os.path.join(absolute_static_path, globals.SELLER_LOGO_FILENAME)
+            utils.copy_file(src=seller_logo_src_path, dst=seller_logo_dst_path)
+
         # Create tables before running the app
         with app.app_context():
             db.create_all()
@@ -208,13 +219,17 @@ def upload_seller_logo():
         # Get the path of the static directory
         static_folder_path = app.static_folder
 
-        # Get the absolute path
+        # Get the absolute path of the static directory
         absolute_static_path = os.path.abspath(static_folder_path)
-        resulting_path = os.path.join(absolute_static_path, "seller-logo.png")
+        seller_logo_src_path = os.path.join(absolute_static_path, globals.SELLER_LOGO_FILENAME)
 
         if file:
             try:
-                file.save(resulting_path)
+                file.save(seller_logo_src_path)
+                seller_logo_dst_path = os.path.join(application_modules.get_options().tmp_path,
+                                                    globals.SELLER_LOGO_FILENAME)
+                utils.copy_file(src=seller_logo_src_path, dst=seller_logo_dst_path)
+
                 # Store the uploaded JSON file on your server
                 return 'Seller logo successfully updated!'
             except Exception as e:
@@ -913,4 +928,4 @@ def get_formatted_number(prefix, sequence_number):
 
 def is_json_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() == 'json'
+        filename.rsplit('.', 1)[1].lower() == 'json'

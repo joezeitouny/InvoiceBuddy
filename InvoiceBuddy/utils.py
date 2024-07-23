@@ -1,4 +1,6 @@
 from datetime import datetime
+import os
+import shutil
 
 from InvoiceBuddy import globals
 
@@ -81,3 +83,11 @@ def find_nearest_timestamp(array_of_timestamps, target_timestamp):
     nearest_timestamp = array_of_timestamps[nearest_index]
 
     return nearest_timestamp
+
+
+def check_file_exists(file_path):
+    return os.path.exists(file_path)
+
+
+def copy_file(src, dst):
+    return shutil.copyfile(src, dst)
