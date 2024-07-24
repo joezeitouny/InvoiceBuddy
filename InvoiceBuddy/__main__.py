@@ -5,36 +5,12 @@ import os
 
 from InvoiceBuddy import globals, utils, app
 
-if __name__ == '__main__':
-    # Create an options list using the Options Parser
-    parser = optparse.OptionParser()
-    parser.set_description(f'Version {globals.APPLICATION_VERSION}. '
-                           f'A tool to help with generating invoices and proposals for freelancers '
-                           f'or small businesses.')
-    parser.set_usage(f'python3 -m {globals.APPLICATION_NAME} --config=CONFIGURATION_PATH')
-    parser.add_option('--config', dest='configuration_path', type='string', help=f'Path to the configuration file')
+CONFIG_FILE_PATH = os.environ.get('CONFIG_ FILE_ PATH', '/InvoiceBuddy/sample-config.json')
 
-    (options, args) = parser.parse_args()
 
-    # Check if the CONFIG_PATH environment variable is set
-    default_configuration_path = '/InvoiceBuddy/sample-config.json'
-    env_configuration_path = os.environ.get('CONFIG_FILE_PATH', default_configuration_path)
-    if env_configuration_path != default_configuration_path and not options.configuration_path:
-        options.configuration_path = env_configuration_path
-
-    if not options.configuration_path:
-        print(f'Invalid argument: Configuration path is a required argument\r\n')
-        parser.print_help()
-    elif not os.path.exists(options.configuration_path):
-        print(f'Invalid argument: Valid JSON configuration file path is required\r\n')
-        parser.print_help()
-    else:
-        try:
-            # Open the configuration JSON file
-            f = open(f'{options.configuration_path}')
-
-            # returns JSON object as
-            # a dictionary
+def parse_config(options):
+    try:
+        with open(options.configuration_path) as f:
             data = json.load(f)
 
             options.output_path = data['output_path']
@@ -63,10 +39,38 @@ if __name__ == '__main__':
             options.seller_iban = data['seller']['seller_iban']
             options.seller_bic = data['seller']['seller_bic']
             options.seller_paypal_address = data['seller']['seller_paypal_address']
-        except Exception as e:
-            print(f'Error while parsing the specified JSON configuration file. Details {e}\r\n')
-            parser.print_help()
-            quit()
+    except Exception as e:
+        print(f'Error while parsing the specified JSON configuration file. Details {e}\r\n')
+        quit()
+
+    return options
+
+
+def main():
+    # Create an options list using the Options Parser
+    parser = optparse.OptionParser()
+    parser.set_description(f'Version {globals.APPLICATION_VERSION}. '
+                           f'A tool to help with generating invoices and proposals for freelancers '
+                           f'or small businesses.')
+    parser.set_usage(f'python3 -m {globals.APPLICATION_NAME} --config=CONFIGURATION_PATH')
+    parser.add_option('--config', dest='configuration_path', type='string', help=f'Path to the configuration file')
+
+    (options, args) = parser.parse_args()
+
+    # Check if the CONFIG_PATH environment variable is set
+    default_configuration_path = '/InvoiceBuddy/sample-config.json'
+    env_configuration_path = os.environ.get('CONFIG_FILE_PATH', default_configuration_path)
+    if env_configuration_path != default_configuration_path and not options.configuration_path:
+        options.configuration_path = env_configuration_path
+
+    if not options.configuration_path:
+        print(f'Invalid argument: Configuration path is a required argument\r\n')
+        parser.print_help()
+    elif not os.path.exists(options.configuration_path):
+        print(f'Invalid argument: Valid JSON configuration file path is required\r\n')
+        parser.print_help()
+    else:
+        options = parse_config(options)
 
         log_numeric_level = getattr(logging, options.log_level.upper(), None)
         if not options.output_path:
@@ -83,3 +87,7 @@ if __name__ == '__main__':
             app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
             from InvoiceBuddy.flask_manager import FlaskManager
             FlaskManager(options)
+
+
+if __name__ == '__main__':
+    main()
