@@ -1,0 +1,129 @@
+<div id="new_invoice_modal" tabindex="-1" class="modal fade" data-backdrop="static"
+     xmlns="http://www.w3.org/1999/html">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
+        <div class="modal-content">
+            <form id="new_invoice_form" class="needs-validation" novalidate>
+                <div class="modal-header bg-success text-light">
+                    <h5 class="modal-title">New Invoice</h5>
+                </div>
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <div class="form-group">
+                        <div class="container border rounded-1 p-1">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label class="form-label" for="new_invoice_number">Invoice Number</label>
+                                </div>
+                                <div class="col">
+                                    <input id="new_invoice_number" class="form-control p-0" type="text"
+                                           placeholder="Invoice Number" name="invoice_number"
+                                           required><br>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label class="form-label" for="new_invoice_date">Invoice Date</label>
+                                </div>
+                                <div class="col">
+                                    <input id="new_invoice_date" class="form-control p-0" type="date"
+                                           name="date"
+                                           required><br>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label class="form-label" for="new_invoice_due_date">Due Date</label>
+                                </div>
+                                <div class="col">
+                                    <input id="new_invoice_due_date" class="form-control p-0" type="date"
+                                           name="date"
+                                           required><br>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label class="form-label" for="new_invoice_reference_number">Reference
+                                        Number</label>
+                                </div>
+                                <div class="col">
+                                    <input id="new_invoice_reference_number" class="form-control p-0"
+                                           type="text"
+                                           placeholder="Reference Number" name="invoice_reference_number"><br>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label class="form-label" for="new_invoice_customer_name">Customer
+                                        Name</label>
+                                </div>
+                                <div class="col">
+                                    <input id="new_invoice_customer_name" class="form-control p-0"
+                                           placeholder="Customer Name" type="text" list="predefinedCustomers"
+                                           name="customer_name"
+                                           required><br>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label" for="new_invoice_description">Description</label>
+                                </div>
+                                <div class="col-12">
+                                <textarea class="container form-control p-0" id="new_invoice_description"
+                                          name="description" rows="3" required></textarea><br>
+                                </div>
+                            </div>
+                        </div>
+                        <h2>Items</h2>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="invoiceItemsTable">
+                                <thead>
+                                <tr>
+                                    <th scope="col" style="min-width: 150px">Title</th>
+                                    <th scope="col" style="min-width: 250px">Description</th>
+                                    <th scope="col" style="min-width: 75px">Qty / Hrs</th>
+                                    <th scope="col" style="min-width: 75px">Price ({{ currency_symbol }})</th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody id="invoiceItemsContainer">
+                                <tr class="invoiceItem">
+                                    <td class="col-4"><input type="text" class="form-control itemTitleInput"
+                                                             list="predefinedItems" name="title[]"
+                                                             required>
+                                    </td>
+                                    <td class="col-5"><textarea class="form-control" name="description[]"
+                                                                rows="3"></textarea>
+                                    </td>
+                                    <td class="col-1"><input type="number" class="form-control"
+                                                             name="quantity[]"
+                                                             min="1"
+                                                             value="1" required></td>
+                                    <td class="col-1"><input type="number" class="form-control" name="price[]"
+                                                             step="1"
+                                                             min="0"
+                                                             value="0" required>
+                                    </td>
+                                    <td class="col-1" style="text-align: center;">
+                                        <button type="button" class="btn btn-danger btn-sm removeItem">
+                                            <span><i class="bi bi-trash"></i></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <button type="button" id="addInvoiceItem" class="btn btn-primary mb-3">Add item</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            onclick="$('#new_invoice_modal').modal('hide');">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary" onclick="generateInvoice()">Create Invoice
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

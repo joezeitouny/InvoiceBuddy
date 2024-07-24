@@ -1,0 +1,70 @@
+<div id="about_us_modal" tabindex="-1" class="modal fade" data-backdrop="static"
+         xmlns="http://www.w3.org/1999/html"
+         role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" id="about_us_modal_content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{application_name}}</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row mt-2 mb-2">
+                        <span><b>Created by Joe Zeitouny</b></span>
+                    </div>
+                    <div class="row mb-2">
+                        <span><b>Version&nbsp {{application_version}}</b></span>
+                    </div>
+                    <div class="row mb-2">
+                        <span><b>Website</b>&nbsp <a href="https://invoicebuddy.site" target="_blank">https://invoicebuddy.site</a></span>
+                    </div>
+                    <div class="row mb-2">
+                        <div id="system_configuration_card" class="card border">
+                            <div class="card-body p-0">
+                                <form action="/upload_config" method="POST" enctype="multipart/form-data">
+                                    <h5 class="card-title">System Configuration</h5>
+                                    <div class="mb-2">
+                                        <label for="configFormFile" class="form-label">Upload JSON configuration
+                                            file</label>
+                                        <input class="form-control" type="file" id="configFormFile" name="config_file"
+                                               accept=".json">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary mb-1">Upload Configuration</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div id="seller_logo_card" class="card border">
+                            <div class="card-body p-0">
+                                <div class="row align-items-center">
+                                    <div class="col-9">
+                                        <form action="/upload_seller_logo" method="POST" enctype="multipart/form-data">
+                                            <h5 class="card-title">Seller Logo</h5>
+                                            <div class="mb-2">
+                                                <label for="sellerLogoFormFile" class="form-label">Upload new
+                                                    logo <strong>(only .png files accepted)</strong></label>
+                                                <input class="form-control" type="file" id="sellerLogoFormFile"
+                                                       name="seller_logo" accept="image/*">
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary mb-1">Upload Logo</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-3 text-center">
+                                        Uploaded
+                                        <img src="/static/seller-logo.png" alt="Seller Logo"
+                                             style="width:100px; height:75px">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="close btn btn-secondary" onclick="hideAboutUsModal()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
