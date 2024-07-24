@@ -388,6 +388,11 @@
 
                     // hide the create customer form
                     $('#new_customer_modal').modal('hide');
+
+                    if (typeof refreshData === 'function') {
+                        // refresh the data on the page
+                        refreshData(1);
+                    }
                 }
             },
             error: function (error) {
@@ -421,6 +426,11 @@
 
                     // hide the create item form
                     $('#new_item_modal').modal('hide');
+
+                    if (typeof refreshData === 'function') {
+                        // refresh the data on the page
+                        refreshData(1);
+                    }
                 }
             },
             error: function (error) {
@@ -473,6 +483,11 @@
 
                     // show the newly created invoice
                     loadNewTabWithInvoiceID(invoice_id, true);
+
+                    if (typeof refreshData === 'function') {
+                        // refresh the data on the page
+                        refreshData(1);
+                    }
                 }
             },
             error: function (error) {
@@ -525,6 +540,11 @@
 
                     // show the newly created proposal
                     loadNewTabWithProposalID(proposal_id, true);
+
+                    if (typeof refreshData === 'function') {
+                        // refresh the data on the page
+                        refreshData(1);
+                    }
                 }
             },
             error: function (error) {
