@@ -1,3 +1,8 @@
+## 0.2.1 (2024-07-24)
+
+* Page data now refreshes after adding customer / item / invoice / proposal to reflect the newly added entry
+* Version bump to 0.2.1
+
 ## 0.2.0 (2024-07-23)
 
 * Added cutomers model
