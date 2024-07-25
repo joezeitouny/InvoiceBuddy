@@ -63,8 +63,8 @@
                 var newItem = $('<tr class="invoiceItem">' +
                     '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
-                    '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
                 $('#invoiceItemsContainer').append(newItem);
@@ -82,8 +82,8 @@
                 var newItem = $('<tr class="proposalItem">' +
                     '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
-                    '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
                 $('#proposalItemsContainer').append(newItem);
@@ -175,6 +175,8 @@
     function showNewCustomerModal() {
         $('#new_customer_modal').modal('show');
 
+        clearFormValidation('add_customer_form');
+
         // clear up the form fields
         $('#new_customer_name').val('');
         $('#new_customer_email').val('');
@@ -187,6 +189,8 @@
     function showNewItemModal() {
         $('#new_item_modal').modal('show');
 
+        clearFormValidation('add_item_form');
+
         // clear up the form fields
         $('#new_item_title').val('');
         $('#new_item_description').val('');
@@ -195,6 +199,8 @@
 
     function showNewInvoiceModal() {
         $('#loading_modal').modal('show');
+
+        clearFormValidation('new_invoice_form');
 
         // clear up the form fields
         $('#new_invoice_number').val('');
@@ -279,6 +285,8 @@
 
     function showNewProposalModal() {
         $('#loading_modal').modal('show');
+
+        clearFormValidation('new_proposal_form');
 
         // clear up the form fields
         $('#new_proposal_number').val('');
@@ -452,9 +460,9 @@
             var item = {
                 title: $(this).find('input[name="title[]"]').val(),
                 description: $(this).find('textarea[name="description[]"]').val(),
-                quantity: parseInt($(this).find('input[name="quantity[]"]').val()),
+                quantity: parseFloat($(this).find('input[name="quantity[]"]').val()),
                 price: parseFloat($(this).find('input[name="price[]"]').val()),
-                amount: parseInt($(this).find('input[name="quantity[]"]').val()) * parseFloat($(this).find('input[name="price[]"]').val())
+                amount: parseFloat($(this).find('input[name="quantity[]"]').val()) * parseFloat($(this).find('input[name="price[]"]').val())
             };
             items.push(item);
         });
@@ -509,9 +517,9 @@
             var item = {
                 title: $(this).find('input[name="title[]"]').val(),
                 description: $(this).find('textarea[name="description[]"]').val(),
-                quantity: parseInt($(this).find('input[name="quantity[]"]').val()),
+                quantity: parseFloat($(this).find('input[name="quantity[]"]').val()),
                 price: parseFloat($(this).find('input[name="price[]"]').val()),
-                amount: parseInt($(this).find('input[name="quantity[]"]').val()) * parseFloat($(this).find('input[name="price[]"]').val())
+                amount: parseFloat($(this).find('input[name="quantity[]"]').val()) * parseFloat($(this).find('input[name="price[]"]').val())
             };
             items.push(item);
         });
@@ -625,6 +633,32 @@
         });
       }, false);
     })();
+
+    function clearFormValidation(formId) {
+        // Get the form element
+        const form = document.getElementById(formId);
+
+        // Reset the form
+        form.reset();
+
+        // Remove validation classes from the form itself
+        form.classList.remove('was-validated');
+
+        // Remove validation classes from all form elements
+        form.querySelectorAll('.is-invalid, .is-valid').forEach(element => {
+            element.classList.remove('is-invalid', 'is-valid');
+        });
+
+        // Clear any error messages
+        form.querySelectorAll('.invalid-feedback').forEach(element => {
+            element.textContent = '';
+        });
+
+        // If you're using Bootstrap's form validation plugin
+        if (typeof form.validate === 'function') {
+            form.validate().resetForm();
+        }
+    }
 </script>
 
 </body>
