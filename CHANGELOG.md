@@ -1,3 +1,9 @@
+## 0.2.2 (2024-07-25)
+
+* Added support for decimals in the quantity field (when adding invoice / proposal items)
+* Fixed an issue where form fields validation wasn't cleared before presenting the form
+* Version bump to 0.2.2
+
 ## 0.2.1 (2024-07-24)
 
 * Page data now refreshes after adding customer / item / invoice / proposal to reflect the newly added entry
