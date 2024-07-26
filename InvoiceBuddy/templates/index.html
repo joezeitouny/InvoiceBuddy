@@ -9,7 +9,7 @@
 <div class="container mt-4">
     <h2>Active Invoices (<span id="active_invoices_count_value">0</span>)</h2>
     <div class="table-responsive">
-        <table class="table table-striped" id="active_invoices_table">
+        <table class="table table-striped table-hover" id="active_invoices_table">
             <thead class="thead-light">
             <tr>
                 <th scope="col">Number</th>
@@ -38,7 +38,7 @@
 <div class="container mt-4">
     <h2>Active Proposals (<span id="active_proposals_count_value">0</span>)</h2>
     <div class="table-responsive">
-        <table class="table table-striped" id="active_proposals_table">
+        <table class="table table-striped table-hover" id="active_proposals_table">
             <thead class="thead-light">
             <tr>
                 <th scope="col">Number</th>
@@ -86,6 +86,7 @@
                 // Repopulate the table
                 for (const [entry, values] of Object.entries(data)) {
                         const row = activeInvoicesTable.insertRow();
+                        row.setAttribute('data-row-id', values.id);
                         const cell1 = row.insertCell(0);
                         const cell2 = row.insertCell(1);
                         const cell3 = row.insertCell(2);
@@ -95,13 +96,19 @@
                         const cell7 = row.insertCell(6);
                         const cell8 = row.insertCell(7);
 
-                        cell1.innerHTML = values.invoice_number;
-                        cell2.innerHTML = values.invoice_date;
-                        cell3.innerHTML = values.due_date;
-                        cell4.innerHTML = values.reference_number;
-                        cell5.innerHTML = values.customer_name;
-                        cell6.innerHTML = values.description;
-                        cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
+                        cell1.textContent = values.invoice_number;
+                        cell2.textContent = values.invoice_date;
+                        cell3.textContent = values.due_date;
+                        cell4.classList.add('text-truncate');
+                        cell4.style.maxWidth = "80px";
+                        cell4.textContent = values.reference_number;
+                        cell5.classList.add('text-truncate');
+                        cell5.style.maxWidth = "100px";
+                        cell5.textContent = values.customer_name;
+                        cell6.classList.add('text-truncate');
+                        cell6.style.maxWidth = "250px";
+                        cell6.textContent = values.description;
+                        cell7.textContent = values.total_amount + ' ' + values.currency_symbol;
                         cell8.innerHTML = `<button type="button" class="btn btn-danger mark-canceled-button me-1" data-toggle="tooltip" data-placement="top" title="Cancel invoice" data-invoice-number="${values.invoice_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-paid-button me-1" data-toggle="tooltip" data-placement="top" title="Mark invoice as paid" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-cash-coin"></i></button><button type="button" class="btn btn-primary view-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="View invoice" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button me-1" data-toggle="tooltip" data-placement="top" title="Print invoice" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-invoice-button" data-toggle="tooltip" data-placement="top" title="Duplicate invoice" data-id="${values.id}"><i class="bi bi-copy"></i></button>`;
 
                         activeInvoicesTotalAmount += values.total_amount;
@@ -129,6 +136,14 @@
                     $('#markInvoicePaidModalValue').text(invoice_number);
 
                     $('#mark_invoice_as_paid_modal').modal('show');
+                });
+
+                // Handle row clicks events
+                $('#active_invoices_table tr').click(function(event) {
+                    // Prevent default link behavior
+                    event.preventDefault();
+
+                    loadNewTabWithInvoiceID(event.currentTarget.getAttribute("data-row-id"), false);
                 });
 
                 // Handle view invoice button clicks
@@ -180,22 +195,29 @@
                 // Repopulate the table
                 for (const [entry, values] of Object.entries(data)) {
                         const row = activeProposalsTable.insertRow();
-                        const cell1 = row.insertCell(0);
-                        const cell2 = row.insertCell(1);
-                        const cell3 = row.insertCell(2);
-                        const cell4 = row.insertCell(3);
-                        const cell5 = row.insertCell(4);
-                        const cell6 = row.insertCell(5);
-                        const cell7 = row.insertCell(6);
-                        const cell8 = row.insertCell(7);
+                        row.setAttribute('data-row-id', values.id);
+                        let cell1 = row.insertCell(0);
+                        let cell2 = row.insertCell(1);
+                        let cell3 = row.insertCell(2);
+                        let cell4 = row.insertCell(3);
+                        let cell5 = row.insertCell(4);
+                        let cell6 = row.insertCell(5);
+                        let cell7 = row.insertCell(6);
+                        let cell8 = row.insertCell(7);
 
-                        cell1.innerHTML = values.proposal_number;
-                        cell2.innerHTML = values.proposal_date;
-                        cell3.innerHTML = values.due_date;
-                        cell4.innerHTML = values.reference_number;
-                        cell5.innerHTML = values.customer_name;
-                        cell6.innerHTML = values.description;
-                        cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
+                        cell1.textContent = values.proposal_number;
+                        cell2.textContent = values.proposal_date;
+                        cell3.textContent = values.due_date;
+                        cell4.classList.add('text-truncate');
+                        cell4.style.maxWidth = "80px";
+                        cell4.textContent = values.reference_number;
+                        cell5.classList.add('text-truncate');
+                        cell5.style.maxWidth = "100px";
+                        cell5.textContent = values.customer_name;
+                        cell6.classList.add('text-truncate');
+                        cell6.style.maxWidth = "250px";
+                        cell6.textContent = values.description;
+                        cell7.textContent = values.total_amount + ' ' + values.currency_symbol;
                         cell8.innerHTML = `<button type="button" class="btn btn-danger mark-rejected-button me-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as rejected" data-proposal-number="${values.proposal_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-accepted-button me-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as accepted" data-proposal-number="${values.proposal_number}"><i class="bi bi-check2-square"></i></button><button type="button" class="btn btn-primary view-proposal-button me-1" data-toggle="tooltip" data-placement="top" title="View proposal" data-id="${values.id}" data-proposal-number="${values.proposal_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button me-1" data-toggle="tooltip" data-placement="top" title="Print proposal" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-proposal-button" data-toggle="tooltip" data-placement="top" title="Duplicate proposal" data-id="${values.id}"><i class="bi bi-copy"></i></button>`;
 
                         activeProposalsTotalAmount += values.total_amount;
@@ -222,6 +244,14 @@
                     $('#markProposalAcceptedModalValue').text(proposal_number);
 
                     $('#mark_proposal_as_accepted_modal').modal('show');
+                });
+
+                // Handle row clicks events
+                $('#active_proposals_table tr').click(function(event) {
+                    // Prevent default link behavior
+                    event.preventDefault();
+
+                    loadNewTabWithProposalID(event.currentTarget.getAttribute("data-row-id"), false);
                 });
 
                 // Handle view proposal button clicks
