@@ -109,6 +109,58 @@
             // Add an event listener to each selected element.
             elements[i].addEventListener('input', populateItemFields);
         }
+
+        document.getElementById('upload_seller_logo_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            fetch('/upload_seller_logo', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    alert('Seller logo successfully uploaded!');
+                } else {
+                    alert('Upload of the specified seller logo failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+
+        document.getElementById('upload_config_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            fetch('/upload_config', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    alert('Configuration file successfully uploaded and will be applied on the next run!');
+                } else {
+                    alert('Upload of the specified configuration file failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+
+        document.getElementById('download_configuration').addEventListener('click', function(event) {
+          event.preventDefault();
+
+          downloadConfiguration();
+        });
     });
 
     $(document).ajaxError(function( event, request, settings ) {
@@ -658,6 +710,45 @@
         if (typeof form.validate === 'function') {
             form.validate().resetForm();
         }
+    }
+
+    function downloadConfiguration(){
+        $('#loading_modal').modal('show');
+        $.ajax({
+            url: '/download_config',
+            method: 'GET',
+            success: function(data) {
+                $('#loading_modal').modal('hide');
+                if (!data)
+                    notify_warning('Error while downloading the current configuration');
+                else {
+                    // Create a Blob with the string content
+                    const blob = new Blob([data], { type: 'text/plain' });
+
+                    // Create a temporary URL for the Blob
+                    const url = URL.createObjectURL(blob);
+
+                    // Create a temporary anchor element
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = "config.json";
+
+                    // Append the link to the body (required for Firefox)
+                    document.body.appendChild(link);
+
+                    // Programmatically click the link to trigger the download
+                    link.click();
+
+                    // Clean up by removing the link and revoking the URL
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while downloading the current configuration! Reason: ' + error);
+            }
+        });
     }
 </script>
 

@@ -1,7 +1,7 @@
 import math
 import time
 import webbrowser
-from flask import render_template, request, jsonify, send_file
+from flask import render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from rich.console import Console
@@ -226,12 +226,31 @@ def upload_config():
         file = request.files['config_file']
         if file and is_json_file(file.filename):
             try:
-                file.save(application_modules.get_options().configuration_path)
                 # Store the uploaded JSON file on your server
-                return 'System configuration updated successfully!'
+                file.save(application_modules.get_options().configuration_path)
             except Exception as e:
-                return f'Error while trying to update the configuration on the server. Details: {e}'
-    return 'Invalid file type'
+                application_modules.get_log_manager().info(
+                    f'Error while trying to update the configuration on the server. Details: {e}')
+                return jsonify(False)
+        else:
+            return jsonify(False)
+
+    return jsonify(True)
+
+
+@app.route('/download_config')
+def download_config():
+    filename = application_modules.get_options().configuration_path
+
+    try:
+        with open(filename) as f:
+            data = f.read()
+    except Exception as e:
+        application_modules.get_log_manager().info(
+            f'Error while trying to read the configuration on the server. Details: {e}')
+        return jsonify(False)
+
+    return jsonify(data)
 
 
 @app.route('/upload_seller_logo', methods=['POST'])
@@ -248,17 +267,19 @@ def upload_seller_logo():
 
         if file:
             try:
-                file.save(seller_logo_src_path)
+                # store the uploaded file in the application static folder
+                file.save(str(seller_logo_src_path))
+
+                # store the uploaded file in the tmp folder
                 seller_logo_dst_path = os.path.join(application_modules.get_options().tmp_path,
                                                     globals.SELLER_LOGO_FILENAME)
                 utils.copy_file(src=seller_logo_src_path, dst=seller_logo_dst_path)
-
-                # Store the uploaded JSON file on your server
-                return 'Seller logo successfully updated!'
             except Exception as e:
-                return f'Error while trying to update the seller logo on the server. Details: {e}'
+                application_modules.get_log_manager().info(
+                    f'Error while trying to update the seller logo on the server. Details: {e}')
+                return jsonify(False)
 
-    return 'Invalid file type'
+    return jsonify(True)
 
 
 @app.route('/new_invoice_number')
@@ -563,7 +584,7 @@ def view_invoice():
         }
 
         for item in invoice_data['items']:
-            item['description'] = item['description'].replace('\n', '<br>')
+            item['description'] = item.get('description', '').replace('\n', '<br>')
 
         return render_template('invoice_template.html', **invoice_data)
 
@@ -602,7 +623,7 @@ def view_proposal():
         }
 
         for item in proposal_data['items']:
-            item['description'] = item['description'].replace('\n', '<br>')
+            item['description'] = item.get('description', '').replace('\n', '<br>')
 
         return render_template('proposal_template.html', **proposal_data)
 
@@ -868,7 +889,7 @@ def mark_proposal_accepted():
             # create a new invoice from the accepted proposal
             invoice_number = new_invoice_number()
             new_invoice = Invoice(
-                invoice_number=invoice_number.json,
+                invoice_number=invoice_number,
                 invoice_date=datetime.now(),
                 due_date=datetime.now() + timedelta(days=application_modules.get_options().invoice_valid_for_days),
                 customer_name=proposal.customer_name,
