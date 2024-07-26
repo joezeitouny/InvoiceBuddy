@@ -1,3 +1,8 @@
+## 0.2.4 (2024-07-26)
+
+* UI Improvements
+* Version bump to 0.2.4
+
 ## 0.2.3 (2024-07-26)
 
 * Reduced the image size for the seller logo in the invoice and proposal templates
