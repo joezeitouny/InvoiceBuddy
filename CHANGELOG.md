@@ -1,3 +1,11 @@
+## 0.2.3 (2024-07-26)
+
+* Reduced the image size for the seller logo in the invoice and proposal templates
+* Added button to download configuration file
+* Improved handling of uploading seller logo and configuration files
+* Fixed typo in the CHANGELOG
+* Version bump to 0.2.3
+
 ## 0.2.2 (2024-07-25)
 
 * Added support for decimals in the quantity field (when adding invoice / proposal items)
