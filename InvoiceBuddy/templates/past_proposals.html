@@ -47,7 +47,7 @@ function refreshData(page) {
             // Repopulate the table
             for (const [entry, values] of Object.entries(data['past_proposals'])) {
                     const row = pastProposalsDataTable.insertRow();
-
+                    row.setAttribute('data-row-id', values.id);
                     const cell1 = row.insertCell(0);
                     const cell2 = row.insertCell(1);
                     const cell3 = row.insertCell(2);
@@ -58,13 +58,19 @@ function refreshData(page) {
                     const cell8 = row.insertCell(7);
                     const cell9 = row.insertCell(8);
 
-                    cell1.innerHTML = values.proposal_number;
-                    cell2.innerHTML = values.proposal_date;
-                    cell3.innerHTML = values.due_date;
-                    cell4.innerHTML = values.reference_number;
-                    cell5.innerHTML = values.customer_name;
-                    cell6.innerHTML = values.description;
-                    cell7.innerHTML = values.total_amount + ' ' + values.currency_symbol;
+                    cell1.textContent = values.proposal_number;
+                    cell2.textContent = values.proposal_date;
+                    cell3.textContent = values.due_date;
+                    cell4.classList.add('text-truncate');
+                    cell4.style.maxWidth = "80px";
+                    cell4.textContent = values.reference_number;
+                    cell5.classList.add('text-truncate');
+                    cell5.style.maxWidth = "100px";
+                    cell5.textContent = values.customer_name;
+                    cell6.classList.add('text-truncate');
+                    cell6.style.maxWidth = "250px";
+                    cell6.textContent = values.description;
+                    cell7.textContent = values.total_amount + ' ' + values.currency_symbol;
                     if (values.status == 1) {
                         cell8.innerHTML = '<div class="bg-success text-light text-center">Accepted</div>';
                     } else if (values.status == 2) {
@@ -72,6 +78,16 @@ function refreshData(page) {
                     }
                     cell9.innerHTML = `<button type="button" class="btn btn-primary view-proposal-button me-1" data-id="${values.id}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button" data-id="${values.id}"><i class="bi bi-printer"></i></button>`;
             }
+
+            // Handle row clicks events
+            $('#past-proposals-data-table tr').click(function(event) {
+                if (event.target instanceof HTMLTableCellElement) {
+                    // Prevent default link behavior
+                    event.preventDefault();
+
+                    loadNewTabWithProposalID(event.currentTarget.getAttribute("data-row-id"), false);
+                }
+            });
 
             // Handle view proposal button clicks
             $('.view-proposal-button').on('click', function () {

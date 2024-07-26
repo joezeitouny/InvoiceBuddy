@@ -140,10 +140,12 @@
 
                 // Handle row clicks events
                 $('#active_invoices_table tr').click(function(event) {
-                    // Prevent default link behavior
-                    event.preventDefault();
+                    if (event.target instanceof HTMLTableCellElement) {
+                        // Prevent default link behavior
+                        event.preventDefault();
 
-                    loadNewTabWithInvoiceID(event.currentTarget.getAttribute("data-row-id"), false);
+                        loadNewTabWithInvoiceID(event.currentTarget.getAttribute("data-row-id"), false);
+                    }
                 });
 
                 // Handle view invoice button clicks
@@ -248,10 +250,12 @@
 
                 // Handle row clicks events
                 $('#active_proposals_table tr').click(function(event) {
-                    // Prevent default link behavior
-                    event.preventDefault();
+                    if (event.target instanceof HTMLTableCellElement) {
+                        // Prevent default link behavior
+                        event.preventDefault();
 
-                    loadNewTabWithProposalID(event.currentTarget.getAttribute("data-row-id"), false);
+                        loadNewTabWithProposalID(event.currentTarget.getAttribute("data-row-id"), false);
+                    }
                 });
 
                 // Handle view proposal button clicks
