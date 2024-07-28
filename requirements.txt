@@ -4,3 +4,6 @@ rich==13.3.1
 SQLAlchemy~=2.0.31
 Flask-SQLAlchemy~=3.1.1
 qrcode[pil]~=7.4.2
+plotly~=5.23.0
+pandas~=2.2.2
+

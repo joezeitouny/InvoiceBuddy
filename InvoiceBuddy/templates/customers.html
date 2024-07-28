@@ -220,30 +220,6 @@
             }
         });
 
-        $.ajax({
-            url: '/past_invoices_count',
-            method: 'GET',
-            success: function(response) {
-                $('#past_invoices_count').text(String(response));
-            },
-            error: function (error) {
-                $('#loading_modal').modal('hide');
-                notify_warning('Error while trying to retrieve past invoices count! Reason: ' + error);
-            }
-        });
-
-        $.ajax({
-            url: '/past_proposals_count',
-            method: 'GET',
-            success: function(response) {
-                $('#past_proposals_count').text(String(response));
-            },
-            error: function (error) {
-                $('#loading_modal').modal('hide');
-                notify_warning('Error while trying to retrieve past proposals count! Reason: ' + error);
-            }
-        });
-
         // hide the loading modal
         $('#loading_modal').modal('hide');
     }

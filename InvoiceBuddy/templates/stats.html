@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<div id="graph1"></div>
+<div id="graph2"></div>
+<div id="graph3"></div>
+<div id="graph4"></div>
+<div id="graph5"></div>
+
+<script>
+    function createGraph(graphData, elementId) {
+        const data = JSON.parse(graphData);
+        Plotly.newPlot(elementId, data.data, data.layout);
+    }
+
+    fetch('/get_stats')
+        .then(response => response.json())
+        .then(data => {
+            createGraph(data.fig1, 'graph1');
+            createGraph(data.fig2, 'graph2');
+            createGraph(data.fig3, 'graph3');
+            createGraph(data.fig4, 'graph4');
+            createGraph(data.fig5, 'graph5');
+        });
+</script>
+
+{% endblock %}
