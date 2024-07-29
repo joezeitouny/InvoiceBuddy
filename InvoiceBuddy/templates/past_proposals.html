@@ -22,11 +22,6 @@
             <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
         </div>
     </div>
-    <div class="row mb-3">
-        <div class="col-md-12">
-            <h4>Total Sum: <span id="total-sum"></span></h4>
-        </div>
-    </div>
     <div class="table-responsive">
         <table class="table table-striped table-hover" id="past-proposals-data-table">
             <thead class="thead-light">
@@ -52,6 +47,11 @@
             <!-- Pagination links will be populated here -->
         </ul>
     </nav>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <h4>Total Sum: <span id="total-sum"></span></h4>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -156,7 +156,7 @@
                 // Update pagination
                 updatePagination(data['total_number_of_pages'], page);
 
-                $('#total-sum').text(data['total_sum'] + ' {{ currency_symbol }}');
+                $('#total-sum').text(data['total_sum'] + ' {{ currency_name }}');
                 $('#past-proposals-count').html(parseInt(data['total_number_of_proposals']));
                 $('#past-proposals-count-header').html(parseInt(data['total_number_of_proposals']));
             }
