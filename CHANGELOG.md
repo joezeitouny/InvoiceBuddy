@@ -1,3 +1,12 @@
+## 0.2.5 (2024-07-29)
+
+* Fixed an issue where multiline content in the description field of invoices and proposals wasn't correctly rendered
+* Added search and filtering capabilities to past invoicesAdded Stats page
+* Added search and filtering capabilities to past proposals
+* Added Stats page
+* UI Improvements
+* Version bump to 0.2.5
+
 ## 0.2.4 (2024-07-26)
 
 * UI Improvements
