@@ -3,6 +3,30 @@
 
 <div class="container mt-4">
     <h2>Past Proposals (<span id="past-proposals-count-header"></span>)</h2>
+    <!-- Search and Filter options -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <input type="text" id="search-input" class="form-control" placeholder="Search...">
+        </div>
+        <div class="col-md-3">
+            <select id="status-filter" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="1">Accepted</option>
+                <option value="2">Rejected</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="date" id="date-filter" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <h4>Total Sum: <span id="total-sum"></span></h4>
+        </div>
+    </div>
     <div class="table-responsive">
         <table class="table table-striped table-hover" id="past-proposals-data-table">
             <thead class="thead-light">
@@ -31,108 +55,150 @@
 </div>
 
 <script type="text/javascript">
-function refreshData(page) {
-    $.ajax({
-        type: 'GET',
-        url: '/past_proposals?page=' + page,
-        success: function(data) {
-            // Populate past proposals section
-            const pastProposalsDataTable = document.getElementById('past-proposals-data-table').getElementsByTagName('tbody')[0];
-            const tableBody = $('#past-proposals-data-table-body');
-            const pagination = $('#pagination');
+    let currentFilters = {
+        search: '',
+        status: '',
+        date: ''
+    };
 
-            // clear all the old rows first
-            tableBody.empty();
+    function refreshData(page) {
+        $.ajax({
+            type: 'GET',
+            url: '/past_proposals',
+            data: {
+                page: page,
+                search: currentFilters.search,
+                status: currentFilters.status,
+                date: currentFilters.date
+            },
+            success: function(data) {
+                // Populate past proposals section
+                const pastProposalsDataTable = document.getElementById('past-proposals-data-table').getElementsByTagName('tbody')[0];
+                const tableBody = $('#past-proposals-data-table-body');
+                const pagination = $('#pagination');
 
-            // Repopulate the table
-            for (const [entry, values] of Object.entries(data['past_proposals'])) {
-                    const row = pastProposalsDataTable.insertRow();
-                    row.setAttribute('data-row-id', values.id);
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    const cell3 = row.insertCell(2);
-                    const cell4 = row.insertCell(3);
-                    const cell5 = row.insertCell(4);
-                    const cell6 = row.insertCell(5);
-                    const cell7 = row.insertCell(6);
-                    const cell8 = row.insertCell(7);
-                    const cell9 = row.insertCell(8);
+                // clear all the old rows first
+                tableBody.empty();
 
-                    cell1.textContent = values.proposal_number;
-                    cell2.textContent = values.proposal_date;
-                    cell3.textContent = values.due_date;
-                    cell4.classList.add('text-truncate');
-                    cell4.style.maxWidth = "80px";
-                    cell4.textContent = values.reference_number;
-                    cell5.classList.add('text-truncate');
-                    cell5.style.maxWidth = "100px";
-                    cell5.textContent = values.customer_name;
-                    cell6.classList.add('text-truncate');
-                    cell6.style.maxWidth = "250px";
-                    cell6.textContent = values.description;
-                    cell7.textContent = values.total_amount + ' ' + values.currency_symbol;
-                    if (values.status == 1) {
-                        cell8.innerHTML = '<div class="bg-success text-light text-center">Accepted</div>';
-                    } else if (values.status == 2) {
-                        cell8.innerHTML = '<div class="bg-danger text-light text-center">Rejected</div>';
-                    }
-                    cell9.innerHTML = `<button type="button" class="btn btn-primary view-proposal-button me-1" data-id="${values.id}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button" data-id="${values.id}"><i class="bi bi-printer"></i></button>`;
-            }
+                // Repopulate the table
+                for (const [entry, values] of Object.entries(data['past_proposals'])) {
+                        const row = pastProposalsDataTable.insertRow();
+                        row.setAttribute('data-row-id', values.id);
+                        const cell1 = row.insertCell(0);
+                        const cell2 = row.insertCell(1);
+                        const cell3 = row.insertCell(2);
+                        const cell4 = row.insertCell(3);
+                        const cell5 = row.insertCell(4);
+                        const cell6 = row.insertCell(5);
+                        const cell7 = row.insertCell(6);
+                        const cell8 = row.insertCell(7);
+                        const cell9 = row.insertCell(8);
 
-            // Handle row clicks events
-            $('#past-proposals-data-table tr').click(function(event) {
-                if (event.target instanceof HTMLTableCellElement) {
-                    // Prevent default link behavior
-                    event.preventDefault();
-
-                    loadNewTabWithProposalID(event.currentTarget.getAttribute("data-row-id"), false);
+                        cell1.textContent = values.proposal_number;
+                        cell2.textContent = values.proposal_date;
+                        cell3.textContent = values.due_date;
+                        cell4.classList.add('text-truncate');
+                        cell4.style.maxWidth = "80px";
+                        cell4.textContent = values.reference_number;
+                        cell5.classList.add('text-truncate');
+                        cell5.style.maxWidth = "100px";
+                        cell5.textContent = values.customer_name;
+                        cell6.classList.add('text-truncate');
+                        cell6.style.maxWidth = "250px";
+                        cell6.textContent = values.description;
+                        cell7.textContent = values.total_amount + ' ' + values.currency_symbol;
+                        if (values.status == 1) {
+                            cell8.innerHTML = '<div class="bg-success text-light text-center">Accepted</div>';
+                        } else if (values.status == 2) {
+                            cell8.innerHTML = '<div class="bg-danger text-light text-center">Rejected</div>';
+                        }
+                        cell9.innerHTML = `<button type="button" class="btn btn-primary view-proposal-button me-1" data-id="${values.id}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button" data-id="${values.id}"><i class="bi bi-printer"></i></button>`;
                 }
-            });
 
-            // Handle view proposal button clicks
-            $('.view-proposal-button').on('click', function () {
-                const proposal_id = $(this).data('id');
+                // Handle row clicks events
+                $('#past-proposals-data-table tr').click(function(event) {
+                    if (event.target instanceof HTMLTableCellElement) {
+                        // Prevent default link behavior
+                        event.preventDefault();
 
-                loadNewTabWithProposalID(proposal_id, false);
-            });
+                        loadNewTabWithProposalID(event.currentTarget.getAttribute("data-row-id"), false);
+                    }
+                });
 
-            // Handle print proposal button clicks
-            $('.print-proposal-button').on('click', function () {
-                const proposal_id = $(this).data('id');
+                // Handle view proposal button clicks
+                $('.view-proposal-button').on('click', function () {
+                    const proposal_id = $(this).data('id');
 
-                loadNewTabWithProposalID(proposal_id, true);
-            });
+                    loadNewTabWithProposalID(proposal_id, false);
+                });
 
-            pagination.empty();
-            for (let i = 1; i <= parseInt(data['total_number_of_pages']); i++) {
-                let li = `<li class="page-item ${i === page ? 'highlighted' : ''}">`;
-                li += `<a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
-                pagination.append(li);
+                // Handle print proposal button clicks
+                $('.print-proposal-button').on('click', function () {
+                    const proposal_id = $(this).data('id');
+
+                    loadNewTabWithProposalID(proposal_id, true);
+                });
+
+                pagination.empty();
+                for (let i = 1; i <= parseInt(data['total_number_of_pages']); i++) {
+                    let li = `<li class="page-item ${i === page ? 'highlighted' : ''}">`;
+                    li += `<a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                    pagination.append(li);
+                }
+
+                // Handle pagination click
+                pagination.on('click', 'a', function(e) {
+                    e.preventDefault();
+                    const page = $(this).data('page');
+                    refreshData(page);
+                });
+
+                // Update pagination
+                updatePagination(data['total_number_of_pages'], page);
+
+                $('#total-sum').text(data['total_sum'] + ' {{ currency_symbol }}');
+                $('#past-proposals-count').html(parseInt(data['total_number_of_proposals']));
+                $('#past-proposals-count-header').html(parseInt(data['total_number_of_proposals']));
             }
+        });
 
-            // Handle pagination click
-            pagination.on('click', 'a', function(e) {
-                e.preventDefault();
-                const page = $(this).data('page');
-                refreshData(page);
-            });
+        // hide the loading modal
+        $('#loading_modal').modal('hide');
+    }
 
-            $('#past-proposals-count').html(parseInt(data['total_number_of_proposals']));
-            $('#past-proposals-count-header').html(parseInt(data['total_number_of_proposals']));
+    function updatePagination(totalPages, currentPage) {
+        const pagination = $('#pagination');
+        pagination.empty();
+
+        for (let i = 1; i <= totalPages; i++) {
+            let li = `<li class="page-item ${i === currentPage ? 'active' : ''}">`;
+            li += `<a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+            pagination.append(li);
         }
+    }
+
+    $(document).ready(function() {
+        $('#loading_modal').modal('show');
+
+        setTimeout(() => {
+            refreshData(1);
+        }, 500);
+
+        // Search and filter functionality
+        $('#apply-filters').click(function() {
+            currentFilters.search = $('#search-input').val();
+            currentFilters.status = $('#status-filter').val();
+            currentFilters.date = $('#date-filter').val();
+            refreshData(1);
+        });
+
+        // Handle pagination click
+        $('#pagination').on('click', 'a', function(e) {
+            e.preventDefault();
+            const page = $(this).data('page');
+            refreshData(page);
+        });
     });
-
-    // hide the loading modal
-    $('#loading_modal').modal('hide');
-}
-
-$(document).ready(function() {
-    $('#loading_modal').modal('show');
-
-    setTimeout(() => {
-        refreshData(1);
-    }, 500);
-});
 
 </script>
 {% endblock %}

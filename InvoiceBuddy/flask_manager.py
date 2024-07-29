@@ -757,23 +757,52 @@ def view_past_proposals():
 @app.route('/past_proposals')
 def list_past_proposals():
     page = int(request.args.get('page', 1))
+    search = request.args.get('search', '')
+    status = request.args.get('status', '')
+    date = request.args.get('date', '')
+
     items_per_page = globals.PAST_PROPOSALS_TABLE_ITEMS_PER_PAGE
 
+    # Start with the base query
+    query = Proposal.query.filter(Proposal.status != globals.ProposalStatus.UNACCEPTED.value)
+
+    # Apply filters
+    if search:
+        search = f"%{search}%"
+        query = query.filter(or_(
+            Proposal.proposal_number.ilike(search),
+            Proposal.reference_number.ilike(search),
+            Proposal.customer_name.ilike(search),
+            Proposal.description.ilike(search)
+        ))
+
+    if status:
+        query = query.filter(Proposal.status == int(status))
+
+    if date:
+        date_obj = datetime.strptime(date, '%Y-%m-%d').date()
+        query = query.filter(func.date(Proposal.proposal_date) == date_obj)
+
+    # Get total count for pagination
+    total_proposals = query.count()
+
+    # Calculate the sum of totals for the filtered invoices
+    total_sum = query.with_entities(func.sum(Proposal.total_amount)).scalar() or 0
+
+    # Apply pagination
     start_idx = (page - 1) * items_per_page
-    end_idx = start_idx + items_per_page
+    proposals = query.order_by(Proposal.proposal_date.desc()).offset(start_idx).limit(items_per_page).all()
 
-    proposals = Proposal.query.filter(Proposal.status != globals.ProposalStatus.UNACCEPTED.value).all()
-    paginated_data = [proposal.to_dict() for proposal in proposals[start_idx:end_idx]]
+    paginated_data = [proposal.to_dict() for proposal in proposals]
 
-    total_number_of_pages = math.floor(len(proposals) / items_per_page)
-    if len(proposals) % items_per_page != 0:
-        total_number_of_pages += 1
+    total_number_of_pages = math.ceil(total_proposals / items_per_page)
 
-    total_number_of_proposals = len(proposals)
-
-    data = {'past_proposals': paginated_data,
-            'total_number_of_pages': total_number_of_pages,
-            'total_number_of_proposals': total_number_of_proposals}
+    data = {
+        'past_proposals': paginated_data,
+        'total_number_of_pages': total_number_of_pages,
+        'total_number_of_proposals': total_proposals,
+        'total_sum': round(total_sum, 2)  # Rounding to 2 decimal places
+    }
 
     return jsonify(data)
 
