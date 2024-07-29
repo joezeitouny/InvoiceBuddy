@@ -4,6 +4,7 @@ import webbrowser
 import plotly.graph_objects as go
 from flask import render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_, func
 from datetime import datetime, timedelta
 from rich.console import Console
 import json
@@ -664,23 +665,52 @@ def view_past_invoices():
 @app.route('/past_invoices')
 def list_past_invoices():
     page = int(request.args.get('page', 1))
+    search = request.args.get('search', '')
+    status = request.args.get('status', '')
+    date = request.args.get('date', '')
+
     items_per_page = globals.PAST_INVOICES_TABLE_ITEMS_PER_PAGE
 
+    # Start with the base query
+    query = Invoice.query.filter(Invoice.status != globals.InvoiceStatus.UNPAID.value)
+
+    # Apply filters
+    if search:
+        search = f"%{search}%"
+        query = query.filter(or_(
+            Invoice.invoice_number.ilike(search),
+            Invoice.reference_number.ilike(search),
+            Invoice.customer_name.ilike(search),
+            Invoice.description.ilike(search)
+        ))
+
+    if status:
+        query = query.filter(Invoice.status == int(status))
+
+    if date:
+        date_obj = datetime.strptime(date, '%Y-%m-%d').date()
+        query = query.filter(func.date(Invoice.invoice_date) == date_obj)
+
+    # Get total count for pagination
+    total_invoices = query.count()
+
+    # Calculate the sum of totals for the filtered invoices
+    total_sum = query.with_entities(func.sum(Invoice.total_amount)).scalar() or 0
+
+    # Apply pagination
     start_idx = (page - 1) * items_per_page
-    end_idx = start_idx + items_per_page
+    invoices = query.order_by(Invoice.invoice_date.desc()).offset(start_idx).limit(items_per_page).all()
 
-    invoices = Invoice.query.filter(Invoice.status != globals.InvoiceStatus.UNPAID.value).all()
-    paginated_data = [invoice.to_dict() for invoice in invoices[start_idx:end_idx]]
+    paginated_data = [invoice.to_dict() for invoice in invoices]
 
-    total_number_of_pages = math.floor(len(invoices) / items_per_page)
-    if len(invoices) % items_per_page != 0:
-        total_number_of_pages += 1
+    total_number_of_pages = math.ceil(total_invoices / items_per_page)
 
-    total_number_of_invoices = len(invoices)
-
-    data = {'past_invoices': paginated_data,
-            'total_number_of_pages': total_number_of_pages,
-            'total_number_of_invoices': total_number_of_invoices}
+    data = {
+        'past_invoices': paginated_data,
+        'total_number_of_pages': total_number_of_pages,
+        'total_number_of_invoices': total_invoices,
+        'total_sum': round(total_sum, 2)  # Rounding to 2 decimal places
+    }
 
     return jsonify(data)
 
