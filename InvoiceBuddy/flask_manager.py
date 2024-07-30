@@ -951,6 +951,7 @@ def mark_proposal_accepted():
             new_invoice = Invoice(
                 invoice_number=invoice_number,
                 invoice_date=datetime.now(),
+                invoice_type=globals.InvoiceType.DEBIT.value,
                 due_date=datetime.now() + timedelta(days=application_modules.get_options().invoice_valid_for_days),
                 customer_name=proposal.customer_name,
                 reference_number=proposal.reference_number,
