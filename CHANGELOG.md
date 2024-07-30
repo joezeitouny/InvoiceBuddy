@@ -1,3 +1,8 @@
+## 0.2.6 (2024-07-30)
+
+* Fixed an issue where the pie chart data was not correctly computed
+* Version bump to 0.2.6
+
 ## 0.2.5 (2024-07-29)
 
 * Fixed an issue where multiline content in the description field of invoices and proposals wasn't correctly rendered
