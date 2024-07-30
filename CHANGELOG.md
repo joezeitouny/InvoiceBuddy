@@ -1,3 +1,9 @@
+## 0.2.7 (2024-07-30)
+
+* Fixed an issue where the stats html page wasn't correctly loaded
+* UI Improvements
+* Version bump to 0.2.7
+
 ## 0.2.6 (2024-07-30)
 
 * Fixed an issue where the pie chart data was not correctly computed
