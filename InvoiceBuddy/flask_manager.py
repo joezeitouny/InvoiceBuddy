@@ -1261,7 +1261,18 @@ def get_breakdown_by_status(invoices):
 
 @app.route('/view_stats', methods=['GET'])
 def view_stats():
-    return render_template('stats.html')
+    # Get application name and version
+    application_name = utils.get_application_name()
+    application_version = utils.get_application_version()
+    invoice_valid_for_days = application_modules.get_options().invoice_valid_for_days
+    proposal_valid_for_days = application_modules.get_options().proposal_valid_for_days
+    currency_symbol = application_modules.get_options().currency_symbol
+    currency_name = application_modules.get_options().currency_name
+
+    return render_template('stats.html', application_name=application_name,
+                           application_version=application_version, invoice_valid_for_days=invoice_valid_for_days,
+                           proposal_valid_for_days=proposal_valid_for_days, currency_symbol=currency_symbol,
+                           currency_name=currency_name)
 
 
 @app.route('/get_stats', methods=['GET'])
