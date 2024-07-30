@@ -1,3 +1,8 @@
+## 0.2.8 (2024-07-30)
+
+* Fixed an issue where mark proposal as accepted was generating an internal server error
+* Version bump to 0.2.8
+
 ## 0.2.7 (2024-07-30)
 
 * Fixed an issue where the stats html page wasn't correctly loaded
