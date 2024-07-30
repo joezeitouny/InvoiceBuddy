@@ -1185,8 +1185,8 @@ def get_total_amounts_per_month(invoices):
         if month not in months:
             months.append(month)
             amounts.append(0)
-        index = months.index(month)
-        amounts[index] += invoice.total_amount
+        i = months.index(month)
+        amounts[i] += invoice.total_amount
     return months, amounts
 
 
@@ -1207,8 +1207,8 @@ def get_total_amounts_per_trimester(invoices):
         if quarter not in trimesters:
             trimesters.append(quarter)
             amounts.append(0)
-        index = trimesters.index(quarter)
-        amounts[index] += invoice.total_amount
+        i = trimesters.index(quarter)
+        amounts[i] += invoice.total_amount
     return trimesters, amounts
 
 
@@ -1225,8 +1225,8 @@ def get_total_amounts_per_semester(invoices):
         if semester not in semesters:
             semesters.append(semester)
             amounts.append(0)
-        index = semesters.index(semester)
-        amounts[index] += invoice.total_amount
+        i = semesters.index(semester)
+        amounts[i] += invoice.total_amount
     return semesters, amounts
 
 
@@ -1239,8 +1239,8 @@ def get_total_amounts_per_year(invoices):
         if year not in years:
             years.append(year)
             amounts.append(0)
-        index = years.index(year)
-        amounts[index] += invoice.total_amount
+        i = years.index(year)
+        amounts[i] += invoice.total_amount
     return years, amounts
 
 
@@ -1256,7 +1256,7 @@ def get_breakdown_by_status(invoices):
             unpaid += 1
         elif invoice.status == globals.InvoiceStatus.CANCELED.value:  # Canceled
             canceled += 1
-    return [f'Paid ({paid})', f'Unpaid ({unpaid})', f'Canceled ({canceled})']
+    return [f'Paid ({paid})', f'Unpaid ({unpaid})', f'Canceled ({canceled})'], [paid, unpaid, canceled]
 
 
 @app.route('/view_stats', methods=['GET'])
@@ -1271,7 +1271,7 @@ def get_stats():
     trimesters, amounts_trimester = get_total_amounts_per_trimester(invoices)
     semesters, amounts_semester = get_total_amounts_per_semester(invoices)
     years, amounts_year = get_total_amounts_per_year(invoices)
-    breakdown = get_breakdown_by_status(invoices)
+    breakdown, breakdown_values = get_breakdown_by_status(invoices)
 
     # Create the graph for total amounts per month
     fig1 = go.Figure(data=[go.Bar(x=months, y=amounts_month)])
@@ -1290,8 +1290,9 @@ def get_stats():
     fig4.update_layout(title='Total Amounts per Year', xaxis_title='Year', yaxis_title='Amount')
 
     # Create the graph for amount breakdown by status
-    fig5 = go.Figure(data=[go.Pie(labels=breakdown, values=[1, 0, 2])])
+    fig5 = go.Figure(data=[go.Pie(labels=breakdown, values=breakdown_values)])
     fig5.update_layout(title='Amount Breakdown by Status')
 
     # Return the graphs as a JSON response
-    return jsonify({'fig1': fig1.to_json(), 'fig2': fig2.to_json(), 'fig3': fig3.to_json(), 'fig4': fig4.to_json(), 'fig5': fig5.to_json()})
+    return jsonify({'fig1': fig1.to_json(), 'fig2': fig2.to_json(), 'fig3': fig3.to_json(), 'fig4': fig4.to_json(),
+                    'fig5': fig5.to_json()})
