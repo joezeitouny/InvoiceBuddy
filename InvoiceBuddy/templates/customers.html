@@ -217,11 +217,15 @@
 
                 $('#customers-count').html(parseInt(data['total_number_of_customers']));
                 $('#customers-count-header').html(parseInt(data['total_number_of_customers']));
+
+                // hide the loading modal
+                $('#loading_modal').modal('hide');
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while trying to load customers! Reason: ' + error);
             }
         });
-
-        // hide the loading modal
-        $('#loading_modal').modal('hide');
     }
 
     $(document).ready(function() {

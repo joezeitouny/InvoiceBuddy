@@ -159,11 +159,15 @@
                 $('#total-sum').text(data['total_sum'] + ' {{ currency_name }}');
                 $('#past-invoices-count').html(parseInt(data['total_number_of_invoices']));
                 $('#past-invoices-count-header').html(parseInt(data['total_number_of_invoices']));
+
+                // hide the loading modal
+                $('#loading_modal').modal('hide');
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while trying to load past invoices! Reason: ' + error);
             }
         });
-
-        // hide the loading modal
-        $('#loading_modal').modal('hide');
     }
 
     function updatePagination(totalPages, currentPage) {

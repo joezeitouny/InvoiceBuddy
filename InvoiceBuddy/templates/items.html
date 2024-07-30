@@ -180,11 +180,15 @@
 
                 $('#items-count').html(parseInt(data['total_number_of_items']));
                 $('#items-count-header').html(parseInt(data['total_number_of_items']));
+
+                // hide the loading modal
+                $('#loading_modal').modal('hide');
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while trying to load items! Reason: ' + error);
             }
         });
-
-        // hide the loading modal
-        $('#loading_modal').modal('hide');
     }
 
     $(document).ready(function() {

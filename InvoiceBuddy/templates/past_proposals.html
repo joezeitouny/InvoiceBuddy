@@ -159,11 +159,15 @@
                 $('#total-sum').text(data['total_sum'] + ' {{ currency_name }}');
                 $('#past-proposals-count').html(parseInt(data['total_number_of_proposals']));
                 $('#past-proposals-count-header').html(parseInt(data['total_number_of_proposals']));
+
+                // hide the loading modal
+                $('#loading_modal').modal('hide');
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while trying to load past proposals! Reason: ' + error);
             }
         });
-
-        // hide the loading modal
-        $('#loading_modal').modal('hide');
     }
 
     function updatePagination(totalPages, currentPage) {
