@@ -15,7 +15,7 @@
 
     <title>Invoice {{ invoice_number }}</title>
 </head>
-<body style="font-size: 12px; line-height: 1;">
+<body style="font-size: 14px; line-height: 1;">
 <div class="container-fluid p-0 m-0">
     <div class="row p-0 m-0">
         <div class="col-4 p-3">
@@ -147,27 +147,27 @@
 </div>
 
 <footer>
-    <div class="container-fluid mx-4">
-        <div class="row p-0">
+    <div class="container-fluid mx-3">
+        <div class="row p-0 align-items-center">
             <div class="col p-0">
                 <div class="row align-items-center">
                     <div class="col-auto">
                         <img src="/static/seller-qr-code.png" alt="Seller QR Code" style="width:80px; height:80px">
                     </div>
-                    <div class="col">
+                    <div class="col p-0">
                         <div class="row">
-                            <div class="col-auto">
+                            <div class="col-auto p-0">
                                 <strong>IBAN:</strong>
                             </div>
-                            <div class="col">
+                            <div class="col p-0">
                                 {{ seller_iban }}
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-auto">
+                            <div class="col-auto p-0">
                                 <strong>BIC / SWIFT Code:</strong>
                             </div>
-                            <div class="col">
+                            <div class="col p-0">
                                 {{ seller_bic }}
                             </div>
                         </div>
@@ -175,10 +175,14 @@
                 </div>
             </div>
             <div class="col p-0">
-                <span>
-                    <img src="/static/paypal-logo.png" width="80">
-                    {{ seller_paypal_address }}
-                </span>
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <img src="/static/paypal-logo.png" width="80">
+                    </div>
+                    <div class="col p-0">
+                        {{ seller_paypal_address }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
