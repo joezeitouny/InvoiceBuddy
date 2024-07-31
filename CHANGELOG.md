@@ -1,3 +1,8 @@
+## 0.2.9 (2024-07-31)
+
+* UI Improvements
+* Version bump to 0.2.9
+
 ## 0.2.8 (2024-07-30)
 
 * Fixed an issue where mark proposal as accepted was generating an internal server error
