@@ -1,62 +1,62 @@
-<div id="new_proposal_modal" tabindex="-1" class="modal fade" data-backdrop="static"
+<div id="edit_proposal_modal" tabindex="-1" class="modal fade" data-backdrop="static"
      xmlns="http://www.w3.org/1999/html">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 80%;" role="document">
         <div class="modal-content">
-            <form id="new_proposal_form" class="needs-validation" novalidate>
+            <form id="edit_proposal_form" class="needs-validation" novalidate>
                 <div class="modal-header bg-warning">
-                    <h5 class="modal-title">New Proposal</h5>
+                    <h5 class="modal-title">Edit Proposal</h5>
                 </div>
                 <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <div class="form-group">
                         <div class="container border rounded-1 p-1">
                             <div class="row">
                                 <div class="col-auto">
-                                    <label class="form-label" for="new_proposal_number">Proposal Number</label>
+                                    <label class="form-label" for="edit_proposal_number">Proposal Number</label>
                                 </div>
                                 <div class="col">
-                                    <input id="new_proposal_number" class="form-control p-0" type="text"
+                                    <input id="edit_proposal_number" class="form-control p-0" type="text"
                                            placeholder="Proposal Number" name="proposal_number"
-                                           required><br>
+                                           required disabled><br>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-auto">
-                                    <label class="form-label" for="new_proposal_date">Proposal Date</label>
+                                    <label class="form-label" for="edit_proposal_date">Proposal Date</label>
                                 </div>
                                 <div class="col">
-                                    <input id="new_proposal_date" class="form-control p-0" type="date"
+                                    <input id="edit_proposal_date" class="form-control p-0" type="date"
                                            name="date"
                                            required><br>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-auto">
-                                    <label class="form-label" for="new_proposal_due_date">Due Date</label>
+                                    <label class="form-label" for="edit_proposal_due_date">Due Date</label>
                                 </div>
                                 <div class="col">
-                                    <input id="new_proposal_due_date" class="form-control p-0" type="date"
+                                    <input id="edit_proposal_due_date" class="form-control p-0" type="date"
                                            name="date"
                                            required><br>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-auto">
-                                    <label class="form-label" for="new_proposal_reference_number">Reference
+                                    <label class="form-label" for="edit_proposal_reference_number">Reference
                                         Number</label>
                                 </div>
                                 <div class="col">
-                                    <input id="new_proposal_reference_number" class="form-control p-0"
+                                    <input id="edit_proposal_reference_number" class="form-control p-0"
                                            type="text"
                                            placeholder="Reference Number" name="proposal_reference_number"><br>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-auto">
-                                    <label class="form-label" for="new_proposal_customer_name">Customer
+                                    <label class="form-label" for="edit_proposal_customer_name">Customer
                                         Name</label>
                                 </div>
                                 <div class="col">
-                                    <input id="new_proposal_customer_name" class="form-control p-0"
+                                    <input id="edit_proposal_customer_name" class="form-control p-0"
                                            placeholder="Customer Name" type="text" list="predefinedCustomers"
                                            name="customer_name"
                                            required><br>
@@ -64,17 +64,17 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <label class="form-label" for="new_proposal_description">Description</label>
+                                    <label class="form-label" for="edit_proposal_description">Description</label>
                                 </div>
                                 <div class="col-12">
-                                <textarea class="container form-control p-0" id="new_proposal_description"
+                                <textarea class="container form-control p-0" id="edit_proposal_description"
                                           name="description" rows="3" required></textarea><br>
                                 </div>
                             </div>
                         </div>
                         <h2>Items</h2>
                         <div class="table-responsive">
-                            <table class="table table-bordered" id="proposalItemsTable">
+                            <table class="table table-bordered" id="editProposalItemsTable">
                                 <thead>
                                 <tr>
                                     <th scope="col" style="min-width: 150px">Title</th>
@@ -84,8 +84,8 @@
                                     <th></th>
                                 </tr>
                                 </thead>
-                                <tbody id="proposalItemsContainer">
-                                <tr class="proposalItem">
+                                <tbody id="editProposalItemsContainer">
+                                <tr class="editProposalItem">
                                     <td class="col-4"><input type="text" class="form-control itemTitleInput"
                                                              list="predefinedItems" name="title[]"
                                                              required>
@@ -116,14 +116,14 @@
                         </div>
                     </div>
 
-                    <button type="button" id="addProposalItem" class="btn btn-primary mb-3">Add Item</button>
+                    <button type="button" class="btn btn-primary mb-3" onclick="addEditProposalItem();">Add Item</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                            onclick="$('#new_proposal_modal').modal('hide');">
+                            onclick="$('#edit_proposal_modal').modal('hide');">
                         Close
                     </button>
-                    <button type="submit" class="btn btn-primary" onclick="generateProposal()">Create Proposal
+                    <button type="submit" class="btn btn-primary" onclick="updateProposal()">Update Proposal
                     </button>
                 </div>
             </form>

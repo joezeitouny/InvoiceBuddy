@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% include 'modals/edit_proposal_modal.html' %}
 {% include 'modals/mark_invoice_as_canceled_modal.html' %}
 {% include 'modals/mark_invoice_as_paid_modal.html' %}
 {% include 'modals/mark_proposal_as_rejected_modal.html' %}
@@ -220,7 +221,7 @@
                         cell6.style.maxWidth = "250px";
                         cell6.textContent = values.description;
                         cell7.textContent = values.total_amount + ' ' + values.currency_symbol;
-                        cell8.innerHTML = `<button type="button" class="btn btn-danger mark-rejected-button me-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as rejected" data-proposal-number="${values.proposal_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-accepted-button me-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as accepted" data-proposal-number="${values.proposal_number}"><i class="bi bi-check2-square"></i></button><button type="button" class="btn btn-primary view-proposal-button me-1" data-toggle="tooltip" data-placement="top" title="View proposal" data-id="${values.id}" data-proposal-number="${values.proposal_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button me-1" data-toggle="tooltip" data-placement="top" title="Print proposal" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-proposal-button" data-toggle="tooltip" data-placement="top" title="Duplicate proposal" data-id="${values.id}"><i class="bi bi-copy"></i></button>`;
+                        cell8.innerHTML = `<button type="button" class="btn btn-danger mark-rejected-button me-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as rejected" data-proposal-number="${values.proposal_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-accepted-button me-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as accepted" data-proposal-number="${values.proposal_number}"><i class="bi bi-check2-square"></i></button></button><button type="button" class="btn btn-warning edit-proposal-button me-1" data-toggle="tooltip" data-placement="top" title="Edit Proposal" data-proposal-id="${values.id}"><i class="bi bi-pencil-square"></i></button><button type="button" class="btn btn-primary view-proposal-button me-1" data-toggle="tooltip" data-placement="top" title="View proposal" data-id="${values.id}" data-proposal-number="${values.proposal_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button me-1" data-toggle="tooltip" data-placement="top" title="Print proposal" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-proposal-button" data-toggle="tooltip" data-placement="top" title="Duplicate proposal" data-id="${values.id}"><i class="bi bi-copy"></i></button>`;
 
                         activeProposalsTotalAmount += values.total_amount;
                 }
@@ -246,6 +247,13 @@
                     $('#markProposalAcceptedModalValue').text(proposal_number);
 
                     $('#mark_proposal_as_accepted_modal').modal('show');
+                });
+
+                // Handle edit proposal button clicks
+                $('.edit-proposal-button').on('click', function () {
+                    const proposal_id = $(this).data('proposal-id');
+
+                    showEditProposalModal(proposal_id);
                 });
 
                 // Handle row clicks events
@@ -297,6 +305,167 @@
 
         refreshData();
     });
+
+    function showEditProposalModal(proposal_id) {
+        $('#loading_modal').modal('show');
+
+        clearFormValidation('edit_proposal_form');
+
+        $('#editProposalItemsContainer tr:not(:first)').remove();
+
+        // Clear the inputs of the first row
+        var firstRow = $('#editProposalItemsContainer tr:first');
+        firstRow.find('input[name="title[]"]').val('');
+        firstRow.find('textarea[name="description[]"]').val('');
+        firstRow.find('input[name="quantity[]"]').val('1');
+        firstRow.find('input[name="price[]"]').val('0');
+
+        $.ajax({
+            type: 'GET',
+            url: '/get_items_data',
+            success: function(data) {
+                const datalist = document.getElementById('predefinedItems');
+
+                // Clear existing options
+                datalist.innerHTML = '';
+
+                // Add new options from the API response
+                data.forEach(item => {
+                  const option = document.createElement('option');
+                  option.id = item.id;
+                  option.value = item.title;
+                  option.description = item.description;
+                  option.price = item.price;
+                  datalist.appendChild(option);
+                });
+            },
+            error: function (error) {
+                notify_warning('Error while populating predefined items! Reason: ' + error);
+            }
+        });
+
+        $.ajax({
+            type: 'GET',
+            url: '/get_customers_data',
+            success: function(data) {
+                const datalist = document.getElementById('predefinedCustomers');
+
+                // Clear existing options
+                datalist.innerHTML = '';
+
+                // Add new options from the API response
+                data.forEach(customer => {
+                  const option = document.createElement('option');
+                  option.id = customer.id;
+                  option.value = customer.customer_name;
+                  datalist.appendChild(option);
+                });
+            },
+            error: function (error) {
+                notify_warning('Error while populating predefined customers! Reason: ' + error);
+            }
+        });
+
+        // fill up the form fields
+        $.ajax({
+            type: 'POST',
+            url: '/get_proposal',
+            data: {
+                proposal_id: proposal_id
+            },
+            success: function(response) {
+                if (!response) {
+                    notify_warning('Error while populating proposal data. Please try again!');
+                    return;
+                }
+
+                $('#edit_proposal_number').val(response['proposal_number']);
+                $('#edit_proposal_date').val(response['proposal_date'].replace(/\//g, '-'));
+                $('#edit_proposal_due_date').val(response['due_date'].replace(/\//g, '-'));
+                $('#edit_proposal_customer_name').val(response['customer_name']);
+                $('#edit_proposal_reference_number').val(response['reference_number']);
+                $('#edit_proposal_description').val(response['description']);
+
+                for (let i = 0; i < response.items.length; i++) {
+                    if (i > 0) {
+                        // create a new row in the table first
+                        addEditProposalItem();
+                    }
+
+                    // find the last added row and populate it
+                    var lastRow = $('#editProposalItemsContainer tr:last');
+                    lastRow.find('input[name="title[]"]').val(response.items[i]['title']);
+                    lastRow.find('textarea[name="description[]"]').val(response.items[i]['description']);
+                    lastRow.find('input[name="quantity[]"]').val(response.items[i]['quantity']);
+                    lastRow.find('input[name="price[]"]').val(response.items[i]['price']);
+                }
+
+                $('#loading_modal').modal('hide');
+
+                $('#edit_proposal_modal').modal('show');
+            },
+            error: function (error) {
+                notify_warning('Error while populating proposal data! Reason: ' + error);
+            }
+        });
+    }
+
+    function updateProposal() {
+        form = document.getElementById('edit_proposal_form');
+        if (!form.checkValidity())
+            return;
+
+        $('#loading_modal').modal('show');
+
+        var items = [];
+        $('.editProposalItem').each(function() {
+            var item = {
+                title: $(this).find('input[name="title[]"]').val(),
+                description: $(this).find('textarea[name="description[]"]').val(),
+                quantity: parseFloat($(this).find('input[name="quantity[]"]').val()),
+                price: parseFloat($(this).find('input[name="price[]"]').val()),
+                amount: parseFloat($(this).find('input[name="quantity[]"]').val()) * parseFloat($(this).find('input[name="price[]"]').val())
+            };
+            items.push(item);
+        });
+
+        $.ajax({
+            url: '/update_proposal',
+            method: 'POST',
+            data: {
+                proposal_number: $('#edit_proposal_number').val(),
+                proposal_date: $('#edit_proposal_date').val(),
+                due_date: $('#edit_proposal_due_date').val(),
+                customer_name: $('#edit_proposal_customer_name').val(),
+                reference_number: $('#edit_proposal_reference_number').val(),
+                description: $('#edit_proposal_description').val(),
+                items: JSON.stringify(items)
+            },
+            success: function(proposal_id) {
+                $('#loading_modal').modal('hide');
+                if (!proposal_id)
+                    notify_warning('Error while updating proposal');
+                else {
+                    notify_success('Proposal successfully updated!');
+
+                    // hide the proposal form
+                    $('#edit_proposal_modal').modal('hide');
+
+                    // show the newly updated proposal
+                    loadNewTabWithProposalID(proposal_id, true);
+
+                    if (typeof refreshData === 'function') {
+                        // refresh the data on the page
+                        refreshData(1);
+                    }
+                }
+            },
+            error: function (error) {
+                $('#loading_modal').modal('hide');
+                notify_warning('Error while updating proposal! Reason: ' + error);
+            }
+        });
+    }
 
     function markInvoiceAsCanceled() {
         $('#loading_modal').modal('show');

@@ -5,6 +5,7 @@ APPLICATION_NAME = 'InvoiceBuddy'
 APPLICATION_VERSION = '0.2.9'
 JSON_RESPONSE_FORMAT_VERSION = 1
 SELLER_LOGO_FILENAME = "seller-logo.png"
+INTERNAL_SERVER_ERROR = "An error occurred on the server. Please check the server logs for more details"
 
 # Caching
 FLASK_WEB_SERVER_CACHE_INTERVAL = 5    # in seconds

@@ -65,3 +65,13 @@
     vertical-align: middle;
     horizontal-align: middle;
 }
+
+#editProposalItemsTable textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+#editProposalItemsTable td {
+    vertical-align: middle;
+    horizontal-align: middle;
+}

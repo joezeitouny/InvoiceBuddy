@@ -9,6 +9,7 @@
     <script src="/static/jquery-3.7.1.min.js"></script>
     <script src="/static/popper.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/plotly-2.34.0.min.js"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/main.css" type="text/css">
@@ -56,6 +57,25 @@
 
     function showAboutUsModal() {
         aboutUsModal.show();
+    }
+
+    function addEditProposalItem() {
+        var newItem = $('<tr class="editProposalItem">' +
+            '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
+            '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
+            '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
+            '<td class="col-1"><input type="number" class="form-control" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
+            '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
+            '</tr>');
+        $('#editProposalItemsContainer').append(newItem);
+
+        // Select all elements with the classname using querySelectorAll.
+        let elements = document.querySelectorAll('.itemTitleInput');
+
+        for(let i=0; i<elements.length; i++) {
+            // Add an event listener to each selected element.
+            elements[i].addEventListener('input', populateItemFields);
+        }
     }
 
     $(document).ready(function() {
@@ -595,7 +615,7 @@
                 else {
                     notify_success('New proposal successfully created!');
 
-                    // hide the create invoice form
+                    // hide the create proposal form
                     $('#new_proposal_modal').modal('hide');
 
                     // show the newly created proposal
