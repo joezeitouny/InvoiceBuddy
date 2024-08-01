@@ -1,3 +1,9 @@
+## 0.2.10 (2024-08-01)
+
+* Added the ability to edit proposals
+* Code improvements
+* Version bump to 0.2.10
+
 ## 0.2.9 (2024-07-31)
 
 * UI Improvements
