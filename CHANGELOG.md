@@ -1,3 +1,8 @@
+## 0.2.11 (2024-08-03)
+
+* Fixed an issue where form validation wasn't cleared after editing an item / customer
+* Version bump to 0.2.11
+
 ## 0.2.10 (2024-08-01)
 
 * Added the ability to edit proposals
