@@ -179,6 +179,8 @@
 
                 // Handle edit customer button clicks
                 $('.edit-customer-button').on('click', function () {
+                    clearFormValidation('edit_customer_form');
+
                     $('#edit_customer_id').val($(this).data('id'));
                     $('#edit_customer_name').val($(this).data('name'));
                     $('#edit_customer_email').val($(this).data('email'));

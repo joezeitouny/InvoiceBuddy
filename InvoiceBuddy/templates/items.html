@@ -145,6 +145,8 @@
 
                 // Handle edit item button clicks
                 $('.edit-item-button').on('click', function () {
+                    clearFormValidation('edit_item_form');
+
                     $('#edit_item_id').val($(this).data('id'));
                     $('#edit_item_title').val($(this).data('title'));
                     $('#edit_item_description').val($(this).data('description').replace(/<br>/g, '\n'));
