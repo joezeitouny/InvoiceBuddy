@@ -1408,7 +1408,9 @@ def get_breakdown_by_status(invoices):
         elif invoice.status == globals.InvoiceStatus.CANCELED.value:  # Canceled
             canceled += 1
             canceled_amount += invoice.total_amount
-    return [f'Paid ({paid_amount})', f'Unpaid ({unpaid_amount})', f'Canceled ({canceled_amount})'], [paid_amount, unpaid_amount, canceled_amount]
+    return [f'Paid ({paid_amount})', f'Unpaid ({unpaid_amount})', f'Canceled ({canceled_amount})'], [paid_amount,
+                                                                                                     unpaid_amount,
+                                                                                                     canceled_amount]
 
 
 @app.route('/view_stats', methods=['GET'])
@@ -1446,19 +1448,23 @@ def get_stats():
 
         # Create the graph for total amounts per month
         fig1 = go.Figure(data=[go.Bar(x=months, y=amounts_month)])
-        fig1.update_layout(title=f'Total Amounts per Month (in {currency_name})', xaxis_title='Month', yaxis_title='Amount')
+        fig1.update_layout(title=f'Total Amounts per Month (in {currency_name})', xaxis_title='Month',
+                           yaxis_title='Amount')
 
         # Create the graph for total amounts per trimester
         fig2 = go.Figure(data=[go.Bar(x=trimesters, y=amounts_trimester)])
-        fig2.update_layout(title=f'Total Amounts per Trimester (in {currency_name})', xaxis_title='Trimester', yaxis_title='Amount')
+        fig2.update_layout(title=f'Total Amounts per Trimester (in {currency_name})', xaxis_title='Trimester',
+                           yaxis_title='Amount')
 
         # Create the graph for total amounts per semester
         fig3 = go.Figure(data=[go.Bar(x=semesters, y=amounts_semester)])
-        fig3.update_layout(title=f'Total Amounts per Semester (in {currency_name})', xaxis_title='Semester', yaxis_title='Amount')
+        fig3.update_layout(title=f'Total Amounts per Semester (in {currency_name})', xaxis_title='Semester',
+                           yaxis_title='Amount')
 
         # Create the graph for total amounts per year
         fig4 = go.Figure(data=[go.Bar(x=years, y=amounts_year)])
-        fig4.update_layout(title=f'Total Amounts per Year (in {currency_name})', xaxis_title='Year', yaxis_title='Amount')
+        fig4.update_layout(title=f'Total Amounts per Year (in {currency_name})', xaxis_title='Year',
+                           yaxis_title='Amount')
 
         # Create the graph for amount breakdown by status
         fig5 = go.Figure(data=[go.Pie(labels=breakdown, values=breakdown_values)])
