@@ -1,3 +1,8 @@
+## 0.2.12 (2024-08-07)
+
+* UI Improvements
+* Version bump to 0.2.12
+
 ## 0.2.11 (2024-08-03)
 
 * Fixed an issue where form validation wasn't cleared after editing an item / customer
