@@ -1393,16 +1393,22 @@ def get_total_amounts_per_year(invoices):
 # Define a function to generate the graph for amount breakdown by status
 def get_breakdown_by_status(invoices):
     paid = 0
+    paid_amount = 0
     unpaid = 0
+    unpaid_amount = 0
     canceled = 0
+    canceled_amount = 0
     for invoice in invoices:
         if invoice.status == globals.InvoiceStatus.PAID.value:  # Paid
             paid += 1
+            paid_amount += invoice.total_amount
         elif invoice.status == globals.InvoiceStatus.UNPAID.value:  # Unpaid
             unpaid += 1
+            unpaid_amount += invoice.total_amount
         elif invoice.status == globals.InvoiceStatus.CANCELED.value:  # Canceled
             canceled += 1
-    return [f'Paid ({paid})', f'Unpaid ({unpaid})', f'Canceled ({canceled})'], [paid, unpaid, canceled]
+            canceled_amount += invoice.total_amount
+    return [f'Paid ({paid_amount})', f'Unpaid ({unpaid_amount})', f'Canceled ({canceled_amount})'], [paid_amount, unpaid_amount, canceled_amount]
 
 
 @app.route('/view_stats', methods=['GET'])
@@ -1430,6 +1436,7 @@ def view_stats():
 @app.route('/get_stats', methods=['GET'])
 def get_stats():
     try:
+        currency_name = application_modules.get_options().currency_name
         invoices = Invoice.query.all()
         months, amounts_month = get_total_amounts_per_month(invoices)
         trimesters, amounts_trimester = get_total_amounts_per_trimester(invoices)
@@ -1439,23 +1446,23 @@ def get_stats():
 
         # Create the graph for total amounts per month
         fig1 = go.Figure(data=[go.Bar(x=months, y=amounts_month)])
-        fig1.update_layout(title='Total Amounts per Month', xaxis_title='Month', yaxis_title='Amount')
+        fig1.update_layout(title=f'Total Amounts per Month (in {currency_name})', xaxis_title='Month', yaxis_title='Amount')
 
         # Create the graph for total amounts per trimester
         fig2 = go.Figure(data=[go.Bar(x=trimesters, y=amounts_trimester)])
-        fig2.update_layout(title='Total Amounts per Trimester', xaxis_title='Trimester', yaxis_title='Amount')
+        fig2.update_layout(title=f'Total Amounts per Trimester (in {currency_name})', xaxis_title='Trimester', yaxis_title='Amount')
 
         # Create the graph for total amounts per semester
         fig3 = go.Figure(data=[go.Bar(x=semesters, y=amounts_semester)])
-        fig3.update_layout(title='Total Amounts per Semester', xaxis_title='Semester', yaxis_title='Amount')
+        fig3.update_layout(title=f'Total Amounts per Semester (in {currency_name})', xaxis_title='Semester', yaxis_title='Amount')
 
         # Create the graph for total amounts per year
         fig4 = go.Figure(data=[go.Bar(x=years, y=amounts_year)])
-        fig4.update_layout(title='Total Amounts per Year', xaxis_title='Year', yaxis_title='Amount')
+        fig4.update_layout(title=f'Total Amounts per Year (in {currency_name})', xaxis_title='Year', yaxis_title='Amount')
 
         # Create the graph for amount breakdown by status
         fig5 = go.Figure(data=[go.Pie(labels=breakdown, values=breakdown_values)])
-        fig5.update_layout(title='Amount Breakdown by Status')
+        fig5.update_layout(title=f'Amount Breakdown by Status (in {currency_name})')
 
         # Return the graphs as a JSON response
         return jsonify({'fig1': fig1.to_json(), 'fig2': fig2.to_json(), 'fig3': fig3.to_json(), 'fig4': fig4.to_json(),
