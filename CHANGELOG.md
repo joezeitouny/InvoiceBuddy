@@ -1,3 +1,8 @@
+## 0.2.14 (2024-08-08)
+
+* Fixed an issue where an internal server error would appear when the user clicks on the "Active Invoices" or "Active Proposals" and these sections are empty
+* Version bump to 0.2.14
+
 ## 0.2.13 (2024-08-08)
 
 * Added ability to visualise totals while adding / editing proposals
