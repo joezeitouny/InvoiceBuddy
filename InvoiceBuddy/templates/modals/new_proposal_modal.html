@@ -85,9 +85,9 @@
                                 </tr>
                                 </thead>
                                 <tbody id="proposalItemsContainer">
-                                <tr class="add-proposal-item">
+                                <tr class="new-proposal-item">
                                     <td class="col-4"><input type="text"
-                                                             class="form-control itemTitleInput add-proposal-amount-compute"
+                                                             class="form-control itemTitleInput new-proposal-amount-compute"
                                                              list="predefinedItems" name="title[]"
                                                              required>
                                     </td>
@@ -95,14 +95,14 @@
                                                                 rows="3"></textarea>
                                     </td>
                                     <td class="col-1"><input type="number"
-                                                             class="form-control add-proposal-amount-compute"
+                                                             class="form-control new-proposal-amount-compute"
                                                              name="quantity[]"
                                                              min="0.01"
                                                              step="0.01"
                                                              pattern="^\d*(\.\d{0,2})?$"
                                                              value="1" required></td>
                                     <td class="col-1"><input type="number"
-                                                             class="form-control add-proposal-amount-compute"
+                                                             class="form-control new-proposal-amount-compute"
                                                              name="price[]"
                                                              min="0.00"
                                                              step="0.01"
@@ -110,7 +110,7 @@
                                                              value="0" required>
                                     </td>
                                     <td class="col-1" style="text-align: center;">
-                                        <button type="button" class="btn btn-danger btn-sm remove-add-proposal-item">
+                                        <button type="button" class="btn btn-danger btn-sm remove-new-proposal-item">
                                             <span><i class="bi bi-trash"></i></span>
                                         </button>
                                     </td>
@@ -123,7 +123,7 @@
                     <button type="button" id="addProposalItem" class="btn btn-primary mb-3">Add Item</button>
                 </div>
                 <div class="modal-footer">
-                    <div><strong>Proposal total: <span id="addProposalTotalAmount">0</span> {{ currency_name }}</strong>
+                    <div><strong>Proposal total: <span id="newProposalTotalAmount">0</span> {{ currency_name }}</strong>
                     </div>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal"
                             onclick="$('#new_proposal_modal').modal('hide');">

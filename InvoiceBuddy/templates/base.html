@@ -84,14 +84,24 @@
         });
     }
 
-    function computeAddProposalTotal() {
+    function computeNewInvoiceTotal() {
         var totalAmount = 0.0;
-        $('.add-proposal-item').each(function() {
+        $('.new-invoice-item').each(function() {
             let qty = isNaN($(this).find('input[name="quantity[]"]').val()) || $(this).find('input[name="quantity[]"]').val() === '' ? 0 : $(this).find('input[name="quantity[]"]').val();
             let price = isNaN($(this).find('input[name="price[]"]').val()) || $(this).find('input[name="price[]"]').val() === '' ? 0 : $(this).find('input[name="price[]"]').val();
             totalAmount += parseFloat(qty) * parseFloat(price);
         });
-        document.getElementById('addProposalTotalAmount').textContent = totalAmount;
+        document.getElementById('newInvoiceTotalAmount').textContent = totalAmount;
+    }
+
+    function computeNewProposalTotal() {
+        var totalAmount = 0.0;
+        $('.new-proposal-item').each(function() {
+            let qty = isNaN($(this).find('input[name="quantity[]"]').val()) || $(this).find('input[name="quantity[]"]').val() === '' ? 0 : $(this).find('input[name="quantity[]"]').val();
+            let price = isNaN($(this).find('input[name="price[]"]').val()) || $(this).find('input[name="price[]"]').val() === '' ? 0 : $(this).find('input[name="price[]"]').val();
+            totalAmount += parseFloat(qty) * parseFloat(price);
+        });
+        document.getElementById('newProposalTotalAmount').textContent = totalAmount;
     }
 
     function computeEditProposalTotal() {
@@ -106,12 +116,12 @@
 
     $(document).ready(function() {
         $('#addInvoiceItem').click(function() {
-                var newItem = $('<tr class="invoiceItem">' +
-                    '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
-                    '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
-                    '<td class="col-1"><input type="number" class="form-control" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
-                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
+                var newItem = $('<tr class="new-invoice-item">' +
+                    '<td class="col-4"><input type="text" class="form-control itemTitleInput new-invoice-amount-compute" list="predefinedItems" name="title[]" required></td>' +
+                    '<td class="col-5"><textarea class="form-control new-invoice-amount-compute" name="description[]" rows="3"></textarea></td>' +
+                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
+                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-new-invoice-item"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
                 $('#invoiceItemsContainer').append(newItem);
 
@@ -122,15 +132,21 @@
                     // Add an event listener to each selected element.
                     elements[i].addEventListener('input', populateItemFields);
                 }
+
+                document.querySelectorAll('.new-invoice-amount-compute').forEach(element => {
+                  element.addEventListener('input', () => {
+                    computeNewInvoiceTotal();
+                  });
+                });
         });
 
         $('#addProposalItem').click(function() {
-                var newItem = $('<tr class="add-proposal-item">' +
+                var newItem = $('<tr class="new-proposal-item">' +
                     '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-                    '<td class="col-1"><input type="number" class="form-control add-proposal-amount-compute" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
-                    '<td class="col-1"><input type="number" class="form-control add-proposal-amount-compute" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
-                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-add-proposal-item"><span><i class="bi bi-trash"></i></span></button></td>' +
+                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
+                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-new-proposal-item"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
                 $('#proposalItemsContainer').append(newItem);
 
@@ -140,9 +156,9 @@
                     elements[i].addEventListener('input', populateItemFields);
                 }
 
-                document.querySelectorAll('.add-proposal-amount-compute').forEach(element => {
+                document.querySelectorAll('.new-proposal-amount-compute').forEach(element => {
                   element.addEventListener('input', () => {
-                    computeAddProposalTotal();
+                    computeNewProposalTotal();
                   });
                 });
         });
@@ -151,9 +167,14 @@
             $(this).closest('tr').remove();
         });
 
-        $(document).on('click', '.remove-add-proposal-item', function() {
+        $(document).on('click', '.remove-new-invoice-item', function() {
             $(this).closest('tr').remove();
-            computeAddProposalTotal();
+            computeNewInvoiceTotal();
+        });
+
+        $(document).on('click', '.remove-new-proposal-item', function() {
+            $(this).closest('tr').remove();
+            computeNewProposalTotal();
         });
 
         $(document).on('click', '.remove-edit-proposal-item', function() {
@@ -167,9 +188,15 @@
             elements[i].addEventListener('input', populateItemFields);
         }
 
-        document.querySelectorAll('.add-proposal-amount-compute').forEach(element => {
+        document.querySelectorAll('.new-proposal-amount-compute').forEach(element => {
           element.addEventListener('input', () => {
-            computeAddProposalTotal();
+            computeNewProposalTotal();
+          });
+        });
+
+        document.querySelectorAll('.new-invoice-amount-compute').forEach(element => {
+          element.addEventListener('input', () => {
+            computeNewInvoiceTotal();
           });
         });
 
@@ -326,6 +353,7 @@
         $('#new_invoice_description').val('');
 
         setNewInvoiceDate();
+        computeNewInvoiceTotal();
 
         $.ajax({
             type: 'GET',
@@ -412,7 +440,7 @@
         $('#new_proposal_description').val('');
 
         setNewProposalDate();
-        computeAddProposalTotal();
+        computeNewProposalTotal();
 
         $.ajax({
             type: 'GET',
@@ -572,7 +600,7 @@
         $('#loading_modal').modal('show');
 
         var items = [];
-        $('.invoiceItem').each(function() {
+        $('.new-invoice-item').each(function() {
             var item = {
                 title: $(this).find('input[name="title[]"]').val(),
                 description: $(this).find('textarea[name="description[]"]').val(),
@@ -629,7 +657,7 @@
         $('#loading_modal').modal('show');
 
         var items = [];
-        $('.add-proposal-item').each(function() {
+        $('.new-proposal-item').each(function() {
             var item = {
                 title: $(this).find('input[name="title[]"]').val(),
                 description: $(this).find('textarea[name="description[]"]').val(),
