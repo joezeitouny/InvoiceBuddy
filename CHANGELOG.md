@@ -1,3 +1,9 @@
+## 0.2.13 (2024-08-08)
+
+* Added ability to visualise totals while adding / editing proposals
+* Added ability to visualise totals while creating new invoices
+* Version bump to 0.2.13
+
 ## 0.2.12 (2024-08-07)
 
 * UI Improvements
