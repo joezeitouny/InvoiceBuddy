@@ -60,12 +60,12 @@
     }
 
     function addEditProposalItem() {
-        var newItem = $('<tr class="editProposalItem">' +
-            '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
+        var newItem = $('<tr class="edit-proposal-item">' +
+            '<td class="col-4"><input type="text" class="form-control itemTitleInput edit-proposal-amount-compute" list="predefinedItems" name="title[]" required></td>' +
             '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-            '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
-            '<td class="col-1"><input type="number" class="form-control" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
-            '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
+            '<td class="col-1"><input type="number" class="form-control edit-proposal-amount-compute" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
+            '<td class="col-1"><input type="number" class="form-control edit-proposal-amount-compute" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
+            '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-edit-proposal-item"><span><i class="bi bi-trash"></i></span></button></td>' +
             '</tr>');
         $('#editProposalItemsContainer').append(newItem);
 
@@ -76,6 +76,32 @@
             // Add an event listener to each selected element.
             elements[i].addEventListener('input', populateItemFields);
         }
+
+        document.querySelectorAll('.edit-proposal-amount-compute').forEach(element => {
+          element.addEventListener('input', () => {
+            computeEditProposalTotal();
+          });
+        });
+    }
+
+    function computeAddProposalTotal() {
+        var totalAmount = 0.0;
+        $('.add-proposal-item').each(function() {
+            let qty = isNaN($(this).find('input[name="quantity[]"]').val()) || $(this).find('input[name="quantity[]"]').val() === '' ? 0 : $(this).find('input[name="quantity[]"]').val();
+            let price = isNaN($(this).find('input[name="price[]"]').val()) || $(this).find('input[name="price[]"]').val() === '' ? 0 : $(this).find('input[name="price[]"]').val();
+            totalAmount += parseFloat(qty) * parseFloat(price);
+        });
+        document.getElementById('addProposalTotalAmount').textContent = totalAmount;
+    }
+
+    function computeEditProposalTotal() {
+        var totalAmount = 0.0;
+        $('.edit-proposal-item').each(function() {
+            let qty = isNaN($(this).find('input[name="quantity[]"]').val()) || $(this).find('input[name="quantity[]"]').val() === '' ? 0 : $(this).find('input[name="quantity[]"]').val();
+            let price = isNaN($(this).find('input[name="price[]"]').val()) || $(this).find('input[name="price[]"]').val() === '' ? 0 : $(this).find('input[name="price[]"]').val();
+            totalAmount += parseFloat(qty) * parseFloat(price);
+        });
+        document.getElementById('editProposalTotalAmount').textContent = totalAmount;
     }
 
     $(document).ready(function() {
@@ -99,36 +125,53 @@
         });
 
         $('#addProposalItem').click(function() {
-                var newItem = $('<tr class="proposalItem">' +
+                var newItem = $('<tr class="add-proposal-item">' +
                     '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
-                    '<td class="col-1"><input type="number" class="form-control" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
-                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
+                    '<td class="col-1"><input type="number" class="form-control add-proposal-amount-compute" name="quantity[]" min="0.01" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
+                    '<td class="col-1"><input type="number" class="form-control add-proposal-amount-compute" name="price[]" min="0.00" step="0.01" pattern="^\d*(\.\d{0,2})?$" value="0" required></td>' +
+                    '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-add-proposal-item"><span><i class="bi bi-trash"></i></span></button></td>' +
                     '</tr>');
                 $('#proposalItemsContainer').append(newItem);
 
-                // Select all elements with the classname using querySelectorAll.
                 let elements = document.querySelectorAll('.itemTitleInput');
-
                 for(let i=0; i<elements.length; i++) {
                     // Add an event listener to each selected element.
                     elements[i].addEventListener('input', populateItemFields);
                 }
+
+                document.querySelectorAll('.add-proposal-amount-compute').forEach(element => {
+                  element.addEventListener('input', () => {
+                    computeAddProposalTotal();
+                  });
+                });
         });
 
         $(document).on('click', '.removeItem', function() {
             $(this).closest('tr').remove();
         });
 
-        // Add event listener for selection
-        // Select all elements with the classname using querySelectorAll.
-        let elements = document.querySelectorAll('.itemTitleInput');
+        $(document).on('click', '.remove-add-proposal-item', function() {
+            $(this).closest('tr').remove();
+            computeAddProposalTotal();
+        });
 
+        $(document).on('click', '.remove-edit-proposal-item', function() {
+            $(this).closest('tr').remove();
+            computeEditProposalTotal();
+        });
+
+        let elements = document.querySelectorAll('.itemTitleInput');
         for(let i=0; i<elements.length; i++) {
             // Add an event listener to each selected element.
             elements[i].addEventListener('input', populateItemFields);
         }
+
+        document.querySelectorAll('.add-proposal-amount-compute').forEach(element => {
+          element.addEventListener('input', () => {
+            computeAddProposalTotal();
+          });
+        });
 
         document.getElementById('upload_seller_logo_form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -369,6 +412,7 @@
         $('#new_proposal_description').val('');
 
         setNewProposalDate();
+        computeAddProposalTotal();
 
         $.ajax({
             type: 'GET',
@@ -585,7 +629,7 @@
         $('#loading_modal').modal('show');
 
         var items = [];
-        $('.proposalItem').each(function() {
+        $('.add-proposal-item').each(function() {
             var item = {
                 title: $(this).find('input[name="title[]"]').val(),
                 description: $(this).find('textarea[name="description[]"]').val(),

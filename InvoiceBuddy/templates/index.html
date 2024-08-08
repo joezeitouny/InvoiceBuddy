@@ -400,6 +400,8 @@
                     lastRow.find('input[name="price[]"]').val(response.items[i]['price']);
                 }
 
+                computeEditProposalTotal();
+
                 $('#loading_modal').modal('hide');
 
                 $('#edit_proposal_modal').modal('show');
@@ -668,11 +670,11 @@
 
                         if (data['items'].length > 1) {
                             for(let i=1; i<data['items'].length; i++){
-                                var newItem = $('<tr class="proposalItem">' +
-                                    '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
+                                var newItem = $('<tr class="add-proposal-item">' +
+                                    '<td class="col-4"><input type="text" class="form-control itemTitleInput add-proposal-amount-compute" list="predefinedItems" name="title[]" required></td>' +
                                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control" name="quantity[]" min="1" value="1" required></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control" name="price[]" step="1" min="0" value="0" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control add-proposal-amount-compute" name="quantity[]" min="1" value="1" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control add-proposal-amount-compute" name="price[]" step="1" min="0" value="0" required></td>' +
                                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm removeItem"><span><i class="bi bi-trash"></i></span></button></td>' +
                                     '</tr>');
                                 $('#proposalItemsContainer').append(newItem);
@@ -692,6 +694,14 @@
                             // Add an event listener to each selected element.
                             elements[i].addEventListener('input', populateItemFields);
                         }
+
+                        document.querySelectorAll('.add-proposal-amount-compute').forEach(element => {
+                          element.addEventListener('input', () => {
+                            computeAddProposalTotal();
+                          });
+                        });
+
+                        computeAddProposalTotal();
                     }
 
                 }
