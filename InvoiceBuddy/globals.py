@@ -2,7 +2,7 @@ from enum import Enum
 
 # General
 APPLICATION_NAME = 'InvoiceBuddy'
-APPLICATION_VERSION = '0.2.14'
+APPLICATION_VERSION = '0.2.15'
 JSON_RESPONSE_FORMAT_VERSION = 1
 SELLER_LOGO_FILENAME = "seller-logo.png"
 INTERNAL_SERVER_ERROR = "An error occurred on the server. Please check the server logs for more details"
