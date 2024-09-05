@@ -1306,16 +1306,19 @@ def file_check_and_copy(options, filename, directory):
     filename_src_path = os.path.join(options.tmp_path, filename)
     if utils.check_file_exists(filename_src_path):
         folder_path = ''
+        absolute_static_path = ''
         # Get the path of the static directory
         if directory == 'static':
             folder_path = app.static_folder
+            # Get the absolute path of the folder
+            absolute_static_path = os.path.abspath(folder_path)
         elif directory == 'templates':
-            folder_path = app.template_folder
+            folder_path = app.static_folder
+            absolute_static_path = os.path.abspath(os.path.join(os.path.abspath(folder_path), '..'))
+            absolute_static_path = os.path.join(absolute_static_path, 'templates')
         else:
             return
 
-        # Get the absolute path of the folder
-        absolute_static_path = os.path.abspath(folder_path)
         filename_dst_path = os.path.join(absolute_static_path, filename)
         utils.copy_file(src=filename_src_path, dst=filename_dst_path)
 
