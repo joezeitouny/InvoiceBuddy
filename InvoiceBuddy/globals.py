@@ -5,6 +5,8 @@ APPLICATION_NAME = 'InvoiceBuddy'
 APPLICATION_VERSION = '0.2.15'
 JSON_RESPONSE_FORMAT_VERSION = 1
 SELLER_LOGO_FILENAME = "seller-logo.png"
+INVOICE_TEMPLATE_FILENAME = "invoice_template.html"
+PROPOSAL_TEMPLATE_FILENAME = "proposal_template.html"
 INTERNAL_SERVER_ERROR = "An error occurred on the server. Please check the server logs for more details"
 
 # Caching

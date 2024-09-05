@@ -186,15 +186,13 @@ class FlaskManager:
         application_modules = ApplicationModules(self._options, _log_manager)
 
         # If a seller logo file exists in the tmp folder then copy it to the static folder
-        seller_logo_src_path = os.path.join(self._options.tmp_path, globals.SELLER_LOGO_FILENAME)
-        if utils.check_file_exists(seller_logo_src_path):
-            # Get the path of the static directory
-            static_folder_path = app.static_folder
+        file_check_and_copy(options, globals.SELLER_LOGO_FILENAME, 'static')
 
-            # Get the absolute path of the static folder
-            absolute_static_path = os.path.abspath(static_folder_path)
-            seller_logo_dst_path = os.path.join(absolute_static_path, globals.SELLER_LOGO_FILENAME)
-            utils.copy_file(src=seller_logo_src_path, dst=seller_logo_dst_path)
+        # If an invoice template file exists in the tmp folder then copy it to the static folder
+        file_check_and_copy(options, globals.INVOICE_TEMPLATE_FILENAME, 'templates')
+
+        # If a proposal template file exists in the tmp folder then copy it to the static folder
+        file_check_and_copy(options, globals.PROPOSAL_TEMPLATE_FILENAME, 'templates')
 
         # Create tables before running the app
         with app.app_context():
@@ -1302,6 +1300,24 @@ def update_invoice_number_in_configuration_file():
         return False
 
     return True
+
+
+def file_check_and_copy(options, filename, directory):
+    filename_src_path = os.path.join(options.tmp_path, filename)
+    if utils.check_file_exists(filename_src_path):
+        folder_path = ''
+        # Get the path of the static directory
+        if directory == 'static':
+            folder_path = app.static_folder
+        elif directory == 'templates':
+            folder_path = app.template_folder
+        else:
+            return
+
+        # Get the absolute path of the folder
+        absolute_static_path = os.path.abspath(folder_path)
+        filename_dst_path = os.path.join(absolute_static_path, filename)
+        utils.copy_file(src=filename_src_path, dst=filename_dst_path)
 
 
 def get_formatted_number(prefix, sequence_number):
