@@ -1,3 +1,8 @@
+## 0.2.17 (2024-09-05)
+
+* Improved handling of templates
+* Version bump to 0.2.17
+
 ## 0.2.16 (2024-09-05)
 
 * Added ability to modify invoice and proposal templates and store the modified versions in the tmp folder
