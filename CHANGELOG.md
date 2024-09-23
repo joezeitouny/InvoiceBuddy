@@ -1,3 +1,8 @@
+## 0.2.18 (2024-09-23)
+
+* Added ability to include negative amounts for items in an invoice or a proposal
+* Version bump to 0.2.18
+
 ## 0.2.17 (2024-09-05)
 
 * Improved handling of templates
