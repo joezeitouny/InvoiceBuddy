@@ -553,8 +553,8 @@
                             var newItem = $('<tr class="new-invoice-item">' +
                                     '<td class="col-4"><input type="text" class="form-control itemTitleInput new-invoice-amount-compute" list="predefinedItems" name="title[]" required></td>' +
                                     '<td class="col-5"><textarea class="form-control new-invoice-amount-compute" name="description[]" rows="3"></textarea></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="quantity[]" min="1" step="1" value="1" required></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="price[]" step="1" pattern="^[-+]?\d*(\.\d{0,2})?$" value="0" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="quantity[]" min="1" step="0.1" value="1" pattern="^\d*(\.\d{0,2})?$" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="price[]" step="0.1" pattern="^[-+]?\d*(\.\d{0,2})?$" value="0" required></td>' +
                                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-new-invoice-item"><span><i class="bi bi-trash"></i></span></button></td>' +
                                     '</tr>');
                             $('#invoiceItemsContainer').append(newItem);
@@ -570,8 +570,8 @@
                                 var newItem = $('<tr class="new-invoice-item">' +
                                     '<td class="col-4"><input type="text" class="form-control itemTitleInput new-invoice-amount-compute" list="predefinedItems" name="title[]" required></td>' +
                                     '<td class="col-5"><textarea class="form-control new-invoice-amount-compute" name="description[]" rows="3"></textarea></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="quantity[]" min="1" step="1" value="1" required></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="price[]" step="1" pattern="^[-+]?\d*(\.\d{0,2})?$" value="0" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="quantity[]" min="1" step="0.1" value="1" pattern="^\d*(\.\d{0,2})?$" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control new-invoice-amount-compute" name="price[]" step="0.1" pattern="^[-+]?\d*(\.\d{0,2})?$" value="0" required></td>' +
                                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-new-invoice-item"><span><i class="bi bi-trash"></i></span></button></td>' +
                                     '</tr>');
                                 $('#invoiceItemsContainer').append(newItem);
@@ -690,8 +690,8 @@
                             var newItem = $('<tr class="new-proposal-item">' +
                                     '<td class="col-4"><input type="text" class="form-control itemTitleInput new-proposal-amount-compute" list="predefinedItems" name="title[]" required></td>' +
                                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="quantity[]" min="1" step="1" value="1" required></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="price[]" step="1" pattern="^[-+]?\d*(\.\d{0,2})?$" value="0" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="quantity[]" min="1" step="0.1" value="1" pattern="^\d*(\.\d{0,2})?$" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="price[]" step="0.1" pattern="^[-+]?\d*(\.\d{0,2})?$" value="0" required></td>' +
                                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-new-proposal-item"><span><i class="bi bi-trash"></i></span></button></td>' +
                                     '</tr>');
                             $('#proposalItemsContainer').append(newItem);
@@ -707,8 +707,8 @@
                                 var newItem = $('<tr class="new-proposal-item">' +
                                     '<td class="col-4"><input type="text" class="form-control itemTitleInput new-proposal-amount-compute" list="predefinedItems" name="title[]" required></td>' +
                                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="quantity[]" min="1" value="1" required></td>' +
-                                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="price[]" step="1" min="0" value="0" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="quantity[]" min="1" step="0.1" value="1" pattern="^\d*(\.\d{0,2})?$" required></td>' +
+                                    '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="price[]" step="0.1" value="0" pattern="^[-+]?\d*(\.\d{0,2})?$" required></td>' +
                                     '<td class="col-1" style="text-align: center;"><button type="button" class="btn btn-danger btn-sm remove-new-proposal-item"><span><i class="bi bi-trash"></i></span></button></td>' +
                                     '</tr>');
                                 $('#proposalItemsContainer').append(newItem);
