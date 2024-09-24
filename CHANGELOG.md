@@ -1,3 +1,8 @@
+## 0.2.19 (2024-09-24)
+
+* Added ability to specify decimals in the item quantity field
+* Version bump to 0.2.19
+
 ## 0.2.18 (2024-09-23)
 
 * Added ability to include negative amounts for items in an invoice or a proposal
