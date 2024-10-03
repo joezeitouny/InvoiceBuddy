@@ -1,3 +1,9 @@
+## 0.2.20 (2024-10-03)
+
+* Added search capability on the items page
+* Added search capability on the customers page
+* Version bump to 0.2.20
+
 ## 0.2.19 (2024-09-24)
 
 * Added ability to specify decimals in the item quantity field
