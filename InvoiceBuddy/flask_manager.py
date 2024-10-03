@@ -1175,12 +1175,24 @@ def list_customers():
 def list_items():
     try:
         page = int(request.args.get('page', 1))
+        search = request.args.get('search', '')
         items_per_page = globals.ITEMS_ITEMS_PER_PAGE
 
         start_idx = (page - 1) * items_per_page
         end_idx = start_idx + items_per_page
 
-        items = Item.query.all()
+        items = Item.query.first()
+
+        # Apply filters
+        if search:
+            search = f"%{search}%"
+            items = Item.query.filter(or_(
+                Item.title.ilike(search),
+                Item.description.ilike(search)
+            )).all()
+        else:
+            items = Item.query.all()
+
         paginated_data = [item.to_dict() for item in items[start_idx:end_idx]]
 
         for item in paginated_data:
