@@ -117,6 +117,12 @@
 
 <div class="container mt-4">
     <h2>Customers (<span id="customers-count-header"></span>)</h2>
+    <!-- Search and Filter options -->
+    <div class="row mb-3">
+        <div class="col">
+            <input type="text" id="search-input" class="form-control" placeholder="Search..." onkeyup="applyFilters()">
+        </div>
+    </div>
     <div class="table-responsive">
         <table class="table table-striped table-hover" id="customers-data-table">
             <thead class="thead-light">
@@ -143,10 +149,18 @@
 </div>
 
 <script type="text/javascript">
+    let currentFilters = {
+        search: ''
+    };
+
     function refreshData(page) {
         $.ajax({
             type: 'GET',
-            url: '/customers?page=' + page,
+            url: '/customers',
+            data: {
+                page: page,
+                search: currentFilters.search
+            },
             success: function(data) {
                 // Populate past invoices section
                 const customersDataTable = document.getElementById('customers-data-table').getElementsByTagName('tbody')[0];
@@ -237,6 +251,11 @@
             refreshData(1);
         }, 500);
     });
+
+    function applyFilters() {
+        currentFilters.search = $('#search-input').val();
+        refreshData(1);
+    }
 
     function deleteCustomer() {
         $('#delete_customer_modal').modal('hide');
