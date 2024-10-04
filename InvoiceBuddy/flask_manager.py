@@ -4,7 +4,7 @@ import webbrowser
 import plotly.graph_objects as go
 from flask import render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, desc
 from datetime import datetime, timedelta
 from rich.console import Console
 import json
@@ -751,7 +751,9 @@ def list_past_invoices():
         items_per_page = globals.PAST_INVOICES_TABLE_ITEMS_PER_PAGE
 
         # Start with the base query
-        query = Invoice.query.filter(Invoice.status != globals.InvoiceStatus.UNPAID.value)
+        query = (Invoice.query
+                 .filter(Invoice.status != globals.InvoiceStatus.UNPAID.value)
+                 .order_by(desc(Invoice.invoice_number)))
 
         # Apply filters
         if search:
@@ -802,7 +804,10 @@ def list_past_invoices():
 @app.route('/past_invoices_count')
 def past_invoices_count():
     try:
-        invoices = Invoice.query.filter(Invoice.status != globals.InvoiceStatus.UNPAID.value).all()
+        invoices = (Invoice.query
+                    .filter(Invoice.status != globals.InvoiceStatus.UNPAID.value)
+                    .order_by(desc(Invoice.invoice_number))
+                    .all())
 
         return jsonify(len(invoices))
     except Exception as e:
@@ -829,7 +834,10 @@ def list_proposals():
 @app.route('/active_proposals')
 def list_active_proposals():
     try:
-        proposals = Proposal.query.filter(Proposal.status == globals.ProposalStatus.UNACCEPTED.value).all()
+        proposals = (Proposal.query
+                     .filter(Proposal.status == globals.ProposalStatus.UNACCEPTED.value)
+                     .order_by(desc(Proposal.proposal_number))
+                     .all())
         json_proposals = [proposal.to_dict() for proposal in proposals]
 
         return jsonify(json_proposals)
@@ -873,7 +881,9 @@ def list_past_proposals():
         items_per_page = globals.PAST_PROPOSALS_TABLE_ITEMS_PER_PAGE
 
         # Start with the base query
-        query = Proposal.query.filter(Proposal.status != globals.ProposalStatus.UNACCEPTED.value)
+        query = (Proposal.query
+                 .filter(Proposal.status != globals.ProposalStatus.UNACCEPTED.value)
+                 .order_by(desc(Proposal.proposal_number)))
 
         # Apply filters
         if search:
