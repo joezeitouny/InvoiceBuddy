@@ -1,3 +1,10 @@
+## 0.2.21 (2024-10-04)
+
+* Customer name now shows up along with the proposal number in the description field of the modal when trying to mark proposals as accepted or rejected
+* Customer name now shows up along with the invoice number in the description field of the modal when trying to mark invoices as paid or canceled
+* Invoices and proposals are now sorted by default in descending order of their respective numbers
+* Version bump to 0.2.21
+
 ## 0.2.20 (2024-10-03)
 
 * Added search capability on the items page
