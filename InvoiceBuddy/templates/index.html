@@ -228,7 +228,7 @@
                         cell6.style.maxWidth = "250px";
                         cell6.textContent = values.description;
                         cell7.textContent = values.total_amount + ' ' + values.currency_symbol;
-                        cell8.innerHTML = `<div style="display: flex; flex-wrap: nowrap; overflow-x: auto;"><button type="button" class="btn btn-danger mark-rejected-button m-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as rejected" data-proposal-number="${values.proposal_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-accepted-button m-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as accepted" data-proposal-number="${values.proposal_number}"><i class="bi bi-check2-square"></i></button></button><button type="button" class="btn btn-warning edit-proposal-button m-1" data-toggle="tooltip" data-placement="top" title="Edit Proposal" data-proposal-id="${values.id}"><i class="bi bi-pencil-square"></i></button><button type="button" class="btn btn-primary view-proposal-button m-1" data-toggle="tooltip" data-placement="top" title="View proposal" data-id="${values.id}" data-proposal-number="${values.proposal_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button m-1" data-toggle="tooltip" data-placement="top" title="Print proposal" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-proposal-button m-1" data-toggle="tooltip" data-placement="top" title="Duplicate proposal" data-id="${values.id}"><i class="bi bi-copy"></i></button></div>`;
+                        cell8.innerHTML = `<div style="display: flex; flex-wrap: nowrap; overflow-x: auto;"><button type="button" class="btn btn-danger mark-rejected-button m-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as rejected" data-proposal-number="${values.proposal_number}" data-customer-name="${values.customer_name}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-accepted-button m-1" data-toggle="tooltip" data-placement="top" title="Mark proposal as accepted" data-proposal-number="${values.proposal_number}" data-customer-name="${values.customer_name}"><i class="bi bi-check2-square"></i></button></button><button type="button" class="btn btn-warning edit-proposal-button m-1" data-toggle="tooltip" data-placement="top" title="Edit Proposal" data-proposal-id="${values.id}"><i class="bi bi-pencil-square"></i></button><button type="button" class="btn btn-primary view-proposal-button m-1" data-toggle="tooltip" data-placement="top" title="View proposal" data-id="${values.id}" data-proposal-number="${values.proposal_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-proposal-button m-1" data-toggle="tooltip" data-placement="top" title="Print proposal" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-proposal-button m-1" data-toggle="tooltip" data-placement="top" title="Duplicate proposal" data-id="${values.id}"><i class="bi bi-copy"></i></button></div>`;
 
                         activeProposalsTotalAmount += values.total_amount;
                 }
@@ -239,20 +239,26 @@
                 // Handle mark as rejected button clicks
                 $('.mark-rejected-button').on('click', function () {
                     const proposal_number = $(this).data('proposal-number');
+                    const customer_name = $(this).data('customer-name');
 
                     // Set the value in the modal's prompt text
-                    $('#markProposalRejectedModalValue').text(proposal_number);
+                    $('.mark-proposal-rejected-number').text(proposal_number);
+                    $('.mark-proposal-rejected-customer-name').text(customer_name);
 
+                    $('#mark_proposal_as_rejected_modal').data["proposal-number"] = proposal_number;
                     $('#mark_proposal_as_rejected_modal').modal('show');
                 });
 
                 // Handle mark as accepted button clicks
                 $('.mark-accepted-button').on('click', function () {
                     const proposal_number = $(this).data('proposal-number');
+                    const customer_name = $(this).data('customer-name');
 
                     // Set the value in the modal's prompt text
-                    $('#markProposalAcceptedModalValue').text(proposal_number);
+                    $('.mark-proposal-accepted-number').text(proposal_number);
+                    $('.mark-proposal-accepted-customer-name').text(customer_name);
 
+                    $('#mark_proposal_as_accepted_modal').data["proposal-number"] = proposal_number;
                     $('#mark_proposal_as_accepted_modal').modal('show');
                 });
 
@@ -621,7 +627,7 @@
             url: '/mark_proposal_rejected',
             method: 'POST',
             data: {
-                proposal_number: $('#markProposalRejectedModalValue').text(),
+                proposal_number: $('#mark_proposal_as_rejected_modal').data["proposal-number"],
             },
             success: function(response) {
                 $('#loading_modal').modal('hide');
@@ -648,7 +654,7 @@
             url: '/mark_proposal_accepted',
             method: 'POST',
             data: {
-                proposal_number: $('#markProposalAcceptedModalValue').text(),
+                proposal_number: $('#mark_proposal_as_accepted_modal').data["proposal-number"],
             },
             success: function(response) {
                 $('#loading_modal').modal('hide');
