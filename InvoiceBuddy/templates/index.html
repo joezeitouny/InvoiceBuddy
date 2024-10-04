@@ -110,7 +110,7 @@
                         cell6.style.maxWidth = "250px";
                         cell6.textContent = values.description;
                         cell7.textContent = values.total_amount + ' ' + values.currency_symbol;
-                        cell8.innerHTML = `<div style="display: flex; flex-wrap: nowrap; overflow-x: auto;"><button type="button" class="btn btn-danger mark-canceled-button m-1" data-toggle="tooltip" data-placement="top" title="Cancel invoice" data-invoice-number="${values.invoice_number}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-paid-button m-1" data-toggle="tooltip" data-placement="top" title="Mark invoice as paid" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-cash-coin"></i></button><button type="button" class="btn btn-primary view-invoice-button m-1" data-toggle="tooltip" data-placement="top" title="View invoice" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button m-1" data-toggle="tooltip" data-placement="top" title="Print invoice" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-invoice-button m-1" data-toggle="tooltip" data-placement="top" title="Duplicate invoice" data-id="${values.id}"><i class="bi bi-copy"></i></button></div>`;
+                        cell8.innerHTML = `<div style="display: flex; flex-wrap: nowrap; overflow-x: auto;"><button type="button" class="btn btn-danger mark-canceled-button m-1" data-toggle="tooltip" data-placement="top" title="Cancel invoice" data-invoice-number="${values.invoice_number}" data-customer-name="${values.customer_name}"><i class="bi bi-x-square"></i></button><button type="button" class="btn btn-success mark-paid-button m-1" data-toggle="tooltip" data-placement="top" title="Mark invoice as paid" data-customer-name="${values.customer_name}" data-invoice-number="${values.invoice_number}"><i class="bi bi-cash-coin"></i></button><button type="button" class="btn btn-primary view-invoice-button m-1" data-toggle="tooltip" data-placement="top" title="View invoice" data-id="${values.id}" data-invoice-number="${values.invoice_number}"><i class="bi bi-zoom-in"></i></button><button type="button" class="btn btn-primary print-invoice-button m-1" data-toggle="tooltip" data-placement="top" title="Print invoice" data-id="${values.id}"><i class="bi bi-printer"></i></button><button type="button" class="btn btn-secondary duplicate-invoice-button m-1" data-toggle="tooltip" data-placement="top" title="Duplicate invoice" data-id="${values.id}"><i class="bi bi-copy"></i></button></div>`;
 
                         activeInvoicesTotalAmount += values.total_amount;
                 }
@@ -121,21 +121,26 @@
                 // Handle mark as canceled button clicks
                 $('.mark-canceled-button').on('click', function () {
                     const invoice_number = $(this).data('invoice-number');
+                    const customer_name = $(this).data('customer-name');
 
                     // Set the value in the modal's prompt text
-                    $('#markInvoiceCanceledModalValue').text(invoice_number);
+                    $('.mark-invoice-canceled-number').text(invoice_number);
+                    $('.mark-invoice-canceled-customer-name').text(customer_name);
 
+                    $('#mark_invoice_as_canceled_modal').data["invoice-number"] = invoice_number;
                     $('#mark_invoice_as_canceled_modal').modal('show');
                 });
 
                 // Handle mark as paid button clicks
                 $('.mark-paid-button').on('click', function () {
-                    const invoice_id = $(this).data('id');
                     const invoice_number = $(this).data('invoice-number');
+                    const customer_name = $(this).data('customer-name');
 
                     // Set the value in the modal's prompt text
-                    $('#markInvoicePaidModalValue').text(invoice_number);
+                    $('.mark-invoice-paid-number').text(invoice_number);
+                    $('.mark-invoice-paid-customer-name').text(customer_name);
 
+                    $('#mark_invoice_as_paid_modal').data["invoice-number"] = invoice_number;
                     $('#mark_invoice_as_paid_modal').modal('show');
                 });
 
@@ -479,7 +484,7 @@
             url: '/mark_invoice_canceled',
             method: 'POST',
             data: {
-                invoice_number: $('#markInvoiceCanceledModalValue').text(),
+                invoice_number: $('#mark_invoice_as_canceled_modal').data["invoice-number"],
             },
             success: function(response) {
                 $('#loading_modal').modal('hide');
@@ -506,7 +511,7 @@
             url: '/mark_invoice_paid',
             method: 'POST',
             data: {
-                invoice_number: $('#markInvoicePaidModalValue').text(),
+                invoice_number: $('#mark_invoice_as_paid_modal').data["invoice-number"],
             },
             success: function(response) {
                 $('#loading_modal').modal('hide');
