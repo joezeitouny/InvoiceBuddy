@@ -1,3 +1,8 @@
+## 0.2.22 (2024-10-18)
+
+* Fixed an issue where automatic calculation of the total fails sporadically when filling up an invoice or a proposal
+* Version bump to 0.2.22
+
 ## 0.2.21 (2024-10-04)
 
 * Customer name now shows up along with the proposal number in the description field of the modal when trying to mark proposals as accepted or rejected
