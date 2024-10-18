@@ -607,6 +607,9 @@
                           element.addEventListener('input', () => {
                             computeNewInvoiceTotal();
                           });
+                          element.addEventListener('change', () => {
+                            computeNewInvoiceTotal();
+                          });
                         });
 
                         computeNewInvoiceTotal();
@@ -742,6 +745,9 @@
 
                         document.querySelectorAll('.new-proposal-amount-compute').forEach(element => {
                           element.addEventListener('input', () => {
+                            computeNewProposalTotal();
+                          });
+                          element.addEventListener('change', () => {
                             computeNewProposalTotal();
                           });
                         });

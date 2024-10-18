@@ -81,6 +81,9 @@
           element.addEventListener('input', () => {
             computeEditProposalTotal();
           });
+          element.addEventListener('change', () => {
+            computeEditProposalTotal();
+          });
         });
     }
 
@@ -137,12 +140,15 @@
                   element.addEventListener('input', () => {
                     computeNewInvoiceTotal();
                   });
+                  element.addEventListener('change', () => {
+                    computeNewInvoiceTotal();
+                  });
                 });
         });
 
         $('#addProposalItem').click(function() {
                 var newItem = $('<tr class="new-proposal-item">' +
-                    '<td class="col-4"><input type="text" class="form-control itemTitleInput" list="predefinedItems" name="title[]" required></td>' +
+                    '<td class="col-4"><input type="text" class="form-control itemTitleInput new-proposal-amount-compute" list="predefinedItems" name="title[]" required></td>' +
                     '<td class="col-5"><textarea class="form-control" name="description[]" rows="3"></textarea></td>' +
                     '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="quantity[]" min="1" step="0.1" pattern="^\d*(\.\d{0,2})?$" value="1" required></td>' +
                     '<td class="col-1"><input type="number" class="form-control new-proposal-amount-compute" name="price[]" step="0.1" pattern="^[-+]?\d*(\.\d{0,2})?$" value="0" required></td>' +
@@ -158,6 +164,9 @@
 
                 document.querySelectorAll('.new-proposal-amount-compute').forEach(element => {
                   element.addEventListener('input', () => {
+                    computeNewProposalTotal();
+                  });
+                  element.addEventListener('change', () => {
                     computeNewProposalTotal();
                   });
                 });
@@ -192,10 +201,16 @@
           element.addEventListener('input', () => {
             computeNewProposalTotal();
           });
+          element.addEventListener('change', () => {
+            computeNewProposalTotal();
+          });
         });
 
         document.querySelectorAll('.new-invoice-amount-compute').forEach(element => {
           element.addEventListener('input', () => {
+            computeNewInvoiceTotal();
+          });
+          element.addEventListener('change', () => {
             computeNewInvoiceTotal();
           });
         });
