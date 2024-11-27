@@ -1,3 +1,8 @@
+## 0.3.0 (2024-11-27)
+
+* Items now have "Notes", "Purchase Price" and a "Selling Price"
+* Version bump to 0.3.0
+
 ## 0.2.23 (2024-11-22)
 
 * UI Improvements
