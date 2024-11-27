@@ -341,6 +341,9 @@
         $('#new_customer_address').val('');
         $('#new_customer_country').val('');
         $('#new_item_description').val('');
+        $('#new_item_notes').val('');
+        $('#new_item_purchase_price').val('');
+        $('#new_item_selling_price').val('');
     }
 
     function showNewItemModal() {
@@ -351,7 +354,9 @@
         // clear up the form fields
         $('#new_item_title').val('');
         $('#new_item_description').val('');
-        $('#new_item_price').val('');
+        $('#new_item_notes').val('');
+        $('#new_item_purchase_price').val('');
+        $('#new_item_selling_price').val('');
     }
 
     function showNewInvoiceModal() {
@@ -409,7 +414,7 @@
                   option.id = item.id;
                   option.value = item.title;
                   option.description = item.description;
-                  option.price = item.price;
+                  option.price = item.selling_price;
                   datalist.appendChild(option);
                 });
             },
@@ -496,7 +501,7 @@
                   option.id = item.id;
                   option.value = item.title;
                   option.description = item.description;
-                  option.price = item.price;
+                  option.price = item.selling_price;
                   datalist.appendChild(option);
                 });
             },
@@ -582,7 +587,9 @@
             data: {
                 title: $('#new_item_title').val(),
                 description: $('#new_item_description').val(),
-                price: $('#new_item_price').val()
+                notes: $('#new_item_notes').val(),
+                purchase_price: $('#new_item_purchase_price').val(),
+                selling_price: $('#new_item_selling_price').val(),
             },
             success: function(item_id) {
                 $('#loading_modal').modal('hide');

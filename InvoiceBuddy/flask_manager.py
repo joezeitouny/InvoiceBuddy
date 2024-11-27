@@ -143,14 +143,18 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
-    price = db.Column(db.Float, nullable=False)
+    notes = db.Column(db.Text, nullable=False)
+    purchase_price = db.Column(db.Float, nullable=False)
+    selling_price = db.Column(db.Float, nullable=False)
 
     def to_dict(self):
         return dict(
             id=self.id,
             title=self.title,
             description=self.description,
-            price=self.price
+            notes=self.notes,
+            purchase_price=self.purchase_price,
+            selling_price=self.selling_price
         )
 
 
@@ -326,13 +330,17 @@ def add_item():
             item_data = {
                 'title': request.form['title'],
                 'description': request.form['description'],
-                'price': request.form['price']
+                'notes': request.form['notes'],
+                'purchase_price': request.form['purchase_price'],
+                'selling_price': request.form['selling_price']
             }
 
             new_item = Item(
                 title=item_data['title'],
                 description=item_data['description'],
-                price=item_data['price']
+                notes=item_data['notes'],
+                purchase_price=item_data['purchase_price'],
+                selling_price=item_data['selling_price']
             )
 
             db.session.add(new_item)
@@ -1223,6 +1231,8 @@ def list_items():
 
         for item in paginated_data:
             item['description'] = item['description'].replace('\n', '<br>')
+            if item['notes']:
+                item['notes'] = item['notes'].replace('\n', '<br>')
 
         total_number_of_pages = math.floor(len(items) / items_per_page)
         if len(items) % items_per_page != 0:
@@ -1310,7 +1320,9 @@ def update_item():
             # Modify the attributes
             item_to_update.title = request.form['title']
             item_to_update.description = request.form['description']
-            item_to_update.price = request.form['price']
+            item_to_update.notes = request.form['notes']
+            item_to_update.purchase_price = request.form['purchase_price']
+            item_to_update.selling_price = request.form['selling_price']
 
             db.session.commit()
 
