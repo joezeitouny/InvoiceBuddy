@@ -165,6 +165,12 @@
                 // Repopulate the table
                 for (const [entry, values] of Object.entries(data['items'])) {
                         const row = itemsDataTable.insertRow();
+                        row.setAttribute('data-id', values.id);
+                        row.setAttribute('data-title', values.title);
+                        row.setAttribute('data-description', values.description);
+                        row.setAttribute('data-notes', values.notes);
+                        row.setAttribute('data-purchase_price', values.purchase_price);
+                        row.setAttribute('data-selling_price', values.selling_price);
 
                         const cell1 = row.insertCell(0);
                         const cell2 = row.insertCell(1);
@@ -181,6 +187,31 @@
                         cell5.innerHTML = `<button type="button" class="btn btn-primary edit-item-button me-1" data-id="${values.id}" data-title="${values.title}" data-description="${values.description}" data-notes="${values.notes}" data-purchase_price="${values.purchase_price}" data-selling_price="${values.selling_price}"><i class="bi bi-pencil-square"></i></button><button type="button" class="btn btn-danger delete-item-button me-1" data-id="${values.id}" data-title="${values.title}"><i class="bi bi-trash"></i></button>`;
                 }
 
+                // Handle row clicks events
+                $('#items-data-table tr').click(function(event) {
+                    if (event.target instanceof HTMLTableCellElement) {
+                        // Prevent default link behavior
+                        event.preventDefault();
+
+                        if (event.currentTarget.getAttribute("data-id")) {
+                            clearFormValidation('edit_item_form');
+
+                            $('#edit_item_id').val(event.currentTarget.getAttribute("data-id"));
+                            $('#edit_item_title').val(event.currentTarget.getAttribute("data-title"));
+                            $('#edit_item_description').val(event.currentTarget.getAttribute("data-description").replace(/<br>/g, '\n'));
+                            if (event.currentTarget.getAttribute("data-notes") && event.currentTarget.getAttribute("data-notes").length > 1) {
+                                $('#edit_item_notes').val(event.currentTarget.getAttribute("data-notes").replace(/<br>/g, '\n'));
+                            } else {
+                                $('#edit_item_notes').val('');
+                            }
+                            $('#edit_item_purchase_price').val(event.currentTarget.getAttribute("data-purchase_price"));
+                            $('#edit_item_selling_price').val(event.currentTarget.getAttribute("data-selling_price"));
+
+                            $('#edit_item_modal').modal('show');
+                        }
+                    }
+                });
+
                 // Handle edit item button clicks
                 $('.edit-item-button').on('click', function () {
                     clearFormValidation('edit_item_form');
@@ -188,8 +219,10 @@
                     $('#edit_item_id').val($(this).data('id'));
                     $('#edit_item_title').val($(this).data('title'));
                     $('#edit_item_description').val($(this).data('description').replace(/<br>/g, '\n'));
-                    if ($(this).data('notes')) {
+                    if ($(this).data('notes') && $(this).data('notes').length > 1) {
                         $('#edit_item_notes').val($(this).data('notes').replace(/<br>/g, '\n'));
+                    } else {
+                        $('#edit_item_notes').val('');
                     }
                     $('#edit_item_purchase_price').val($(this).data('purchase_price'));
                     $('#edit_item_selling_price').val($(this).data('selling_price'));
