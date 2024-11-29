@@ -1,3 +1,9 @@
+## 0.3.1 (2024-11-29)
+
+* Customers table is now clickable and will show the edit customer modal when a row is clicked
+* Items table is now clickable and will show the edit item modal when a row is clicked
+* Version bump to 0.3.1
+
 ## 0.3.0 (2024-11-27)
 
 * Items now have "Notes", "Purchase Price" and a "Selling Price"

@@ -2,7 +2,7 @@ from enum import Enum
 
 # General
 APPLICATION_NAME = 'InvoiceBuddy'
-APPLICATION_VERSION = '0.3.0'
+APPLICATION_VERSION = '0.3.1'
 JSON_RESPONSE_FORMAT_VERSION = 1
 SELLER_LOGO_FILENAME = "seller-logo.png"
 INVOICE_TEMPLATE_FILENAME = "invoice_template.html"
