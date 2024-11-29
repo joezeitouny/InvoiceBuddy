@@ -57,6 +57,8 @@ class Invoice(db.Model):
     seller_email = db.Column(db.String(100), nullable=False)
     seller_iban = db.Column(db.String(100), nullable=False)
     seller_bic = db.Column(db.String(100), nullable=False)
+    seller_bank_name = db.Column(db.String(100), nullable=True)
+    seller_bank_address = db.Column(db.String(100), nullable=True)
     seller_paypal_address = db.Column(db.String(100), nullable=False)
     currency_symbol = db.Column(db.String(100), nullable=False)
     currency_name = db.Column(db.String(100), nullable=False)
@@ -82,6 +84,8 @@ class Invoice(db.Model):
             seller_email=self.seller_email,
             seller_iban=self.seller_iban,
             seller_bic=self.seller_bic,
+            seller_bank_name=self.seller_bank_name,
+            seller_bank_address=self.seller_bank_address,
             seller_paypal_address=self.seller_paypal_address,
             currency_symbol=self.currency_symbol,
             currency_name=self.currency_name,
@@ -107,6 +111,8 @@ class Proposal(db.Model):
     seller_email = db.Column(db.String(100), nullable=False)
     seller_iban = db.Column(db.String(100), nullable=False)
     seller_bic = db.Column(db.String(100), nullable=False)
+    seller_bank_name = db.Column(db.String(100), nullable=True)
+    seller_bank_address = db.Column(db.String(100), nullable=True)
     seller_paypal_address = db.Column(db.String(100), nullable=False)
     currency_symbol = db.Column(db.String(100), nullable=False)
     currency_name = db.Column(db.String(100), nullable=False)
@@ -131,6 +137,8 @@ class Proposal(db.Model):
             seller_email=self.seller_email,
             seller_iban=self.seller_iban,
             seller_bic=self.seller_bic,
+            seller_bank_name=self.seller_bank_name,
+            seller_bank_address=self.seller_bank_address,
             seller_paypal_address=self.seller_paypal_address,
             currency_symbol=self.currency_symbol,
             currency_name=self.currency_name,
@@ -412,6 +420,8 @@ def generate_invoice():
                 'seller_email': application_modules.get_options().seller_email,
                 'seller_iban': application_modules.get_options().seller_iban,
                 'seller_bic': application_modules.get_options().seller_bic,
+                'seller_bank_name': application_modules.get_options().seller_bank_name,
+                'seller_bank_address': application_modules.get_options().seller_bank_address,
                 'seller_paypal_address': application_modules.get_options().seller_paypal_address,
                 'currency_symbol': application_modules.get_options().currency_symbol,
                 'currency_name': application_modules.get_options().currency_name,
@@ -436,6 +446,8 @@ def generate_invoice():
                 seller_email=invoice_data['seller_email'],
                 seller_iban=invoice_data['seller_iban'],
                 seller_bic=invoice_data['seller_bic'],
+                seller_bank_name=invoice_data['seller_bank_name'],
+                seller_bank_address=invoice_data['seller_bank_address'],
                 seller_paypal_address=invoice_data['seller_paypal_address'],
                 currency_symbol=invoice_data['currency_symbol'],
                 currency_name=invoice_data['currency_name'],
@@ -496,6 +508,8 @@ def generate_proposal():
                 'seller_email': application_modules.get_options().seller_email,
                 'seller_iban': application_modules.get_options().seller_iban,
                 'seller_bic': application_modules.get_options().seller_bic,
+                'seller_bank_name': application_modules.get_options().seller_bank_name,
+                'seller_bank_address': application_modules.get_options().seller_bank_address,
                 'seller_paypal_address': application_modules.get_options().seller_paypal_address,
                 'currency_symbol': application_modules.get_options().currency_symbol,
                 'currency_name': application_modules.get_options().currency_name,
@@ -519,6 +533,8 @@ def generate_proposal():
                 seller_email=proposal_data['seller_email'],
                 seller_iban=proposal_data['seller_iban'],
                 seller_bic=proposal_data['seller_bic'],
+                seller_bank_name=proposal_data['seller_bank_name'],
+                seller_bank_address=proposal_data['seller_bank_address'],
                 seller_paypal_address=proposal_data['seller_paypal_address'],
                 currency_symbol=proposal_data['currency_symbol'],
                 currency_name=proposal_data['currency_name'],
@@ -634,6 +650,8 @@ def view_invoice():
                 'seller_email': invoice.seller_email,
                 'seller_iban': invoice.seller_iban,
                 'seller_bic': invoice.seller_bic,
+                'seller_bank_name': invoice.seller_bank_name,
+                'seller_bank_address': invoice.seller_bank_address,
                 'seller_paypal_address': invoice.seller_paypal_address,
                 'currency_symbol': invoice.currency_symbol,
                 'currency_name': invoice.currency_name,
@@ -679,6 +697,8 @@ def view_proposal():
                 'seller_email': proposal.seller_email,
                 'seller_iban': proposal.seller_iban,
                 'seller_bic': proposal.seller_bic,
+                'seller_bank_name': proposal.seller_bank_name,
+                'seller_bank_address': proposal.seller_bank_name,
                 'seller_paypal_address': proposal.seller_paypal_address,
                 'currency_symbol': proposal.currency_symbol,
                 'currency_name': proposal.currency_name,
@@ -1013,6 +1033,8 @@ def mark_invoice_canceled():
                 seller_email=invoice.seller_email,
                 seller_iban=invoice.seller_iban,
                 seller_bic=invoice.seller_bic,
+                seller_bank_name=invoice.seller_bank_name,
+                seller_bank_address=invoice.seller_bank_address,
                 seller_paypal_address=invoice.seller_paypal_address,
                 currency_symbol=invoice.currency_symbol,
                 currency_name=invoice.currency_name,
@@ -1093,6 +1115,8 @@ def mark_proposal_accepted():
                 seller_email=proposal.seller_email,
                 seller_iban=proposal.seller_iban,
                 seller_bic=proposal.seller_bic,
+                seller_bank_name=proposal.seller_bank_name,
+                seller_bank_address=proposal.seller_bank_address,
                 seller_paypal_address=proposal.seller_paypal_address,
                 currency_symbol=proposal.currency_symbol,
                 currency_name=proposal.currency_name,

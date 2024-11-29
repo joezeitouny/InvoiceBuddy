@@ -38,6 +38,8 @@ def parse_config(options):
             options.seller_email = data['seller']['seller_email']
             options.seller_iban = data['seller']['seller_iban']
             options.seller_bic = data['seller']['seller_bic']
+            options.seller_bank_name = data['seller']['seller_bank_name']
+            options.seller_bank_address = data['seller']['seller_bank_address']
             options.seller_paypal_address = data['seller']['seller_paypal_address']
     except Exception as e:
         print(f'Error while parsing the specified JSON configuration file. Details {e}\r\n')

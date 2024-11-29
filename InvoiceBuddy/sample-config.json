@@ -32,6 +32,8 @@
     "seller_email": "",
     "seller_iban": "",
     "seller_bic": "",
+    "seller_bank_name": "",
+    "seller_bank_address": "",
     "seller_paypal_address": ""
   }
 }
