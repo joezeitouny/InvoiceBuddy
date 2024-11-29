@@ -143,7 +143,7 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
-    notes = db.Column(db.Text, nullable=False)
+    notes = db.Column(db.Text, nullable=False, default='')
     purchase_price = db.Column(db.Float, nullable=False)
     selling_price = db.Column(db.Float, nullable=False)
 
