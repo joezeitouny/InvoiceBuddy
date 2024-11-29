@@ -173,6 +173,13 @@
                 // Repopulate the table
                 for (const [entry, values] of Object.entries(data['customers'])) {
                         const row = customersDataTable.insertRow();
+                        row.setAttribute('data-id', values.id);
+                        row.setAttribute('data-name', values.customer_name);
+                        row.setAttribute('data-email', values.customer_email);
+                        row.setAttribute('data-phone', values.customer_phone);
+                        row.setAttribute('data-address', values.customer_address);
+                        row.setAttribute('data-country', values.customer_country);
+                        row.setAttribute('data-description', values.description);
 
                         const cell1 = row.insertCell(0);
                         const cell2 = row.insertCell(1);
@@ -190,6 +197,28 @@
                         cell6.innerHTML = values.description;
                         cell7.innerHTML = `<button type="button" class="btn btn-primary edit-customer-button me-1" data-id="${values.id}" data-name="${values.customer_name}" data-email="${values.customer_email}" data-phone="${values.customer_phone}" data-address="${values.customer_address}" data-country="${values.customer_country}" data-description="${values.description}"><i class="bi bi-pencil-square"></i></button><button type="button" class="btn btn-danger delete-customer-button me-1" data-id="${values.id}" data-name="${values.customer_name}"><i class="bi bi-trash"></i></button>`;
                 }
+
+                // Handle row clicks events
+                $('#customers-data-table tr').click(function(event) {
+                    if (event.target instanceof HTMLTableCellElement) {
+                        // Prevent default link behavior
+                        event.preventDefault();
+
+                        if (event.currentTarget.getAttribute("data-id")) {
+                            clearFormValidation('edit_customer_form');
+
+                            $('#edit_customer_id').val(event.currentTarget.getAttribute("data-id"));
+                            $('#edit_customer_name').val(event.currentTarget.getAttribute("data-name"));
+                            $('#edit_customer_email').val(event.currentTarget.getAttribute("data-email"));
+                            $('#edit_customer_phone').val(event.currentTarget.getAttribute("data-phone"));
+                            $('#edit_customer_address').val(event.currentTarget.getAttribute("data-address"));
+                            $('#edit_customer_country').val(event.currentTarget.getAttribute("data-country"));
+                            $('#edit_customer_description').val(event.currentTarget.getAttribute("data-description").replace(/<br>/g, '\n'));
+
+                            $('#edit_customer_modal').modal('show');
+                        }
+                    }
+                });
 
                 // Handle edit customer button clicks
                 $('.edit-customer-button').on('click', function () {
