@@ -1,3 +1,9 @@
+## 0.4.0 (2024-11-29)
+
+* Added seller bank name and address fields to invoices
+* Updated items table created schema
+* Version bump to 0.4.0
+
 ## 0.3.1 (2024-11-29)
 
 * Customers table is now clickable and will show the edit customer modal when a row is clicked
