@@ -1,3 +1,8 @@
+## 0.4.2 (2025-03-06)
+
+* Fixed an issue where the edit proposal form didn't allow negative values to be added in the price column
+* Version bump to 0.4.2
+
 ## 0.4.1 (2025-03-06)
 
 * Fixed an issue where the edit proposal form didn't allow negative values to be added in the price column
